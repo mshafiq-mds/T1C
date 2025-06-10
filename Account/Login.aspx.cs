@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Web;
 using System.Web.UI;
@@ -110,6 +111,43 @@ namespace Prodata.WebForm.Account
                         var result = manager.Create(user);
                         if (result.Succeeded)
                         {
+                            // Assign role to the user based on iPMSRoleCode
+                            if (!string.IsNullOrEmpty(user.iPMSRoleCode))
+                            {
+                                var roleCode = user.iPMSRoleCode.ToUpperInvariant();
+
+                                if (roleCode == "ADMIN")
+                                {
+                                    if (!manager.IsInRole(user.Id, "HQ"))
+                                    {
+                                        manager.AddToRole(user.Id, "HQ");
+                                    }
+                                }
+                                else
+                                {
+                                    var approverRoles = new HashSet<string>
+                                    {
+                                        "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+                                    };
+
+                                    if (approverRoles.Contains(roleCode))
+                                    {
+                                        if (!manager.IsInRole(user.Id, "Approver"))
+                                        {
+                                            manager.AddToRole(user.Id, "Approver");
+                                        }
+
+                                        if (roleCode == "AM" || roleCode == "MM")
+                                        {
+                                            if (!manager.IsInRole(user.Id, "Kilang"))
+                                            {
+                                                manager.AddToRole(user.Id, "Kilang");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
                             // **Manually login user**
                             signinManager.SignIn(user, RememberMe.Checked, false);
                         }
