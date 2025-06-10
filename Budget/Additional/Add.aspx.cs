@@ -108,7 +108,7 @@ namespace Prodata.WebForm.Budget.AddBudget
             if (!isEmptyBA)
             {
                 LblBA.Text = ba;
-                LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba) ?? "";
+                LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
                 //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().iPMSBizAreaCode);
             }
         }

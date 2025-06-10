@@ -3098,6 +3098,8 @@
     </Compile>
     <Compile Include="Models\AdditionalBudgetDocuments.cs" />
     <Compile Include="Models\AdditionalBudgetRequests.cs" />
+    <Compile Include="Models\AdditionalLoaCogsLimits.cs" />
+    <Compile Include="Models\AdditionalLoaFinanceLimits.cs" />
     <Compile Include="Models\Approval.cs" />
     <Compile Include="Models\ApprovalLimit.cs" />
     <Compile Include="Models\Budget.cs" />

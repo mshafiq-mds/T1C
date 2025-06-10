@@ -115,7 +115,7 @@ namespace Prodata.WebForm.Budget.Transfer
             if (!isEmptyBA) 
             {
                 LblBA.Text = ba;
-                LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba) ?? "";
+                LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
                 //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().iPMSBizAreaCode);
             }
         }

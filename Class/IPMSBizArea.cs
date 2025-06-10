@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -235,6 +236,38 @@ namespace Prodata.WebForm.Class
                 throw ex;
             }
             return zoneCode;
+        }
+
+        public List<string> GetBizAreaCodes(string bizAreaCode)
+        {
+            var bizAreaCodes = new List<string>();
+
+            string connectionString = ConfigurationManager.ConnectionStrings["iPMSConnection"].ConnectionString;
+
+            string query = @"
+        SELECT DISTINCT B.code AS BizAreaCode
+        FROM iPMS.dbo.[User] U
+        JOIN iPMS.dbo.BizArea B ON B.type = 'MILL'
+        JOIN iPMS.dbo.Wilayah W ON B.kod_wilayah = W.kod_wilayah
+        WHERE U.BizAreaCode = @BizAreaCode
+          AND W.zone_code = U.BizAreaCode";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@BizAreaCode", bizAreaCode);
+
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bizAreaCodes.Add(reader["BizAreaCode"].ToString());
+                    }
+                }
+            }
+
+            return bizAreaCodes;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             List<string> accessibleBizAreas = !string.IsNullOrEmpty(ba)
                 ? new Class.IPMSBizArea().GetBizAreaCodes(ba)
                 : new List<string>(); // Empty list means access all later
+            //List<string> accessibleBizAreas = Auth.IPMSBizAreaCodes();
 
             using (var db = new AppDbContext())
             {
