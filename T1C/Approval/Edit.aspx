@@ -8,7 +8,7 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%: Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/T1C/Default" CausesValidation="false">
+                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/T1C/Approval/Default" CausesValidation="false">
                         <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnApprove" runat="server" CssClass="btn btn-success" OnClick="btnApprove_Click">
@@ -62,7 +62,7 @@
                             <asp:Label ID="lblJustificationDirectAward" runat="server" CssClass="text-muted"></asp:Label>
                         </dd>
                         <dt class="col-lg-2 col-sm-3">Data Kos</dt>
-                        <dd class="col-lg-10 col-sm-9">
+                        <dd class="col-lg-8 col-sm-7">
                             <div class="table-responsive">
                                 <table id="tblDataKos" runat="server" class="table table-bordered table-sm">
                                     <thead>
@@ -83,16 +83,16 @@
                                     <tbody>
                                         <tr>
                                             <th class="text-nowrap align-middle">S & M</th>
-                                            <td>
-                                                <asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                            <td>
-                                                <asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                            <td>
-                                                <asp:TextBox ID="txtPreviousYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                            <td>
-                                                <asp:TextBox ID="txtPreviousYearActual" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                            <td>
-                                                <asp:TextBox ID="txtPreviousYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                            <td class="text-center">
+                                                <asp:Label ID="lblCurrentYearActualYTD" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                            <td class="text-center">
+                                                <asp:Label ID="lblCurrentYearBudget" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                            <td class="text-center">
+                                                <asp:Label ID="lblPreviousYearActualYTD" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                            <td class="text-center">
+                                                <asp:Label ID="lblPreviousYearActual" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                            <td class="text-center">
+                                                <asp:Label ID="lblPreviousYearBudget" runat="server" CssClass="form-control text-muted"></asp:Label></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -100,20 +100,20 @@
                             <table style="width: 100%;">
                                 <tbody>
                                     <tr>
-                                        <th class="text-center align-middle pl-2 pr-1">A</th>
+                                        <th class="text-center align-middle pl-1 pr-1">A</th>
                                         <td>
-                                            <asp:TextBox ID="txtA" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                        <th class="text-center align-middle pl-2 pr-1">C</th>
+                                            <asp:Label ID="lblA" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                        <th class="text-center align-middle pl-1 pr-1">C</th>
                                         <td>
-                                            <asp:TextBox ID="txtC" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                            <asp:Label ID="lblC" runat="server" CssClass="form-control text-muted"></asp:Label></td>
                                     </tr>
                                     <tr>
-                                        <th class="text-center align-middle pl-2 pr-1">B</th>
+                                        <th class="text-center align-middle pl-1 pr-1">B</th>
                                         <td>
-                                            <asp:TextBox ID="txtB" runat="server" CssClass="form-control"></asp:TextBox></td>
-                                        <th class="text-center align-middle pl-2 pr-1">D</th>
+                                            <asp:Label ID="lblB" runat="server" CssClass="form-control text-muted"></asp:Label></td>
+                                        <th class="text-center align-middle pl-1 pr-1">D</th>
                                         <td>
-                                            <asp:TextBox ID="txtD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                            <asp:Label ID="lblD" runat="server" CssClass="form-control text-muted"></asp:Label></td>
                                     </tr>
                                 </tbody>
                             </table>

@@ -98,28 +98,30 @@ namespace Prodata.WebForm.Class
             }
         }
 
-        public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string ipmsRoleCode = null)
+        public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string ipmsRoleCode = null, List<string> ipmsBizAreaCodes = null)
         {
             using (var db = new AppDbContext())
             {
-                // Step 1: Materialize latest approvals
+                // Step 1: Latest approvals per form
                 var latestApprovals = db.Approvals
                     .Where(a => a.ObjectType == "Form")
                     .GroupBy(a => a.ObjectId)
                     .Select(g => new
                     {
                         ObjectId = g.Key,
-                        LastApprovalOrder = g.OrderByDescending(x => x.CreatedDate).Select(x => x.Order).FirstOrDefault()
+                        LastApprovalOrder = g.OrderByDescending(x => x.CreatedDate)
+                                              .Select(x => x.Order)
+                                              .FirstOrDefault()
                     })
-                    .ToList(); // in-memory after this point
+                    .ToList();
 
-                // Step 2: Materialize only the approval limits needed
+                // Step 2: Applicable approval limits
                 var approvalLimits = db.ApprovalLimits
                     .Where(al => al.ApproverType.ToLower() == "ipms_role" &&
                                  (ipmsRoleCode == null || al.ApproverCode.ToLower() == ipmsRoleCode.ToLower()))
-                    .ToList(); // in-memory
+                    .ToList();
 
-                // Step 3: Materialize forms + types (before joining with in-memory data)
+                // Step 3: Forms and their type names
                 var formsWithTypes = (
                     from f in db.Forms.ExcludeSoftDeleted()
                     join t in db.FormTypes on f.TypeId equals t.Id into ft
@@ -129,81 +131,50 @@ namespace Prodata.WebForm.Class
                         Form = f,
                         TypeName = t.Name
                     }
-                ).ToList(); // materialized before joining with in-memory collections
+                ).ToList();
 
-                // Step 4: In-memory join with latestApprovals and approvalLimits
+                // Step 4: Combine all data
                 var query =
                     from fwt in formsWithTypes
                     let f = fwt.Form
                     let tName = fwt.TypeName
                     join la in latestApprovals on f.Id equals la.ObjectId into laGroup
                     from a in laGroup.DefaultIfEmpty()
-                    let lastOrder = (a != null && a.LastApprovalOrder.HasValue) ? a.LastApprovalOrder.Value : 0
+                    let lastOrder = (a?.LastApprovalOrder ?? 0)
                     let nextOrder = lastOrder + 1
                     from al in approvalLimits
                     where al.Order == nextOrder &&
                           f.Amount >= al.AmountMin &&
-                          (al.AmountMax == null || f.Amount <= al.AmountMax)
-                    select new
+                          (al.AmountMax == null || f.Amount <= al.AmountMax) &&
+                          (ipmsBizAreaCodes == null || !ipmsBizAreaCodes.Any() || ipmsBizAreaCodes.Contains(f.BizAreaCode))
+                    orderby f.Date
+                    select new Models.ViewModels.FormListViewModel
                     {
-                        f.Id,
-                        f.EntityId,
-                        f.TypeId,
+                        Id = f.Id,
                         Type = tName,
-                        f.BizAreaCode,
-                        f.BizAreaName,
-                        f.Date,
-                        f.Ref,
-                        f.Details,
-                        f.JustificationOfNeed,
-                        f.Remarks,
-                        f.Amount,
-                        f.ProcurementType,
-                        f.Justification,
-                        f.CurrentYearActualYTD,
-                        f.CurrentYearBudget,
-                        f.PreviousYearActualYTD,
-                        f.PreviousYearActual,
-                        f.PreviousYearBudget,
-                        f.A,
-                        f.B,
-                        f.C,
-                        f.D,
-                        f.Status,
-                        ApprovalLimitOrder = al.Order,
-                        ApprovalOrder = a.LastApprovalOrder
+                        BizAreaCode = f.BizAreaCode,
+                        BizAreaName = f.BizAreaName,
+                        Date = f.Date.HasValue ? f.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+                        Ref = f.Ref,
+                        Details = f.Details,
+                        JustificationOfNeed = f.JustificationOfNeed,
+                        Remarks = f.Remarks,
+                        Amount = f.Amount.HasValue ? f.Amount.Value.ToString("#,##0.00") : string.Empty,
+                        ProcurementType = f.ProcurementType,
+                        Justification = f.Justification,
+                        CurrentYearActualYTD = f.CurrentYearActualYTD.HasValue ? f.CurrentYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
+                        CurrentYearBudget = f.CurrentYearBudget.HasValue ? f.CurrentYearBudget.Value.ToString("#,##0.00") : string.Empty,
+                        PreviousYearActualYTD = f.PreviousYearActualYTD.HasValue ? f.PreviousYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
+                        PreviousYearActual = f.PreviousYearActual.HasValue ? f.PreviousYearActual.Value.ToString("#,##0.00") : string.Empty,
+                        PreviousYearBudget = f.PreviousYearBudget.HasValue ? f.PreviousYearBudget.Value.ToString("#,##0.00") : string.Empty,
+                        A = f.A.HasValue ? f.A.Value.ToString("#,##0.00") : string.Empty,
+                        B = f.B,
+                        C = f.C.HasValue ? f.C.Value.ToString("#,##0.00") : string.Empty,
+                        D = f.D.HasValue ? f.D.Value.ToString("#,##0.00") : string.Empty,
+                        Status = f.Status
                     };
 
-                // Step 5: Ordering and projection to ViewModel
-                var query2 = query.OrderBy(q => q.Date).ToList();
-
-                var result = query.Select(q => new Models.ViewModels.FormListViewModel
-                {
-                    Id = q.Id,
-                    Type = q.Type,
-                    BizAreaCode = q.BizAreaCode,
-                    BizAreaName = q.BizAreaName,
-                    Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
-                    Ref = q.Ref,
-                    Details = q.Details,
-                    JustificationOfNeed = q.JustificationOfNeed,
-                    Remarks = q.Remarks,
-                    Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
-                    ProcurementType = q.ProcurementType,
-                    Justification = q.Justification,
-                    CurrentYearActualYTD = q.CurrentYearActualYTD.HasValue ? q.CurrentYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
-                    CurrentYearBudget = q.CurrentYearBudget.HasValue ? q.CurrentYearBudget.Value.ToString("#,##0.00") : string.Empty,
-                    PreviousYearActualYTD = q.PreviousYearActualYTD.HasValue ? q.PreviousYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
-                    PreviousYearActual = q.PreviousYearActual.HasValue ? q.PreviousYearActual.Value.ToString("#,##0.00") : string.Empty,
-                    PreviousYearBudget = q.PreviousYearBudget.HasValue ? q.PreviousYearBudget.Value.ToString("#,##0.00") : string.Empty,
-                    A = q.A.HasValue ? q.A.Value.ToString("#,##0.00") : string.Empty,
-                    B = q.B,
-                    C = q.C.HasValue ? q.C.Value.ToString("#,##0.00") : string.Empty,
-                    D = q.D.HasValue ? q.D.Value.ToString("#,##0.00") : string.Empty,
-                    Status = q.Status
-                }).ToList();
-
-                return result;
+                return query.ToList();
             }
         }
 

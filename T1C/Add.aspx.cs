@@ -91,7 +91,7 @@ namespace Prodata.WebForm.T1C
                             {
                                 TypeId = typeEntity.Id,
                                 BizAreaCode = ba,
-                                BizAreaName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba),
+                                BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba),
                                 Date = date,
                                 Ref = refNo,
                                 Details = details,
@@ -266,7 +266,7 @@ namespace Prodata.WebForm.T1C
                             {
                                 TypeId = typeEntity.Id,
                                 BizAreaCode = ba,
-                                BizAreaName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba),
+                                BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba),
                                 Date = date,
                                 Ref = refNo,
                                 Details = details,
@@ -444,7 +444,7 @@ namespace Prodata.WebForm.T1C
                 rfvBA.Visible = false;
 
                 string baCode = Auth.User().iPMSBizAreaCode;
-                string baName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(baCode);
+                string baName = new Class.IPMSBizArea().GetNameByCode(baCode);
                 lblBAText.Text = baCode + " - " + baName;
             }
             else

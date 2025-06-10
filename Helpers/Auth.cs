@@ -44,5 +44,32 @@ namespace Prodata.WebForm
             }
             return false;
         }
+
+        public static List<string> IPMSBizAreaCodes()
+        {
+            var ipmsBizArea = new Class.IPMSBizArea();
+
+            if (User() != null && !User().IsSuperadmin())
+            {
+                string ipmsRoleCode = User().iPMSRoleCode;
+                string baType = ipmsBizArea.GetTypeByCode(User().iPMSBizAreaCode);
+                if (baType.Equals("MILL", StringComparison.OrdinalIgnoreCase))
+                {
+                    return new List<string> { User().iPMSBizAreaCode };
+                }
+                else
+                {
+                    if (User().iPMSBizAreaCode.Equals("001") || User().iPMSBizAreaCode.Equals("002") || User().iPMSBizAreaCode.Equals("003"))
+                    {
+                        var bizAreas = ipmsBizArea.GetIPMSBizAreas("MILL", User().iPMSRoleCode);
+                        if (bizAreas != null && bizAreas.Count > 0)
+                        {
+                            return bizAreas.Select(x => x.Code).ToList();
+                        }
+                    }
+                }
+            }
+            return new List<string>();
+        }
     }
 }

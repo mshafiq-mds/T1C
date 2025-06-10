@@ -150,84 +150,84 @@ namespace Prodata.WebForm.T1C.Approval
         protected global::System.Web.UI.HtmlControls.HtmlTable tblDataKos;
 
         /// <summary>
-        /// txtCurrentYearActualYTD control.
+        /// lblCurrentYearActualYTD control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCurrentYearActualYTD;
+        protected global::System.Web.UI.WebControls.Label lblCurrentYearActualYTD;
 
         /// <summary>
-        /// txtCurrentYearBudget control.
+        /// lblCurrentYearBudget control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCurrentYearBudget;
+        protected global::System.Web.UI.WebControls.Label lblCurrentYearBudget;
 
         /// <summary>
-        /// txtPreviousYearActualYTD control.
+        /// lblPreviousYearActualYTD control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPreviousYearActualYTD;
+        protected global::System.Web.UI.WebControls.Label lblPreviousYearActualYTD;
 
         /// <summary>
-        /// txtPreviousYearActual control.
+        /// lblPreviousYearActual control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPreviousYearActual;
+        protected global::System.Web.UI.WebControls.Label lblPreviousYearActual;
 
         /// <summary>
-        /// txtPreviousYearBudget control.
+        /// lblPreviousYearBudget control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtPreviousYearBudget;
+        protected global::System.Web.UI.WebControls.Label lblPreviousYearBudget;
 
         /// <summary>
-        /// txtA control.
+        /// lblA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtA;
+        protected global::System.Web.UI.WebControls.Label lblA;
 
         /// <summary>
-        /// txtC control.
+        /// lblC control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtC;
+        protected global::System.Web.UI.WebControls.Label lblC;
 
         /// <summary>
-        /// txtB control.
+        /// lblB control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtB;
+        protected global::System.Web.UI.WebControls.Label lblB;
 
         /// <summary>
-        /// txtD control.
+        /// lblD control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtD;
+        protected global::System.Web.UI.WebControls.Label lblD;
     }
 }

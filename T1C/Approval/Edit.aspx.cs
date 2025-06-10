@@ -62,14 +62,14 @@ namespace Prodata.WebForm.T1C.Approval
                         Action = "Approved",
                         Order = lastApprovalOrder + 1,
                     });
+                    db.SaveChanges();
 
                     if (!formClass.IsFormHasNextApprover(form.Id))
                     {
                         form.Status = "Approved";
                         db.Entry(form).State = System.Data.Entity.EntityState.Modified;
+                        db.SaveChanges();
                     }
-
-                    db.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -218,6 +218,16 @@ namespace Prodata.WebForm.T1C.Approval
 
                         lblProcurementType.Text = procurementType;
                         lblJustificationDirectAward.Text = form.Justification;
+
+                        lblCurrentYearActualYTD.Text = form.CurrentYearActualYTD.HasValue ? form.CurrentYearActualYTD.Value.ToString("#,##0.00") : "-";
+                        lblCurrentYearBudget.Text = form.CurrentYearBudget.HasValue ? form.CurrentYearBudget.Value.ToString("#,##0.00") : "-";
+                        lblPreviousYearActualYTD.Text = form.PreviousYearActualYTD.HasValue ? form.PreviousYearActualYTD.Value.ToString("#,##0.00") : "-";
+                        lblPreviousYearActual.Text = form.PreviousYearActual.HasValue ? form.PreviousYearActual.Value.ToString("#,##0.00") : "-";
+                        lblPreviousYearBudget.Text = form.PreviousYearBudget.HasValue ? form.PreviousYearBudget.Value.ToString("#,##0.00") : "-";
+                        lblA.Text = form.A.HasValue ? form.A.Value.ToString("#,##0.00") : "-";
+                        lblB.Text = !string.IsNullOrEmpty(form.B) ? form.B : "-";
+                        lblC.Text = form.C.HasValue ? form.C.Value.ToString("#,##0.00") : "-";
+                        lblD.Text = form.D.HasValue ? form.D.Value.ToString("#,##0.00") : "-";
                     }
                 }
             }

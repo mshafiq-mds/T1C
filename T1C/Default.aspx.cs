@@ -15,7 +15,6 @@ namespace Prodata.WebForm.T1C
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            string formId = hdnRecordId.Value;
             btnAdd.Visible = Auth.User().Can("t1c-add");
 
             if (!IsPostBack)
@@ -67,8 +66,10 @@ namespace Prodata.WebForm.T1C
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
+            var bizAreaCode = Auth.User().iPMSBizAreaCode;
+
             var form = new Class.Form();
-            var formList = form.GetForms();
+            var formList = form.GetForms(bizAreaCode: bizAreaCode);
 
             gvData.DataSource = formList;
             gvData.PageIndex = int.Parse(ViewState["pageIndex"].ToString());

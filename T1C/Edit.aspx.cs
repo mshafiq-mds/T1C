@@ -110,7 +110,7 @@ namespace Prodata.WebForm.T1C
                             var form = db.Forms.Find(parsedFormId);
                             form.TypeId = typeEntity.Id;
                             form.BizAreaCode = ba;
-                            form.BizAreaName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba);
+                            form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
                             form.Ref = refNo;
                             form.Details = details;
@@ -296,7 +296,7 @@ namespace Prodata.WebForm.T1C
                             var form = db.Forms.Find(parsedFormId);
                             form.TypeId = typeEntity.Id;
                             form.BizAreaCode = ba;
-                            form.BizAreaName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(ba);
+                            form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
                             form.Ref = refNo;
                             form.Details = details;
@@ -536,7 +536,7 @@ namespace Prodata.WebForm.T1C
                 rfvBA.Visible = false;
 
                 string baCode = Auth.User().iPMSBizAreaCode;
-                string baName = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(baCode);
+                string baName = new Class.IPMSBizArea().GetNameByCode(baCode);
                 lblBAText.Text = baCode + " - " + baName;
             }
             else

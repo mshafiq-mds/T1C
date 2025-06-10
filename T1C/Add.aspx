@@ -83,7 +83,7 @@
                                         </div>
                                         <asp:TextBox ID="txtAmount" runat="server" CssClass="form-control input-number2" placeholder="Anggaran Kerja"></asp:TextBox>
                                     </div>
-                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila msukkan anggaran kerja (RM)"></asp:RequiredFieldValidator>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila masukkan anggaran kerja (RM)"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
                             <div class="form-group row">
