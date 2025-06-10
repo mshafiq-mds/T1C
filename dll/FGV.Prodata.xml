@@ -1,0 +1,478 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>FGV.Prodata</name>
+    </assembly>
+    <members>
+        <member name="T:FGV.Prodata.App.Setting">
+            <summary>
+                Application setting which get data from ConfigurationManager.AppSettings
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppPath">
+            <summary>
+                Application path. Set new key as "AppPath".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppLogo">
+            <summary>
+                Application logo. Set new key as "AppLogo".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppFavicon">
+            <summary>
+                Application favicon. Set new key as "AppFavicon".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppName">
+            <summary>
+                Application name. Set new key as "AppName".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppYear">
+            <summary>
+                Application year. Set new key as "AppYear".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppVersion">
+            <summary>
+                Application version. Set new key as "AppVersion".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.TimeZone">
+            <summary>
+                Application time zone. Set new key as "TimeZone".
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.AppLang">
+            <summary>
+                Application language. Set new key as "Language" and value in culture. Example value: en-US
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.EnableAuditLog">
+            <summary>
+                Enable audit log. Set new key as "EnableAuditLog" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.EnableErrorLog">
+            <summary>
+                Enable error log. Set new key as "EnableErrorLog" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.ErrorLogFolder">
+            <summary>
+                Error log folder path. Set new key as "ErrorLogFolder" and value as path to the directory of log file.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.ErrorLogFileName">
+            <summary>
+                Error log file name. Set new key as "ErrorLogFileName". Default name: Error
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.ErrorLogFileFormat">
+            <summary>
+                Error log file format. Set new key as "ErrorLogFileFormat" and value as filetype. Default format: .log
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.EnableCustomError">
+            <summary>
+                Enable custom error message. Set new key as "EnableCustomError" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.CustomErrorMessage">
+            <summary>
+                Custom error message. Set new key as "CustomErrorMessage".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.UserCanRegister">
+            <summary>
+                Determine whether user can register to the system. Set new key as "UserCanRegister" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.UserActiveByDefault">
+            <summary>
+                New registered user active by default. Set new key as "NewRegisteredUserActiveByDefault" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.UserCanChangeLanguage">
+            <summary>
+                Determine whether user can change language. Set new key as "UserCanChangeLanguage" and value as "true/false".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.DefaultRole">
+            <summary>
+                Default role to be assign to newly registered user. Set new key as "DefaultRole" and value as comma-separated text.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpHost">
+            <summary>
+                SMTP host. Set new key as "SMTPHost".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpPort">
+            <summary>
+                SMTP port. Set new key as "SMTPPort".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpUsername">
+            <summary>
+                SMTP username/email. Set new key as "SMTPUsername".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpDisplayName">
+            <summary>
+                SMTP display name. Set new key as "SMTPDisplayName".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpPassword">
+            <summary>
+                SMTP password. Set new key as "SMTPPassword".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.SmtpSsl">
+            <summary>
+                SMTP use SSL. Set new key as "SMTPSSL".
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Setting.RecordsPerPage">
+            <summary>
+                Table records per page. Set new key as "RecordsPerPage".
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:FGV.Prodata.App.Types.AlertType">
+            <summary>
+                Alert types.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Success">
+            <summary>
+                Success.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Info">
+            <summary>
+                Info.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Warning">
+            <summary>
+                Warning.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Danger">
+            <summary>
+                Error.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Error">
+            <summary>
+                Error.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.App.Types.AlertType.Question">
+            <summary>
+                Error.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.App.Utility">
+            <summary>
+                Application utility.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.GetUrl">
+            <summary>
+                Get current URL.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.GetCurrentUrl(System.Uri,System.Boolean)">
+            <summary>
+            Gets the current URL path and query, removing "default.aspx" or "index.aspx" if present.
+            Also removes specific query parameters like "Id" and trims unnecessary parts.
+            </summary>
+            <param name="url">The current <see cref="T:System.Uri"/> instance from <c>Request.Url</c>.</param>
+            <param name="isFullUrl">Indicate whether the url should include query paramenter "Id".</param>
+            <returns>A cleaned-up URL path without "default.aspx", "index.aspx", or unwanted query parameters.</returns>
+            <remarks>
+            - If the URL contains "default.aspx" or "index.aspx", they are removed.
+            - If the query string contains an "Id" parameter, its value is removed.
+            - The function ensures that trailing slashes are properly handled.
+            </remarks>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.GetIpAddress">
+            <summary>
+                Get current IP Address.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.GetBrowserInfo">
+            <summary>
+                Get browser info.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.IsEmailValid(System.String)">
+            <summary>
+                Validate email address.
+            </summary>
+            <param name="email">email</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.ToDateTimeZone(System.DateTime)">
+            <summary>
+                Return DateTime to it specific TimeZone.
+            </summary>
+            <param name="dateTime">DateTime to be converted.</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.ToLocalDateTime(System.DateTime)">
+            <summary>
+                Return Datetime to Local Datetime.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.DiffForHuman(System.DateTime)">
+            <summary>
+                Return DateTime to human readable format.
+            </summary>
+            <param name="dateTime">DateTime to be converted.</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.FromJson``1(System.String)">
+            <summary>
+                Convert JSON to object.
+            </summary>
+            <param name="str">str</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.ToJson(System.Object)">
+            <summary>
+                Convert object to JSON.
+            </summary>
+            <param name="obj">obj</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.ToJson(System.Data.DataTable)">
+            <summary>
+                Convert DataTable to JSON.
+            </summary>
+            <param name="dt">dt</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.AddSpaces(System.String)">
+            <summary>
+                Add spaces to capitalize sentence.
+            </summary>
+            <param name="str">str</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.App.Utility.GetExcelColumnLetter(System.Int32)">
+            <summary>
+                Get excel column letter based on column index.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.Exporter.ExcelExporter">
+            <summary>
+                Excel exporter.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.Exporter.ExcelExporter.ExcelFormat">
+            <summary>
+                Excel format.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Exporter.ExcelExporter.ExcelFormat.Xls">
+            <summary>
+                .xls
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Exporter.ExcelExporter.ExcelFormat.Xlsx">
+            <summary>
+                .xlsx
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.Exporter.ExcelExporter.ExportFromDataTable(System.Data.DataTable,System.String,System.String,FGV.Prodata.Web.Exporter.ExcelExporter.ExcelFormat,System.Boolean,System.String,System.String,System.String,System.String,System.Nullable{System.Int32})">
+            <summary>
+                Export excel document from datatable.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.Exporter.ExcelExporter.ExportFromList(System.Collections.Generic.List{System.Collections.Generic.List{System.String}},System.Collections.Generic.List{System.String},System.Collections.Generic.List{System.String},System.String,System.String,FGV.Prodata.Web.Exporter.ExcelExporter.ExcelFormat,System.Boolean,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+                Export excel document from list.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.Mvc.UI.SweetAlert">
+            <summary>
+                Sweet alert.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType">
+            <summary>
+                Sweet alert type.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType.Success">
+            <summary>
+                Sweet alert success.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType.Info">
+            <summary>
+                Sweet alert info.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType.Warning">
+            <summary>
+                Sweet alert warning.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType.Error">
+            <summary>
+                Sweet alert error.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType.Question">
+            <summary>
+                Sweet alert question.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.Mvc.UI.SweetAlert.SetAlert(System.String,FGV.Prodata.Web.Mvc.UI.SweetAlert.SweetAlertType)">
+            <summary>
+                Set new sweet alert.
+            </summary>
+            <param name="type">type</param>
+            <param name="message">message</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.Web.Mvc.UI.SweetAlert.GetType(System.Nullable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+                Get type of sweet alert.
+            </summary>
+            <param name="sweetAlert">toastr</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.Web.Mvc.UI.SweetAlert.GetMessage(System.Nullable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+                Get message of sweet alert.
+            </summary>
+            <param name="sweetAlert">toastr</param>
+            <returns></returns>
+        </member>
+        <member name="T:FGV.Prodata.Web.UI.ProdataPage">
+            <summary>
+                Prodata page.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.ProdataPage.InitializeCulture">
+            <summary>
+                Sets the Culture and UICulture for the current thread of the page.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.ProdataPage.OnError(System.EventArgs)">
+            <summary>
+                Raises the Page.Error event.
+            </summary>
+            <param name="e">An EventArgs that contains the event data.</param>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.ProdataPage.OnPreRenderComplete(System.EventArgs)">
+            <summary>
+                Raises the PreRenderComplete event after the OnPreRenderComplete event and before the page is rendered.
+            </summary>
+            <param name="e">An System.EventArgs that contains the event data.</param>
+        </member>
+        <member name="T:FGV.Prodata.Web.UI.SweetAlert">
+            <summary>
+                Sweet alert.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType">
+            <summary>
+                Sweet alert type.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType.Success">
+            <summary>
+                Sweet alert success.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType.Info">
+            <summary>
+                Sweet alert info.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType.Warning">
+            <summary>
+                Sweet alert warning.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType.Error">
+            <summary>
+                Sweet alert error.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.SweetAlert.SweetAlertType.Question">
+            <summary>
+                Sweet alert question.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.SweetAlert.SetAlert(FGV.Prodata.Web.UI.SweetAlert.SweetAlertType,System.String)">
+            <summary>
+                Set new sweet alert.
+            </summary>
+            <param name="type">type</param>
+            <param name="message">message</param>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.SweetAlert.GetType(System.Nullable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+                Get type of sweet alert.
+            </summary>
+            <param name="sweetAlert">toastr</param>
+            <returns></returns>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.SweetAlert.GetMessage(System.Nullable{System.Collections.Generic.KeyValuePair{System.String,System.String}})">
+            <summary>
+                Get message of sweet alert.
+            </summary>
+            <param name="sweetAlert">toastr</param>
+            <returns></returns>
+        </member>
+        <member name="T:FGV.Prodata.Web.UI.Toastr">
+            <summary>
+                Toastr.
+            </summary>
+        </member>
+        <member name="T:FGV.Prodata.Web.UI.Toastr.ToastrType">
+            <summary>
+                Toastr type.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.Toastr.ToastrType.Success">
+            <summary>
+                Toastr success.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.Toastr.ToastrType.Info">
+            <summary>
+                Toastr info.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.Toastr.ToastrType.Warning">
+            <summary>
+                Toastr warning.
+            </summary>
+        </member>
+        <member name="F:FGV.Prodata.Web.UI.Toastr.ToastrType.Error">
+            <summary>
+                Toastr error.
+            </summary>
+        </member>
+        <member name="M:FGV.Prodata.Web.UI.Toastr.SetToastr(FGV.Prodata.Web.UI.Toastr.ToastrType,System.String)">
+            <summary>
+                Set new toastr alert.
+            </summary>
+            <param name="type">type</param>
+            <param name="message">message</param>
+        </member>
+    </members>
+</doc>

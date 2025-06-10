@@ -1,0 +1,300 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="Prodata.WebForm.SiteMaster" %>
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> | <%= FGV.Prodata.App.Setting.AppName() %></title>
+
+    <%--<asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/modernizr") %>
+    </asp:PlaceHolder>
+    <webopt:bundlereference runat="server" path="~/Content/css" />--%>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <%--<link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">--%>
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Theme style -->
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- select2 -->
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/select2/css/select2.min.css" />
+    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" />
+    <!-- GridView -->
+    <link rel="stylesheet" href="~/Content/paging.gridview.css" />
+    <!-- Custom -->
+    <style type="text/css">
+        .width-1 {
+            width: 1%;
+        }
+        .width-30 {
+            width: 30px;
+        }
+        .width-80 {
+            width: 80px;
+        }
+        .user-footer .btn.nav-link {
+            display: inline-block;
+            padding: .375rem .75rem;
+            height: unset;
+        }
+        .wrapper .content-wrapper {
+            min-height: 100vh !important;
+        }
+        .card-header-sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top:0;
+            background-color: #fff;
+            z-index: 1000
+        }
+
+        .select2-container--bootstrap4 .select2-selection--single.form-control-sm {
+            height: calc(1.8125rem + 2px) !important;
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            line-height: 1.5 !important;
+        }
+        .select2-container--bootstrap4 .select2-selection--single .select2-selection__placeholder {
+            line-height: 1.5 !important;
+            color: #6c757d !important;
+            opacity: 1 !important;
+        }
+        .select2-container--bootstrap4 .select2-selection--single .select2-selection__rendered {
+            line-height: 1.5 !important;
+            padding-left: .05rem;
+        }
+        .select2-container--bootstrap4 .select2-selection__clear {
+            margin-top: .3rem;
+            margin-right: 0;
+            padding-left: .18rem;
+            padding-top: .05rem;
+        }
+        @media (max-width: 767px) {
+            .select2-container--open .select2-dropdown {
+                width: 100% !important;
+                height: auto !important;
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0;
+                z-index: 9999;
+                background: white;
+                border-top-left-radius: 12px;
+                border-top-right-radius: 12px;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            }
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <form runat="server">
+        <asp:ScriptManager runat="server" EnablePageMethods="true">
+            <Scripts>
+                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
+                <%--Framework Scripts--%>
+                <asp:ScriptReference Name="MsAjaxBundle" />
+                <asp:ScriptReference Name="jquery" />
+                <%--<asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/jquery/jquery.min.js" />--%>
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/jquery-ui/jquery-ui.min.js" />
+                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                <asp:ScriptReference Name="WebFormsBundle" />
+                <%--Site Scripts--%>
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js" />
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" />
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/dist/js/adminlte.min.js" />
+                <%-- SweetAlert --%>
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/sweetalert2/sweetalert2.all.min.js" />
+                <%-- Custom file input --%>
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/bs-custom-file-input/bs-custom-file-input.min.js" />
+                <%-- select2 --%>
+                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/select2/js/select2.full.js" />
+            </Scripts>
+        </asp:ScriptManager>
+
+        <div class="wrapper">
+
+            <!-- Preloader -->
+            <div class="preloader flex-column justify-content-center align-items-center">
+                <img runat="server" class="animation__shake" src="~/App_Themes/AdminLTE-3.2.0/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+            </div>
+
+            <!-- Navbar -->
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+                <!-- Left navbar links -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    </li>
+                </ul>
+
+                <!-- Right navbar links -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown user-menu">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                            <img runat="server" src="~/Images/user-alt-solid-darkgray.svg" class="user-image img-circle elevation-2" alt="User Image">
+                            <span class="d-none d-md-inline">
+                                <%= Prodata.WebForm.Auth.User().Name %>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <!-- User image -->
+                            <li class="user-header">
+                                <img runat="server" src="~/Images/user-alt-solid-darkgray.svg" class="img-circle elevation-2" alt="User Image">
+                                <p>
+                                    <%= Prodata.WebForm.Auth.User().Name %>
+                                    <small><%= Prodata.WebForm.Auth.User().Email %></small>
+                                </p>
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <a href="/Account/Profile" class="btn btn-default btn-flat nav-link">Profile</a>
+                                <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Logout" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" CssClass="btn btn-default btn-flat float-right" />
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+            <!-- /.navbar -->
+
+            <!-- Main Sidebar Container -->
+            <aside class="main-sidebar sidebar-dark-warning elevation-4">
+                <!-- Brand Logo -->
+                <a runat="server" href="~/" class="brand-link">
+                    <img runat="server" src="~/App_Themes/AdminLTE-3.2.0/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                    <span class="brand-text font-weight-light"><%= FGV.Prodata.App.Setting.AppName() %></span>
+                </a>
+
+                <!-- Sidebar -->
+                <div class="sidebar">
+                    <!-- Sidebar Menu -->
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column text-sm" data-widget="treeview" role="menu" data-accordion="false">
+                            <!-- Add icons to the links using the .nav-icon class with font-awesome or any other icon font library -->
+                            <asp:Literal ID="ltrlMenu" runat="server"></asp:Literal>
+                        </ul>
+                    </nav>
+                    <!-- /.sidebar-menu -->
+                </div>
+                <!-- /.sidebar -->
+            </aside>
+
+            <!-- Content Wrapper. Contains page content -->
+            <div class="content-wrapper">
+                <!-- Content Header (Page header) -->
+                <div class="content-header">
+                    <div class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <h1 class="m-0"><%: Page.Title %></h1>
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb float-sm-right">
+                                    <li class="breadcrumb-item"><a href="javascript:void(0);">Home</a></li>
+                                    <asp:Literal ID="ltrlBreadcrumb" runat="server"></asp:Literal>
+                                </ol>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <!-- /.container-fluid -->
+                </div>
+                <!-- /.content-header -->
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="container-fluid">
+                        <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+                    </div>
+                </section>
+                <!-- /.content -->
+            </div>
+            <!-- /.content-wrapper -->
+
+            <footer class="main-footer">
+                <strong>Copyright &copy; <%= FGV.Prodata.App.Setting.AppYear() %> <a href="javascript:void(0);"><%= FGV.Prodata.App.Setting.AppName() %></a>.</strong>
+                All rights reserved.
+   
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>Version</b> <%= FGV.Prodata.App.Setting.AppVersion() %>
+                </div>
+            </footer>
+        </div>
+        <!-- ./wrapper -->
+    </form>
+    <%--<asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/Scripts/bootstrap.js") %>
+    </asp:PlaceHolder>--%>
+    <script>
+        //$.widget.bridge('uibutton', $.ui.button);
+        $(document).ready(function () {
+            $(this).find('.content-wrapper').addClass('text-sm');
+            $(this).find('.col-form-label:not(.col-form-label-lg)').addClass('col-form-label-sm');
+            $(this).find('.form-control:not(.form-control-lg)').addClass('form-control-sm');
+            $(this).find('.input-group:not(.input-group-lg)').addClass('input-group-sm');
+            $(this).find('.btn:not(.btn-lg)').addClass('btn-sm');
+
+            $('.select2').select2({
+                allowClear: true,
+                theme: "bootstrap4", // Bootstrap 4 theme
+                dropdownParent: $('body') // Prevents clipping issues
+            }).next('.select2-container').find('.select2-selection').addClass('form-control-sm'); // Apply small size
+
+            $('.input-uppercase').on('keyup', function () {
+                $(this).val(($(this).val()).toUpperCase());
+            });
+
+            $('.input-number, .input-number2').attr('type', 'text');
+            $('.input-number, .input-number2').on('focus', function () {
+                $(this).val($(this).val().replace(/,/g, ''));
+                $(this).attr('type', 'number');
+            });
+            $('.input-number').on('blur', function () {
+                $(this).attr('type', 'text');
+                if ($(this).val()) {
+                    var value = parseInt($(this).val());
+                    $(this).val(value.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    }));
+                }
+            });
+            $('.input-number2').on('blur', function () {
+                $(this).attr('type', 'text');
+                if ($(this).val()) {
+                    var value = parseFloat($(this).val());
+                    $(this).val(value.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }));
+                }
+            });
+        });
+    </script>
+</body>
+</html>
