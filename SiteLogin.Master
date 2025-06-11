@@ -1,61 +1,56 @@
 ﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="SiteLogin.Master.cs" Inherits="Prodata.WebForm.SiteLogin" %>
 
 <!DOCTYPE html>
-
 <html>
 <head runat="server">
-    <%--<title></title>
-    <asp:ContentPlaceHolder ID="head" runat="server">
-    </asp:ContentPlaceHolder>--%>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%: Page.Title %> | <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %></title>
 
-    <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-    <!-- Font Awesome -->
-    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
-    <!-- icheck bootstrap -->
-    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
-    <!-- Theme style -->
-    <link runat="server" rel="stylesheet" href="~/App_Themes/AdminLTE-3.2.0/dist/css/adminlte.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" rel="stylesheet" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" runat="server" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" runat="server" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/dist/css/adminlte.min.css" rel="stylesheet" runat="server" />
+
+    <style>
+        body.login-page {
+            background: url('<%= ResolveUrl("~/Images/certificate-in-cost-control-management-training-course.jpg") %>') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .login-logo img {
+            max-width: 180px;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
     <form id="form1" runat="server">
-        <asp:ScriptManager runat="server">
-            <Scripts>
-                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
-                <%--Framework Scripts--%>
-                <asp:ScriptReference Name="MsAjaxBundle" />
-                <%--<asp:ScriptReference Name="jquery" />--%>
-                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/jquery/jquery.min.js" />
-                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/jquery-ui/jquery-ui.min.js" />
-                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
-                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
-                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
-                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
-                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
-                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
-                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
-                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
-                <asp:ScriptReference Name="WebFormsBundle" />
-                <%--Site Scripts--%>
-                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js" />
-                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js" />
-                <asp:ScriptReference Path="~/App_Themes/AdminLTE-3.2.0/dist/js/adminlte.min.js" />
-            </Scripts>
-        </asp:ScriptManager>
+        <asp:ScriptManager runat="server" />
 
         <div class="login-box">
             <div class="login-logo">
-                <a href="~/" runat="server"><%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %></a>
+                <img src='<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>' alt="Logo" />
+                <br />
+                <a href="~/" runat="server" class="h4 text-dark font-weight-bold">
+                    <%= System.Configuration.ConfigurationManager.AppSettings["AppFullName"] %>
+                </a>
+                <br />
+                <a href="~/" runat="server" class="h4 text-dark font-weight-bold">
+                    <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %>
+                </a>
             </div>
-            <!-- /.login-logo -->
-            <div class="card">
-                <asp:ContentPlaceHolder ID="LoginContent" runat="server"></asp:ContentPlaceHolder>
+
+            <div class="card shadow">
+                <asp:ContentPlaceHolder ID="LoginContent" runat="server" />
             </div>
         </div>
-        <!-- /.login-box -->
     </form>
 </body>
 </html>
