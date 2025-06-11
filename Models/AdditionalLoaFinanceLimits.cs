@@ -15,16 +15,16 @@ namespace Prodata.WebForm.Models
         [StringLength(100)]
         public string ObjectType { get; set; }
 
-        public Guid? TransApproverId { get; set; }
+        public Guid? FinanceApproverId { get; set; }
 
         [StringLength(100)]
-        public string TransApproverType { get; set; }
+        public string FinanceApproverType { get; set; }
 
         [StringLength(50)]
-        public string TransApproverCode { get; set; }
+        public string FinanceApproverCode { get; set; }
 
         [StringLength(255)]
-        public string TransApproverName { get; set; }
+        public string FinanceApproverName { get; set; }
 
         public decimal? AmountMin { get; set; }
 

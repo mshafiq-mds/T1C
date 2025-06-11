@@ -87,6 +87,24 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.RadioButton rdoCapex;
 
         /// <summary>
+        /// rdoFinance control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rdoFinance;
+
+        /// <summary>
+        /// rdoCOGS control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RadioButton rdoCOGS;
+
+        /// <summary>
         /// txtProject control.
         /// </summary>
         /// <remarks>

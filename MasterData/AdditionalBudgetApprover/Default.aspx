@@ -8,11 +8,11 @@
             <div class="card card-outline">
                 <div class="card-header">
                     <h3 class="card-title d-none d-sm-inline"><%: Page.Title %></h3>
-                    <div class="card-tools">
+                    <%--<div class="card-tools">
                         <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/MasterData/BudgetApprover/Add" CausesValidation="false">
                             <i class="fas fa-plus"></i> Add Budget Approver
                         </asp:LinkButton>
-                    </div>
+                    </div>--%>
                 </div>
                 <div class="card-body">
                     <div class="card card-outline card-outline-tabs">
@@ -33,6 +33,11 @@
                                     <asp:UpdatePanel ID="updLoaFinance" runat="server">
                                         <ContentTemplate>
                                             <div class="table-responsive">
+                                                <div class="card-tools">
+                                                    <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/MasterData/AdditionalBudgetApprover/FinanceAdd" CausesValidation="false">
+                                                        <i class="fas fa-plus"></i> Add Finance Group Approver
+                                                    </asp:LinkButton>
+                                                </div>
                                                 <asp:GridView ID="gvLoaFinance" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm"
                                                     PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true"
                                                     OnPageIndexChanging="gvLoaFinance_PageIndexChanging" EmptyDataText="No record.">
@@ -76,6 +81,11 @@
                                     <asp:UpdatePanel ID="updLoaCogs" runat="server">
                                         <ContentTemplate>
                                             <div class="table-responsive">
+                                                <div class="card-tools">
+                                                    <asp:LinkButton ID="LinkButton1" runat="server" CssClass="btn btn-primary" PostBackUrl="~/MasterData/AdditionalBudgetApprover/CogsAdd" CausesValidation="false">
+                                                        <i class="fas fa-plus"></i> Add COGS Approver
+                                                    </asp:LinkButton>
+                                                </div>
                                                 <asp:GridView ID="gvLoaCogs" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm"
                                                     PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true"
                                                     OnPageIndexChanging="gvLoaCogs_PageIndexChanging" EmptyDataText="No record.">

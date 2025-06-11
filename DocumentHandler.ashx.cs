@@ -64,9 +64,15 @@ namespace Prodata.WebForm
             }
             catch (Exception ex)
             {
+                if (!context.Response.IsClientConnected)
+                    return;
+
+                context.Response.Clear(); // Clear any partial output
                 context.Response.StatusCode = 500;
+                context.Response.ContentType = "text/plain";
                 context.Response.Write("Server error: " + ex.Message);
             }
+
         }
 
         public bool IsReusable => false;

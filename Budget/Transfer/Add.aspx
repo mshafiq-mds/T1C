@@ -117,7 +117,7 @@
 
         <div class="form-group">
             <label>Application Date</label>
-            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date" />
+            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date"  Enabled="false"/>
             <asp:RequiredFieldValidator ID="rfvDate" runat="server" ControlToValidate="txtDate" CssClass="text-danger" ErrorMessage="Date is required." Display="Dynamic" />
         </div>
 

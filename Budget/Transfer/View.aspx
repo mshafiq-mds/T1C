@@ -9,6 +9,11 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Transfer/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
+                <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-print" CausesValidation="false"
+                    OnClientClick="printPanel(); return false;">
+                    <i class="fas fa-print"></i> Print
+                </asp:LinkButton>
+
                 <%--<asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary btn-revision">
                     <i class="fas fa-edit"></i> Request Revision
                 </asp:LinkButton>
@@ -120,5 +125,45 @@
 
     </asp:Panel>
 
-     
+  <!-- PRINT SCRIPT -->
+<script type="text/javascript">
+    function printPanel() {
+        var panel = document.querySelector('.card');
+        var printWindow = window.open('', '', 'height=800,width=1000');
+        printWindow.document.write('<html><head><title>Print Report</title>');
+
+        // Copy all linked stylesheets and inline styles
+        var styles = document.querySelectorAll('link[rel="stylesheet"], style');
+        styles.forEach(function (style) {
+            printWindow.document.write(style.outerHTML);
+        });
+
+        // Print-specific styles
+        printWindow.document.write(`
+            <style>
+                .btn, .card-header-sticky, .navbar, .footer {
+                    display: none !important;
+                }
+                body, .card {
+                    margin: 0;
+                    padding: 0;
+                    box-shadow: none;
+                }
+            </style>
+        `);
+
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(panel.outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+
+        printWindow.onafterprint = function () {
+            printWindow.close();
+        };
+    }
+</script>
+   
 </asp:Content>
+

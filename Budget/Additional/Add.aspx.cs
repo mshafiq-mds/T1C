@@ -40,6 +40,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                     Project = txtProject.Text.Trim(),
                     ApplicationDate = DateTime.TryParse(txtDate.Text, out var appDate) ? appDate : DateTime.Today,
                     BudgetType = rdoOpex.Checked ? "OPEX" : "CAPEX",
+                    CheckType = rdoFinance.Checked ? "FINANCE" : "COGS",
                     EstimatedCost = decimal.TryParse(txtBudgetEstimate.Text, out var estimated) ? estimated : 0,
                     EVisaNo = txtEVisa.Text.Trim(),
 
@@ -76,7 +77,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                     {
                         byte[] fileData = binaryReader.ReadBytes(fuDocument.PostedFile.ContentLength);
 
-                        var document = new TransferDocument
+                        var document = new AdditionalBudgetDocuments
                         {
                             Id = Guid.NewGuid(),
                             TransferId = newId,
@@ -87,7 +88,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                             UploadedDate = DateTime.Now
                         };
 
-                        db.TransferDocuments.Add(document);
+                        db.AdditionalBudgetDocuments.Add(document);
                         db.SaveChanges();
                     }
                 }

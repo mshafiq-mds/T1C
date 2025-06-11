@@ -30,6 +30,10 @@ namespace Prodata.WebForm.Models
         public string BudgetType { get; set; } // OPEX or CAPEX
 
         [Required]
+        [MaxLength(10)]
+        public string CheckType { get; set; } // OPEX or CAPEX
+
+        [Required]
         public decimal EstimatedCost { get; set; }
 
         [MaxLength(100)]

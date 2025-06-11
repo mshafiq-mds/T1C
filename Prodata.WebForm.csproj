@@ -2333,9 +2333,11 @@
     <Content Include="Global.asax" />
     <Content Include="Images\user-alt-solid-darkgray.svg" />
     <Content Include="Images\user-circle-solid-darkgray.svg" />
-    <Content Include="MasterData\AdditionalBudgetApprover\Add.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\CogsEdit.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\Default.aspx" />
-    <Content Include="MasterData\AdditionalBudgetApprover\Edit.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\FinanceAdd.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx" />
     <Content Include="MasterData\BudgetApprover\Add.aspx" />
     <Content Include="MasterData\BudgetApprover\Default.aspx" />
     <Content Include="MasterData\BudgetApprover\Edit.aspx" />
@@ -3012,12 +3014,19 @@
     </Compile>
     <Compile Include="Helpers\Encryptor2.cs" />
     <Compile Include="Helpers\FormHelper.cs" />
-    <Compile Include="MasterData\AdditionalBudgetApprover\Add.aspx.cs">
-      <DependentUpon>Add.aspx</DependentUpon>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx.cs">
+      <DependentUpon>CogsAdd.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MasterData\AdditionalBudgetApprover\Add.aspx.designer.cs">
-      <DependentUpon>Add.aspx</DependentUpon>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx.designer.cs">
+      <DependentUpon>CogsAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CogsEdit.aspx.cs">
+      <DependentUpon>CogsEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CogsEdit.aspx.designer.cs">
+      <DependentUpon>CogsEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="MasterData\AdditionalBudgetApprover\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -3026,12 +3035,19 @@
     <Compile Include="MasterData\AdditionalBudgetApprover\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="MasterData\AdditionalBudgetApprover\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
+    <Compile Include="MasterData\AdditionalBudgetApprover\FinanceAdd.aspx.cs">
+      <DependentUpon>FinanceAdd.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="MasterData\AdditionalBudgetApprover\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
+    <Compile Include="MasterData\AdditionalBudgetApprover\FinanceAdd.aspx.designer.cs">
+      <DependentUpon>FinanceAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx.cs">
+      <DependentUpon>FinanceEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx.designer.cs">
+      <DependentUpon>FinanceEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="MasterData\BudgetApprover\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
@@ -3097,6 +3113,7 @@
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\AdditionalBudgetDocuments.cs" />
+    <Compile Include="Models\AdditionalBudgetLog.cs" />
     <Compile Include="Models\AdditionalBudgetRequests.cs" />
     <Compile Include="Models\AdditionalLoaCogsLimits.cs" />
     <Compile Include="Models\AdditionalLoaFinanceLimits.cs" />

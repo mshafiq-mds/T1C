@@ -37,12 +37,12 @@ namespace Prodata.WebForm.Budget.AddBudget
                     .OrderByDescending(x => x.CreatedDate)
                     .Select(x => new
                     {
-                        x.BA,
                         x.Id,
                         x.RefNo,
-                        x.Project,
                         x.CreatedDate,
-                        x.EstimatedCost,
+                        x.BA,
+                        x.Project,
+                        x.EstimatedCost, 
                         Status =
                             x.Status == 0 ? "Resubmit" :
                             //x.status == 1 ? "Submitted" :
@@ -56,8 +56,32 @@ namespace Prodata.WebForm.Budget.AddBudget
                 gvBudgetList.DataBind();
             }
         }
-    }
+        protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Guid id = Guid.Parse(hdnDeleteId.Value);
 
-    // Temporary model for testing
-    
+                using (var db = new AppDbContext())
+                {
+                    var record = db.AdditionalBudgetRequests.Find(id);
+                    if (record != null)
+                    {
+                        record.DeletedBy = Auth.Id();
+                        record.DeletedDate = DateTime.Now;
+
+                        db.SaveChanges();
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Record deleted successfully.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error deleting record: " + ex.Message);
+            }
+
+            BindTransfers();
+        }
+    }
+     
 }

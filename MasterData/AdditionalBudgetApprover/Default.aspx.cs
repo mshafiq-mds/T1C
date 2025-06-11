@@ -1,4 +1,5 @@
-﻿using Prodata.WebForm.Models;
+﻿using CustomGuid.AspNet.Identity;
+using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +28,7 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
         {
         }
         private void BindLoaFinance()
-        {
-            // Replace with your actual data source logic
-            //gvLoaFinance.DataSource = GetLoaFinanceList();
-            //gvLoaFinance.DataBind();
+        { 
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
             var list = GetApprovalLoaFinanceLimits();
@@ -39,13 +37,22 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             gvLoaFinance.PageIndex = Convert.ToInt32(ViewState["pageIndex"]);
             gvLoaFinance.DataBind();
         }
+        private void BindLoaCogs()
+        {
+            ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
+            var list = GetApprovalLoaCogsLimits();
+
+            gvLoaCogs.DataSource = list;
+            gvLoaCogs.PageIndex = Convert.ToInt32(ViewState["pageIndex"]);
+            gvLoaCogs.DataBind();
+        }
         private List<Models.ViewModels.ApprovalLimitListViewModel> GetApprovalLoaFinanceLimits()
         {
             using (var db = new AppDbContext())
             {
                 var query = db.AdditionalLoaFinanceLimits
-                    //.ExcludeSoftDeleted()
+                    .ExcludeSoftDeleted()
                     .OrderBy(x => x.AmountMin)
                     .ThenBy(x => x.AmountMax)
                     .ThenBy(x => x.Order)
@@ -54,9 +61,9 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
                 return query.Select(x => new Models.ViewModels.ApprovalLimitListViewModel
                 {
                     Id = x.Id,
-                    //ApproverType = x.ApproverType,
-                    //ApproverCode = x.ApproverCode,
-                    //ApproverName = x.ApproverName,
+                    ApproverType = x.FinanceApproverType,
+                    ApproverCode = x.FinanceApproverCode,
+                    ApproverName = x.FinanceApproverName,
                     AmountMin = x.AmountMin.HasValue ? x.AmountMin.Value.ToString("#,##0.00") : string.Empty,
                     AmountMax = x.AmountMax.HasValue ? x.AmountMax.Value.ToString("#,##0.00") : "Unlimited",
                     Section = x.Section,
@@ -66,12 +73,43 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             }
         }
 
-        private void BindLoaCogs()
+        private List<Models.ViewModels.ApprovalLimitListViewModel> GetApprovalLoaCogsLimits()
         {
-            //Replace with your actual data source logic
-            //gvLoaCogs.DataSource = GetLoaCogsList();
-            //gvLoaCogs.DataBind();
+            using (var db = new AppDbContext())
+            {
+                var query = db.AdditionalLoaCogsLimits
+                    .ExcludeSoftDeleted()
+                    .OrderBy(x => x.AmountMin)
+                    .ThenBy(x => x.AmountMax)
+                    .ThenBy(x => x.Order)
+                    .ToList();
+
+                return query.Select(x => new Models.ViewModels.ApprovalLimitListViewModel
+                {
+                    Id = x.Id,
+                    ApproverType = x.CogsApproverType,
+                    ApproverCode = x.CogsApproverCode,
+                    ApproverName = x.CogsApproverName,
+                    AmountMin = x.AmountMin.HasValue ? x.AmountMin.Value.ToString("#,##0.00") : string.Empty,
+                    AmountMax = x.AmountMax.HasValue ? x.AmountMax.Value.ToString("#,##0.00") : "Unlimited",
+                    Section = x.Section,
+                    Status = x.Status,
+                    Order = x.Order.ToString()
+                }).ToList();
+            }
         }
 
+
+        protected void gvLoaFinance_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            ViewState["pageIndex"] = e.NewPageIndex.ToString();
+            BindLoaFinance();
+        }
+
+        protected void gvLoaCogs_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            ViewState["pageIndex"] = e.NewPageIndex.ToString();
+            BindLoaCogs();
+        }
     }
 }

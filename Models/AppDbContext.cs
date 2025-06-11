@@ -34,7 +34,8 @@ namespace Prodata.WebForm.Models
             modelBuilder.Entity<CustomIdentityUserRole>().ToTable("UserRoles");
             modelBuilder.Entity<CustomIdentityUserLogin>().ToTable("UserLogins");
             modelBuilder.Entity<CustomIdentityUserClaim>().ToTable("UserClaims");
-            modelBuilder.Entity<TransferApprovalLog>().ToTable("TransferApprovalLog");
+            modelBuilder.Entity<TransferApprovalLog>().ToTable("TransferApprovalLog");  
+            modelBuilder.Entity<AdditionalBudgetLog>().ToTable("AdditionalBudgetLog"); 
             modelBuilder.Ignore<BaseModel>();
         }
 
@@ -118,6 +119,8 @@ namespace Prodata.WebForm.Models
         public DbSet<AdditionalLoaCogsLimits> AdditionalLoaCogsLimits { get; set; } 
 
         public DbSet<AdditionalLoaFinanceLimits> AdditionalLoaFinanceLimits { get; set; }
+        public DbSet<AdditionalBudgetLog> AdditionalBudgetLog { get; set; }
+        
 
     }
 }

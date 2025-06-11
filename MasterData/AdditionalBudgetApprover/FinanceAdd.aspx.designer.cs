@@ -11,79 +11,115 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
 {
 
 
-    public partial class Default
+    public partial class FinanceAdd
     {
 
         /// <summary>
-        /// hdnRecordId control.
+        /// btnBack control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnRecordId;
+        protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnDeleteRecord control.
+        /// btnSave control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDeleteRecord;
+        protected global::System.Web.UI.WebControls.LinkButton btnSave;
 
         /// <summary>
-        /// updLoaFinance control.
+        /// lblMinValue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updLoaFinance;
+        protected global::System.Web.UI.WebControls.Label lblMinValue;
 
         /// <summary>
-        /// btnAdd control.
+        /// txtMinValue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnAdd;
+        protected global::System.Web.UI.WebControls.TextBox txtMinValue;
 
         /// <summary>
-        /// gvLoaFinance control.
+        /// lblMaxValue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvLoaFinance;
+        protected global::System.Web.UI.WebControls.Label lblMaxValue;
 
         /// <summary>
-        /// updLoaCogs control.
+        /// txtMaxValue control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel updLoaCogs;
+        protected global::System.Web.UI.WebControls.TextBox txtMaxValue;
 
         /// <summary>
-        /// LinkButton1 control.
+        /// lblSection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton1;
+        protected global::System.Web.UI.WebControls.Label lblSection;
 
         /// <summary>
-        /// gvLoaCogs control.
+        /// txtSection control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvLoaCogs;
+        protected global::System.Web.UI.WebControls.TextBox txtSection;
+
+        /// <summary>
+        /// lblIPMSRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblIPMSRole;
+
+        /// <summary>
+        /// ddlIPMSRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlIPMSRole;
+
+        /// <summary>
+        /// lblOrder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblOrder;
+
+        /// <summary>
+        /// txtOrder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtOrder;
     }
 }

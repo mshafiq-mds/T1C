@@ -69,7 +69,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                         int userLevelApproval = matchingLimit?.Order ?? 0;
 
-                        bool canEdit = (matchingLimit != null && userLevelApproval == currentLevelApproval + 1) || Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
+                        bool canEdit = (matchingLimit != null && userLevelApproval == currentLevelApproval + 1);//|| Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
 
                         return new
                         {

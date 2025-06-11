@@ -46,7 +46,7 @@
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
             <div class="card-tools">
-                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Addbudget/Default" CausesValidation="false">
+                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
 <%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
@@ -98,6 +98,19 @@
         </div>
         <span class="text-danger">(CAPEX not available)</span>
 
+        <div class="form-group">
+            <label class="d-block mb-2 font-weight-bold">LETTER OF AUTHORITY</label>
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label class="btn btn-outline-primary">
+                    <asp:RadioButton runat="server" ID="rdoFinance" GroupName="CheckType" CssClass="d-none" Checked="true" />
+                    <span>FINANCE</span>
+                </label>
+                <label class="btn btn-outline-primary ml-2">
+                    <asp:RadioButton runat="server" ID="rdoCOGS" GroupName="CheckType" CssClass="d-none" Checked="false"/>
+                    <span>COST OF GOOD SOLD</span>
+                </label>
+            </div>
+        </div>
 
         <div class="form-group">
             <label>Project / Department</label>
@@ -113,7 +126,7 @@
 
         <div class="form-group">
             <label>Application Date</label>
-            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date" />
+            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date" Enabled="false" />
             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDate" ErrorMessage="Application Date is required." CssClass="text-danger" Display="Dynamic" />
         </div>
 
