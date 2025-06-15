@@ -137,10 +137,10 @@ namespace Prodata.WebForm.Budget.Upload
                                 string reference = row.GetCell(1)?.ToString();
                                 int? num = !string.IsNullOrEmpty(reference) ? int.Parse(reference.Split('/').Last()) : (int?)null;
 
-                                string typeName = row.GetCell(5)?.ToString();
+                                string typeName = row.GetCell(12)?.ToString();
                                 var type = db.BudgetTypes.FirstOrDefault(t => t.Name.Equals(typeName, StringComparison.OrdinalIgnoreCase));
 
-                                int? year = TryParseInt(row.GetCell(6));
+                                int? year = TryParseInt(row.GetCell(13));
                                 int? month = ConvertMonthNameToNumber(row.GetCell(7)?.ToString()?.Trim());
 
                                 DateTime? date = null;
@@ -165,7 +165,7 @@ namespace Prodata.WebForm.Budget.Upload
                                     Month = ConvertMonthNameToNumber(row.GetCell(7)?.ToString()?.Trim()),
                                     Num = num,
                                     Ref = reference,
-                                    Details = row.GetCell(4)?.ToString(),
+                                    Details = row.GetCell(6)?.ToString(),
                                     Wages = TryParseDecimal(row.GetCell(9)),
                                     Purchase = TryParseDecimal(row.GetCell(10)),
                                     Amount = TryParseDecimal(row.GetCell(11)),
