@@ -160,8 +160,8 @@
                 <tr>
                     <th>Cost Centre</th>
                     <th>GL</th>
-                    <th>Approved Budget 2022</th>
-                    <th>New Budget 2022</th>
+                    <th>Approved Budget</th>
+                    <th>New Budget</th>
                     <th>Additional Budget Value</th>
                 </tr>
             </thead>
@@ -195,7 +195,7 @@
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
-            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" Enabled="false" />
+            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
         <asp:Label ID="lblUploadResult" runat="server" CssClass="text-success mt-2" />
 
     </asp:Panel>

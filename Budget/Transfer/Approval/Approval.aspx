@@ -100,6 +100,8 @@
 
         <h4 class="mt-4">Remarks</h4>
         <asp:TextBox runat="server" ID="txtRemarks" CssClass="form-control" TextMode="MultiLine" Rows="10" />
+        <asp:RequiredFieldValidator ID="rfvtxtRemarks" runat="server" ControlToValidate="txtRemarks" CssClass="text-danger" ErrorMessage="Required Remarks" Display="Dynamic" />
+
 
         <!-- Hidden fields and buttons for sweet alert postback -->
         <asp:HiddenField ID="hdnAction" runat="server" />
@@ -118,7 +120,7 @@
                               EmptyDataText="No record.">
                     <Columns>
                         <asp:BoundField DataField="ActionDate" HeaderText="Action Date" />
-                        <asp:BoundField DataField="ActionType" HeaderText="Action" />
+                        <asp:BoundField DataField="ActionType" HeaderText="Role Action" />
                         <asp:BoundField DataField="RoleName" HeaderText="Role" /> 
                         <asp:BoundField DataField="Status" HeaderText="Status"/>
                         <asp:BoundField DataField="Remarks" HeaderText="Remarks"/>

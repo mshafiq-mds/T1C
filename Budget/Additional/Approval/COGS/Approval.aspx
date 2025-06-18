@@ -1,13 +1,20 @@
-﻿<%@ Page Title="View Additional Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.AddBudget.View" %>
+﻿<%@ Page Title="Additional Approval COGS Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Approval.aspx.cs" Inherits="Prodata.WebForm.Budget.Additional.Approval.COGS.Approval" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:Panel runat="server" CssClass="card p-4">
+
+         <!-- Header Bar -->
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
             <div class="card-tools">
-                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Default" CausesValidation="false">
+                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/COGS/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:Button ID="btnPrint" runat="server" CssClass="btn btn-info" Text="Print" OnClientClick="printPanel(); return false;" />
+                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary btn-revision">
+                    <i class="fas fa-edit"></i> Request Revision
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve">
+                    <i class="fas fa-circle"></i> Approve Transfer
+                </asp:LinkButton>
             </div>
         </div>
 
@@ -89,6 +96,17 @@
             <asp:PlaceHolder ID="phDocumentList" runat="server" />
         </asp:Panel>
 
+        <h4 class="mt-4">Remarks</h4>
+        <asp:TextBox runat="server" ID="txtRemarks" CssClass="form-control" TextMode="MultiLine" Rows="10" />
+        <asp:RequiredFieldValidator ID="rfvtxtRemarks" runat="server" ControlToValidate="txtRemarks" CssClass="text-danger" ErrorMessage="Required Remarks" Display="Dynamic" />
+
+
+        <!-- Hidden fields and buttons for sweet alert postback -->
+        <asp:HiddenField ID="hdnAction" runat="server" />
+        <asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />
+        <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click1" Style="display:none;" />
+        <asp:HiddenField ID="hdnTransferId" runat="server" />
+
         
         <h4 class="mt-4">Approval History</h4>
          <asp:UpdatePanel ID="UpdatePanel1" runat="server">
@@ -111,41 +129,52 @@
         </asp:UpdatePanel>
 
     </asp:Panel>
-
+    
+    <!-- SweetAlert2 Confirmation Scripts -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
-        function printPanel() {
-            var panel = document.querySelector('.card');
-            var printWindow = window.open('', '', 'height=800,width=1000');
-            printWindow.document.write('<html><head><title>Print Report</title>');
+        $(document).ready(function () {
 
-            var styles = document.querySelectorAll('link[rel="stylesheet"], style');
-            styles.forEach(function (style) {
-                printWindow.document.write(style.outerHTML);
+            // Request Revision
+            $(".btn-revision").click(function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Request Resubmit?',
+                    text: "Do you want to ask the requester to revise or reupload the document?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, request it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#<%= hdnAction.ClientID %>').val('resubmit');
+                        $('#<%= btnRevisionConfirmed.ClientID %>').click();
+                    }
+                });
             });
 
-            printWindow.document.write(`
-                <style>
-                    .btn, .card-header-sticky, .navbar, .footer {
-                        display: none !important;
+            // Approve Transfer
+            $(".btn-approve").click(function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Approve Transfer?',
+                    text: "Are you sure you want to approve this budget transfer?",
+                    icon: 'success',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, approve it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#<%= hdnAction.ClientID %>').val('approve');
+                        $('#<%= btnApproveConfirmed.ClientID %>').click();
                     }
-                    body, .card {
-                        margin: 0;
-                        padding: 0;
-                        box-shadow: none;
-                    }
-                </style>
-            `);
+                });
+            });
 
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(panel.outerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-
-            printWindow.onafterprint = function () {
-                printWindow.close();
-            };
-        }
+        });
     </script>
+
 </asp:Content>

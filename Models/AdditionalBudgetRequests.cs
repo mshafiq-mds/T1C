@@ -31,7 +31,7 @@ namespace Prodata.WebForm.Models
 
         [Required]
         [MaxLength(10)]
-        public string CheckType { get; set; } // OPEX or CAPEX
+        public string CheckType { get; set; } // "FINANCE" : "COGS"
 
         [Required]
         public decimal EstimatedCost { get; set; }

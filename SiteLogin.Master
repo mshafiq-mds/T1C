@@ -14,7 +14,7 @@
 
     <style>
         body.login-page {
-            background: url('<%= ResolveUrl("~/Images/certificate-in-cost-control-management-training-course.jpg") %>') no-repeat center center fixed;
+            background: url('<%= ResolveUrl("~/Images/Background.png") %>') no-repeat center center fixed;
             background-size: cover;
         }
 
@@ -28,6 +28,11 @@
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
         }
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body class="hold-transition login-page">
@@ -36,16 +41,17 @@
 
         <div class="login-box">
             <div class="login-logo">
-                <img src='<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>' alt="Logo" />
-                <br />
-                <a href="~/" runat="server" class="h4 text-dark font-weight-bold">
-                    <%= System.Configuration.ConfigurationManager.AppSettings["AppFullName"] %>
-                </a>
-                <br />
-                <a href="~/" runat="server" class="h4 text-dark font-weight-bold">
-                    <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %>
-                </a>
+                <img src='<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>' alt="Logo" style="max-width: 180px;" />
+                <div style="background-color: white; padding: 10px; border-radius: 12px; display: inline-block;">
+                    <div class="h4 text-dark font-weight-bold mt-2">
+                        <%= System.Configuration.ConfigurationManager.AppSettings["AppFullName"] %>
+                    </div>
+                    <div class="h4 text-dark font-weight-bold">
+                        <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %>
+                    </div>
+                </div>
             </div>
+
 
             <div class="card shadow">
                 <asp:ContentPlaceHolder ID="LoginContent" runat="server" />

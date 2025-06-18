@@ -24,8 +24,8 @@ namespace Prodata.WebForm.Budget.AddBudget
 
             using (var db = new AppDbContext())
             {
-                var query = db.AdditionalBudgetRequests
-                              .Where(x => x.DeletedDate == null);
+                var query = db.AdditionalBudgetRequests.AsQueryable();
+                              //.Where(x => x.DeletedDate == null);
 
                 // If user has a specific BizAreaCode, filter by it
                 if (!string.IsNullOrEmpty(ba))
@@ -44,8 +44,8 @@ namespace Prodata.WebForm.Budget.AddBudget
                         x.Project,
                         x.EstimatedCost, 
                         Status =
+                            x.DeletedDate != null ? "Deleted" :
                             x.Status == 0 ? "Resubmit" :
-                            //x.status == 1 ? "Submitted" :
                             x.Status == 2 ? "Under Review" :
                             x.Status == 3 ? "Completed" :
                             "Submitted"

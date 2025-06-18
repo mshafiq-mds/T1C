@@ -115,7 +115,7 @@
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
-            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" Enabled="false" />
+            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
 
         <!-- Document Uploads -->
         <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group mt-3" Visible="false">
@@ -146,7 +146,7 @@
                               EmptyDataText="No record found.">
                     <Columns>
                         <asp:BoundField DataField="ActionDate" HeaderText="Action Date" />
-                        <asp:BoundField DataField="ActionType" HeaderText="Action" />
+                        <asp:BoundField DataField="ActionType" HeaderText="Role Action" />
                         <asp:BoundField DataField="RoleName" HeaderText="Role" />
                         <asp:BoundField DataField="Status" HeaderText="Status" />
                         <asp:BoundField DataField="Remarks" HeaderText="Remarks" />

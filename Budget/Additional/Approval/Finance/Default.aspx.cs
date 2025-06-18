@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.Budget.Transfer.Approval
+namespace Prodata.WebForm.Budget.Additional.Approval.Finance
 {
     public partial class Default : ProdataPage
     {
@@ -33,14 +33,14 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             {
                 // Get approval limits only if userRole is not null
                 var limits = !string.IsNullOrEmpty(userRole)
-                    ? db.TransferApprovalLimits
-                        .Where(m => m.TransApproverCode == userRole && m.DeletedDate == null)
+                    ? db.AdditionalLoaFinanceLimits
+                        .Where(m => m.FinanceApproverCode == userRole && m.DeletedDate == null)
                         .ToList()
-                    : new List<TransferApprovalLimits>();
+                    : new List<AdditionalLoaFinanceLimits>();
 
                 // Query base transfers
-                var query = db.TransfersTransaction
-                              .Where(x => x.DeletedDate == null);
+                var query = db.AdditionalBudgetRequests
+                              .Where(x => x.DeletedDate == null && x.CheckType == "FINANCE");
 
                 if (!string.IsNullOrEmpty(ba))
                 {
@@ -53,11 +53,11 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 // else: ba == null → no filtering, access all
 
                 var transfers = query
-                    .OrderByDescending(x => x.Date)
+                    .OrderByDescending(x => x.ApplicationDate)
                     .ToList()
                     .Select(x =>
                     {
-                        int currentLevelApproval = db.TransferApprovalLog
+                        int currentLevelApproval = db.AdditionalBudgetLog
                             .Where(w => w.BudgetTransferId == x.Id)
                             .OrderByDescending(w => w.CreatedDate)
                             .Select(w => w.StepNumber)
@@ -77,48 +77,22 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                             x.Id,
                             x.RefNo,
                             x.Project,
-                            x.Date,
+                            x.ApplicationDate,
                             x.EstimatedCost,
-                            Status = x.status == 0 ? "Resubmit" :
+                            Status = x.Status == 0 ? "Resubmit" :
                                         //x.status == 1 and null ? "Submitted" :
-                                        x.status == 2 ? "Under Review" :
-                                        x.status == 3 ? "Completed" :
+                                        x.Status == 2 ? "Under Review" :
+                                        x.Status == 3 ? "Completed" :
                                         "Submitted",
                             CanEdit = canEdit
                         };
                     })
                     .ToList();
 
-                gvTransfers.DataSource = transfers;
-                gvTransfers.DataBind();
+                gvAdditionalBudgetList.DataSource = transfers;
+                gvAdditionalBudgetList.DataBind();
             }
         }
 
-        protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                int id = int.Parse(hdnDeleteId.Value);
-
-                using (var db = new AppDbContext())
-                {
-                    var record = db.TransfersTransaction.Find(id);
-                    if (record != null)
-                    {
-                        record.DeletedBy = Auth.Id();
-                        record.DeletedDate = DateTime.Now;
-
-                        db.SaveChanges();
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Record deleted successfully.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error deleting record: " + ex.Message);
-            }
-
-            BindTransfers();
-        }
     }
 }

@@ -1,7 +1,8 @@
 ﻿<%@ Page Title="Additional Budget Approver" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.MasterData.AdditionalBudgetApprover.Default" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnRecordId" runat="server" />
-    <asp:Button ID="btnDeleteRecord" runat="server" OnClick="btnDeleteRecord_Click" CssClass="d-none" />
+    <asp:Button ID="btnDeleteRecordFinance" runat="server" OnClick="btnDeleteRecordFinance_Click" CssClass="d-none" />
+    <asp:Button ID="btnDeleteRecordCogs" runat="server" OnClick="btnDeleteRecordCogs_Click" CssClass="d-none" />
 
     <div class="row">
         <div class="col-md-12">
@@ -58,10 +59,10 @@
                                                             <HeaderStyle CssClass="width-80 text-center" />
                                                             <ItemStyle CssClass="width-80 text-center" />
                                                             <ItemTemplate>
-                                                                <asp:LinkButton ID="btnEdit1" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-edit") %>'>
+                                                                <asp:LinkButton ID="btnEdit1" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit1_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-edit") %>'>
                                                                     <i class="fas fa-edit"></i>
                                                                 </asp:LinkButton>
-                                                                <asp:LinkButton ID="btnDelete1" runat="server" CssClass="btn btn-danger btn-xs button-delete" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-delete") %>'>
+                                                                <asp:LinkButton ID="btnDelete1" runat="server" CssClass="btn btn-danger btn-xs button-delete-finance" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-delete") %>'>
                                                                     <i class="fas fa-trash-alt"></i>
                                                                 </asp:LinkButton>
                                                                 <asp:HiddenField ID="hdnId1" runat="server" Value='<%# Eval("Id") %>' />
@@ -106,10 +107,10 @@
                                                             <HeaderStyle CssClass="width-80 text-center" />
                                                             <ItemStyle CssClass="width-80 text-center" />
                                                             <ItemTemplate>
-                                                                <asp:LinkButton ID="btnEdit2" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-edit") %>'>
+                                                                <asp:LinkButton ID="btnEdit2" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit2_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-edit") %>'>
                                                                     <i class="fas fa-edit"></i>
                                                                 </asp:LinkButton>
-                                                                <asp:LinkButton ID="btnDelete2" runat="server" CssClass="btn btn-danger btn-xs button-delete" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-delete") %>'>
+                                                                <asp:LinkButton ID="btnDelete2" runat="server" CssClass="btn btn-danger btn-xs button-delete-cogs" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-delete") %>'>
                                                                     <i class="fas fa-trash-alt"></i>
                                                                 </asp:LinkButton>
                                                                 <asp:HiddenField ID="hdnId2" runat="server" Value='<%# Eval("Id") %>' />
@@ -133,7 +134,7 @@
 
     <script>
         $(document).ready(function () {
-            $(document).on("click", ".button-delete", function (event) {
+            $(document).on("click", ".button-delete-finance", function (event) {
                 event.preventDefault();
                 var recordId = $(this).data("id");
                 Swal.fire({
@@ -147,7 +148,25 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $('#<%= hdnRecordId.ClientID %>').val(recordId);
-                        __doPostBack("<%= btnDeleteRecord.UniqueID %>", "");
+                        __doPostBack("<%= btnDeleteRecordFinance.UniqueID %>", "");
+                    }
+                });
+            });
+            $(document).on("click", ".button-delete-cogs", function (event) {
+                event.preventDefault();
+                var recordId = $(this).data("id");
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This record will be deleted permanently!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#<%= hdnRecordId.ClientID %>').val(recordId);
+                        __doPostBack("<%= btnDeleteRecordCogs.UniqueID %>", "");
                     }
                 });
             });

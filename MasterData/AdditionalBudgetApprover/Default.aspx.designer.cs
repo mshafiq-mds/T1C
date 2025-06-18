@@ -24,13 +24,22 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
         protected global::System.Web.UI.WebControls.HiddenField hdnRecordId;
 
         /// <summary>
-        /// btnDeleteRecord control.
+        /// btnDeleteRecordFinance control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDeleteRecord;
+        protected global::System.Web.UI.WebControls.Button btnDeleteRecordFinance;
+
+        /// <summary>
+        /// btnDeleteRecordCogs control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDeleteRecordCogs;
 
         /// <summary>
         /// updLoaFinance control.

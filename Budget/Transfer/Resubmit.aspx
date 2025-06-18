@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit Budget Approver" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Edit" %>
+﻿<%@ Page Title="Resubmit Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Resubmit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">
         function formatCurrencyInput(input, formatOnBlur = false) {
@@ -155,14 +155,20 @@
                 </tr>
             </tbody>
         </table>
-
+        
         <h4 class="mt-4">Justification</h4>
         <asp:TextBox runat="server" ID="txtJustification" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="false"/>
+
+        <h4 class="mt-4">Remark Resubmit</h4>
+        <asp:TextBox runat="server" ID="txtResubmit" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="true"/>
+        <asp:RequiredFieldValidator ID="rfvtxtResubmit" runat="server" ControlToValidate="txtResubmit"
+            ErrorMessage="Please Fill Remark" CssClass="text-danger" Display="Dynamic"  />
+
 
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
-            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
+            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic"  />
 
 
     </asp:Panel>

@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm.Budget.Transfer
+namespace Prodata.WebForm.Budget.Additional.Approval.Finance
 {
 
 
@@ -33,24 +33,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.Button btnDeleteConfirmed;
 
         /// <summary>
-        /// ddlStatusFilter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlStatusFilter;
-
-        /// <summary>
-        /// btnAdd control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnAdd;
-
-        /// <summary>
         /// UpdatePanel1 control.
         /// </summary>
         /// <remarks>
@@ -60,12 +42,12 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.UpdatePanel UpdatePanel1;
 
         /// <summary>
-        /// gvTransfers control.
+        /// gvAdditionalBudgetList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvTransfers;
+        protected global::System.Web.UI.WebControls.GridView gvAdditionalBudgetList;
     }
 }

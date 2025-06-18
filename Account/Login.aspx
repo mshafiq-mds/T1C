@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Log in" Language="C#" MasterPageFile="~/SiteLogin.Master" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="Prodata.WebForm.Account.Login" Async="true" %>
 
 <asp:Content runat="server" ID="BodyContent" ContentPlaceHolderID="LoginContent">
-    <div class="card-body login-card-body">
+    <div class="card-body login-card-body"  style="border-radius: 12px" >
         <p class="login-box-msg font-weight-bold">Sign in to start your session</p>
 
         <asp:PlaceHolder runat="server" ID="ErrorMessage" Visible="false">

@@ -112,10 +112,15 @@
             <!-- Main Sidebar Container -->
             <aside class="main-sidebar sidebar-dark-warning elevation-4">
                 <!-- Brand Logo -->
-                <a runat="server" href="~/" class="brand-link">
-                    <img runat="server" src="~/App_Themes/AdminLTE-3.2.0/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                    <span class="brand-text font-weight-light"><%= FGV.Prodata.App.Setting.AppName() %></span>
+                <a runat="server" href="~/" class="brand-link d-flex align-items-center">
+                    <div style="background-color: white; padding: 10px; border-radius: 12px;">
+                        <img runat="server" src="~/Images/Felda_Global_Ventures_Logo.png" alt="AdminLTE Logo" 
+                             style=" width: 40px; height: 40px; object-fit: contain;" />
+                    </div>
+                    <span class="brand-text font-weight-light ml-3"><%= FGV.Prodata.App.Setting.AppName() %></span>
                 </a>
+
+
 
                 <!-- Sidebar -->
                 <div class="sidebar">

@@ -4,11 +4,28 @@
     <asp:Button ID="btnDeleteConfirmed" runat="server" CssClass="d-none" OnClick="btnDeleteConfirmed_Click" />
 
     <asp:Panel runat="server" CssClass="card p-4">
-        <div class="card-tools mb-3">
-            <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Transfer/Add" CausesValidation="false">
-                <i class="fas fa-plus"></i> Request Transfer Budget
-            </asp:LinkButton>
+
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <div class="form-inline">
+                <label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>
+                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control"
+                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged">
+                    <asp:ListItem Text="All" Value="All" />
+                    <asp:ListItem Text="Submitted" Value="Submitted" />
+                    <asp:ListItem Text="Resubmit" Value="Resubmit" />
+                    <asp:ListItem Text="Under Review" Value="Under Review" />
+                    <asp:ListItem Text="Completed" Value="Completed" />
+                    <asp:ListItem Text="Deleted" Value="Deleted" />
+                </asp:DropDownList>
+            </div>
+
+            <div class="card-tools">
+                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Transfer/Add" CausesValidation="false">
+                    <i class="fas fa-plus"></i> Request Transfer Budget
+                </asp:LinkButton>
+            </div>
         </div>
+
 
         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
@@ -25,25 +42,42 @@
                         <asp:BoundField DataField="Project" HeaderText="Project" />
                         <asp:BoundField DataField="Date" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
-                        <asp:BoundField DataField="Status" HeaderText="Status"/>
+                        <asp:TemplateField HeaderText="Status">
+                            <ItemTemplate>
+                                <asp:Label ID="lblStatus" runat="server"
+                                    Text='<%# Eval("Status") %>'
+                                    CssClass='<%#
+                                        Eval("Status").ToString() == "Deleted" ? "text-danger font-weight-bold" :
+                                        Eval("Status").ToString() == "Resubmit" ? "text-warning font-weight-bold" :
+                                        Eval("Status").ToString() == "Under Review" ? "text-info" :
+                                        Eval("Status").ToString() == "Completed" ? "text-success" :
+                                        "text-primary"
+                                    %>'>
+                                </asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+
 
                         <asp:TemplateField HeaderText="Action">
                             <HeaderStyle CssClass="width-80 text-center align-middle" />
                             <ItemStyle CssClass="width-80 text-center" />
                             <ItemTemplate>
-                                <%# (Eval("Status").ToString() == "Completed") ? 
-                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/View.aspx?id=" + Eval("Id") + "'><i class='fas fa-eye'></i></a>" : "" %>
+                                <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review"|| Eval("Status").ToString() == "Deleted") ? 
+                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
-                                <%# (Eval("Status") == null || Eval("Status").ToString() == "Resubmit" || Eval("Status").ToString() == "Submitted") ? 
-                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/Edit.aspx?id=" + Eval("Id") + "'><i class='fas fa-edit'></i></a>" : "" %>
-    
-                                <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") //||
-                                     //Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-delete")) 
-                                    ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "'><i class='fas fa-trash-alt'></i></a>"
+                                <%# (Eval("Status").ToString() == "Resubmit") ? 
+                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
+
+                                <%# (Eval("Status").ToString() == "Submitted") ? 
+                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/Edit.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
+
+                                <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") 
+                                    ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "' title='Delete Entry'><i class='fas fa-trash-alt'></i></a>" 
                                     : "" 
                                 %>
-
                             </ItemTemplate>
+
 
                         </asp:TemplateField>
                     </Columns>

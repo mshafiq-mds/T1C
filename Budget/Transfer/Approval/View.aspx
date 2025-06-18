@@ -113,7 +113,7 @@
                               EmptyDataText="No record.">
                     <Columns>
                         <asp:BoundField DataField="ActionDate" HeaderText="Action Date" />
-                        <asp:BoundField DataField="ActionType" HeaderText="Action" />
+                        <asp:BoundField DataField="ActionType" HeaderText="Role Action" />
                         <asp:BoundField DataField="RoleName" HeaderText="Role" /> 
                         <asp:BoundField DataField="Status" HeaderText="Status"/>
                         <asp:BoundField DataField="Remarks" HeaderText="Remarks"/>

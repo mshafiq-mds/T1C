@@ -20,7 +20,20 @@
                 <asp:BoundField DataField="BA" HeaderText="BA" />
                 <asp:BoundField DataField="Project" HeaderText="Project / Department" />
                 <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
-                <asp:BoundField DataField="Status" HeaderText="Status"/>
+                <asp:TemplateField HeaderText="Status">
+                    <ItemTemplate>
+                        <asp:Label ID="lblStatus" runat="server"
+                            Text='<%# Eval("Status") %>'
+                            CssClass='<%#
+                                Eval("Status").ToString() == "Deleted" ? "text-danger font-weight-bold" :
+                                Eval("Status").ToString() == "Resubmit" ? "text-warning font-weight-bold" :
+                                Eval("Status").ToString() == "Under Review" ? "text-info" :
+                                Eval("Status").ToString() == "Completed" ? "text-success" :
+                                "text-primary"
+                            %>'>
+                        </asp:Label>
+                    </ItemTemplate>
+                </asp:TemplateField>
                 <asp:TemplateField HeaderText="Action">
                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                     <ItemStyle CssClass="width-80 text-center" />
@@ -33,10 +46,13 @@
                          </asp:LinkButton>                          
                     </ItemTemplate>--%>
                     <ItemTemplate>
-                        <%# (Eval("Status").ToString() == "Completed") ? 
+                        <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review" || Eval("Status").ToString() == "Deleted") ? 
                             "<a class='btn btn-info btn-xs' href='/Budget/Additional/View.aspx?id=" + Eval("Id") + "'><i class='fas fa-eye'></i></a>" : "" %>
+                        
+                        <%# (Eval("Status").ToString() == "Resubmit") ? 
+                            "<a class='btn btn-info btn-xs' href='/Budget/Additional/Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
 
-                        <%# (Eval("Status") == null || Eval("Status").ToString() == "Resubmit" || Eval("Status").ToString() == "Submitted") ? 
+                        <%# (Eval("Status").ToString() == "Submitted") ? 
                             "<a class='btn btn-info btn-xs' href='/Budget/Additional/Edit.aspx?id=" + Eval("Id") + "'><i class='fas fa-edit'></i></a>" : "" %>
     
                         <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") //||

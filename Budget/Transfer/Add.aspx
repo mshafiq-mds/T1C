@@ -219,7 +219,7 @@
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
-            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" Enabled="false" />
+            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
         <asp:Label ID="lblUploadResult" runat="server" CssClass="text-success mt-2" />
 
 
