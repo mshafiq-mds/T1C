@@ -63,6 +63,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                 lblApprovedBudget.Text = model.ApprovedBudget.HasValue ? model.ApprovedBudget.Value.ToString("N2") : "-";
                 lblNewTotalBudget.Text = model.NewTotalBudget.HasValue ? model.NewTotalBudget.Value.ToString("N2") : "-";
                 lblAdditionalBudget.Text = model.AdditionalBudget.HasValue ? model.AdditionalBudget.Value.ToString("N2") : "-";
+                lblCheckType.Text = model.CheckType;
             }
         }
 

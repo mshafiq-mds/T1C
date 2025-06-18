@@ -27,66 +27,93 @@
             <span class="fw-bold text-dark" style="font-size: 2rem;">)</span>
         </div>
 
-        <div class="form-group">
-            <label>Budget Type</label>
-            <p class="form-control-plaintext fw-bold">
-                <asp:Label runat="server" ID="lblBudgetType" />
-            </p>
+        <!-- Application Info -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Budget Type</label>
+                <div class="form-control-plaintext fw-bold text-dark">
+                    <asp:Label runat="server" ID="lblBudgetType" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Project / Department</label>
+                <div class="form-control-plaintext fw-bold text-dark">
+                    <asp:Label ID="lblProject" runat="server" />
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Project / Department</label>
-            <asp:Label ID="lblProject" runat="server" CssClass="form-control-plaintext" />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Reference No.</label>
+                <div class="form-control-plaintext fw-bold text-dark">
+                    <asp:Label ID="lblRefNo" runat="server" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Application Date</label>
+                <div class="form-control-plaintext fw-bold text-dark">
+                    <asp:Label ID="lblDate" runat="server" />
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Reference No.</label>
-            <asp:Label ID="lblRefNo" runat="server" CssClass="form-control-plaintext" />
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label class="form-label">Estimated Cost (RM)</label>
+                <div class="form-control-plaintext fw-bold text-primary">
+                    RM <asp:Label ID="lblBudgetEstimate" runat="server" />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">E-VISA No.</label>
+                <div class="form-control-plaintext fw-bold text-dark">
+                    <asp:Label ID="lblEVisa" runat="server" />
+                </div>
+            </div>
+        </div>
+        
+         <div class="mb-4">
+            <label class="form-label">Type LOA</label>
+            <div class="form-control-plaintext fw-bold text-dark">
+                <asp:Label ID="lblCheckType" runat="server" />
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Application Date</label>
-            <asp:Label ID="lblDate" runat="server" CssClass="form-control-plaintext" />
+        <!-- Justification -->
+         <div class="mb-4">
+            <label class="form-label">Application Details</label>
+            <div class="form-control-plaintext text-dark">
+                <asp:Label ID="lblRequestDetails" runat="server" />
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>Estimated Cost (RM)</label>
-            <asp:Label ID="lblBudgetEstimate" runat="server" CssClass="form-control-plaintext" />
+        <div class="mb-4">
+            <label class="form-label">Reason for Application</label>
+            <div class="form-control-plaintext text-dark">
+                <asp:Label ID="lblReason" runat="server" />
+            </div>
         </div>
 
-        <div class="form-group">
-            <label>E-VISA No.</label>
-            <asp:Label ID="lblEVisa" runat="server" CssClass="form-control-plaintext" />
-        </div>
-
-        <div class="form-group">
-            <label>Application Details</label>
-            <asp:Label ID="lblRequestDetails" runat="server" CssClass="form-control-plaintext" />
-        </div>
-
-        <div class="form-group">
-            <label>Reason for Application</label>
-            <asp:Label ID="lblReason" runat="server" CssClass="form-control-plaintext" />
-        </div>
-
-        <h4 class="mt-4">Additional Budget Allocation Details</h4>
-        <table class="table table-bordered">
-            <thead>
+        <!-- Budget Breakdown -->
+        <h4 class="mb-3 border-bottom pb-1">Budget Allocation Breakdown</h4>
+        <table class="table table-bordered table-sm text-center align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>Cost Centre</th>
-                    <th>GL</th>
-                    <th>Approved Budget 2022</th>
-                    <th>New Budget 2022</th>
-                    <th>Additional Budget Value</th>
+                    <th>GL Code</th>
+                    <th>Approved Budget 2022 (RM)</th>
+                    <th>New Budget 2022 (RM)</th>
+                    <th>Additional Budget (RM)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><asp:Label ID="lblCostCentre" runat="server" /></td>
                     <td><asp:Label ID="lblGL" runat="server" /></td>
-                    <td><asp:Label ID="lblApprovedBudget" runat="server" /></td>
-                    <td><asp:Label ID="lblNewTotalBudget" runat="server" /></td>
-                    <td><asp:Label ID="lblAdditionalBudget" runat="server" /></td>
+                    <td class="text-primary"><asp:Label ID="lblApprovedBudget" runat="server" /></td>
+                    <td class="text-primary"><asp:Label ID="lblNewTotalBudget" runat="server" /></td>
+                    <td class="text-primary fw-bold"><asp:Label ID="lblAdditionalBudget" runat="server" /></td>
                 </tr>
             </tbody>
         </table>

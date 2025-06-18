@@ -18,7 +18,13 @@ namespace Prodata.WebForm.Budget.AddBudget
                 BindTransfers();
             }
         }
-        private void BindTransfers()
+
+        protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
+        private void BindTransfers(string statusFilter = "All")
         {
             string ba = Auth.User().iPMSBizAreaCode;
 
@@ -50,6 +56,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                             x.Status == 3 ? "Completed" :
                             "Submitted"
                     })
+                    .Where(x => statusFilter == "All" || x.Status == statusFilter)
                     .ToList();
 
                 gvBudgetList.DataSource = transfers;

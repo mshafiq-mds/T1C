@@ -18,12 +18,12 @@
         </div>
 
         <!-- BA Section -->
-        <div class="mb-4">
-            <span class="fs-4 fw-semibold text-dark">BA :</span>
-            <asp:Label ID="LblBA" runat="server" CssClass="fs-4 fw-bold text-dark me-1" />
-            <span class="fs-4 fw-bold text-dark">(</span>
-            <asp:Label ID="LblBAName" runat="server" CssClass="fs-4 fw-bold text-dark" />
-            <span class="fs-4 fw-bold text-dark">)</span>
+        <div class="form-group d-flex align-items-center" style="font-size: 2rem;">
+            <label class="me-2 mb-0 fw-semibold text-dark">BA :</label>
+            <asp:Label ID="LblBA" runat="server" CssClass="fw-bold text-dark me-1" Style="font-size: 2rem;" />
+            <span class="fw-bold text-dark" style="font-size: 2rem;">(</span>
+            <asp:Label ID="LblBAName" runat="server" CssClass="fw-bold text-dark" Style="font-size: 2rem;" />
+            <span class="fw-bold text-dark" style="font-size: 2rem;">)</span>
         </div>
 
         <!-- Application Info -->
@@ -71,14 +71,22 @@
                 </div>
             </div>
         </div>
+        
+         <div class="mb-4">
+            <label class="form-label">Type LOA</label>
+            <div class="form-control-plaintext fw-bold text-dark">
+                <asp:Label ID="lblCheckType" runat="server" />
+            </div>
+        </div>
 
         <!-- Justification -->
-        <div class="mb-3">
+         <div class="mb-4">
             <label class="form-label">Application Details</label>
             <div class="form-control-plaintext text-dark">
                 <asp:Label ID="lblRequestDetails" runat="server" />
             </div>
         </div>
+
         <div class="mb-4">
             <label class="form-label">Reason for Application</label>
             <div class="form-control-plaintext text-dark">
@@ -109,9 +117,6 @@
             </tbody>
         </table>
 
-        <h4 class="mt-4">Justification</h4>
-        <asp:TextBox runat="server" ID="txtJustification" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="false"/>
-
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
@@ -135,21 +140,21 @@
         </asp:Panel>
 
         <!-- Approval History -->
-        <h4 class="mt-4 border-bottom pb-1">Approval History</h4>
-        <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+        <h4 class="mt-4">Approval History</h4>
+         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
                 <asp:GridView ID="gvHistory" runat="server"
-                              CssClass="table table-hover table-sm"
+                              CssClass="table table-bordered table-sm" 
                               AllowPaging="true"
                               AutoGenerateColumns="False"
                               DataKeyNames="Id"
-                              EmptyDataText="No record found.">
+                              EmptyDataText="No record.">
                     <Columns>
                         <asp:BoundField DataField="ActionDate" HeaderText="Action Date" />
                         <asp:BoundField DataField="ActionType" HeaderText="Role Action" />
-                        <asp:BoundField DataField="RoleName" HeaderText="Role" />
-                        <asp:BoundField DataField="Status" HeaderText="Status" />
-                        <asp:BoundField DataField="Remarks" HeaderText="Remarks" />
+                        <asp:BoundField DataField="RoleName" HeaderText="Role" /> 
+                        <asp:BoundField DataField="Status" HeaderText="Status"/>
+                        <asp:BoundField DataField="Remarks" HeaderText="Remarks"/>
                     </Columns>
                 </asp:GridView>
             </ContentTemplate>

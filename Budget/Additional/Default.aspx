@@ -4,10 +4,25 @@
     <asp:Button ID="btnDeleteConfirmed" runat="server" CssClass="d-none" OnClick="btnDeleteConfirmed_Click" />
 
     <asp:Panel runat="server" CssClass="card p-4">
-        <div class="card-tools">
-            <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Additional/Add" CausesValidation="false">
-                <i class="fas fa-plus"></i>  Request Additional Budget
-            </asp:LinkButton>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <div class="form-inline">
+                <label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>
+                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control"
+                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged">
+                    <asp:ListItem Text="All" Value="All" />
+                    <asp:ListItem Text="Submitted" Value="Submitted" />
+                    <asp:ListItem Text="Resubmit" Value="Resubmit" />
+                    <asp:ListItem Text="Under Review" Value="Under Review" />
+                    <asp:ListItem Text="Completed" Value="Completed" />
+                    <asp:ListItem Text="Deleted" Value="Deleted" />
+                </asp:DropDownList>
+            </div>
+
+            <div class="card-tools">
+                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Additional/Add" CausesValidation="false">
+                    <i class="fas fa-plus"></i> Request Additional Budget
+                </asp:LinkButton>
+            </div>
         </div>
 
          <div class="mb-3"></div>
