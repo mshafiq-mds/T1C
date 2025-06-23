@@ -10,7 +10,7 @@ namespace Prodata.WebForm.Class
 {
 	public class Budget
 	{
-		public List<Models.ViewModels.BudgetListViewModel> GetBudgets(Guid? entityId = null, Guid? typeId = null, int? month = null, string bizAreaCode = null, string refNo = null, decimal? amountMin = null, decimal? amountMax = null)
+		public List<Models.ViewModels.BudgetListViewModel> GetBudgets(Guid? entityId = null, Guid? typeId = null, int? year = null, int? month = null, string bizAreaCode = null, string refNo = null, decimal? amountMin = null, decimal? amountMax = null)
 		{
 			using (var db = new AppDbContext())
 			{
@@ -43,6 +43,9 @@ namespace Prodata.WebForm.Class
 
 				if (typeId.HasValue)
                     query = query.Where(q => q.TypeId == typeId);
+
+                if (year.HasValue)
+                    query = query.Where(q => q.Date.HasValue && q.Date.Value.Year == year);
 
                 if (month.HasValue)
                     query = query.Where(q => q.Month == month);
