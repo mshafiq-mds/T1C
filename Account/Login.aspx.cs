@@ -137,7 +137,7 @@ namespace Prodata.WebForm.Account
                                             manager.AddToRole(user.Id, "Approver");
                                         }
 
-                                        if (roleCode == "AM" || roleCode == "MM")
+                                        if (roleCode == "KB" || roleCode == "MM")
                                         {
                                             if (!manager.IsInRole(user.Id, "Kilang"))
                                             {
@@ -165,15 +165,54 @@ namespace Prodata.WebForm.Account
                         existingUser.iPMSBizAreaCode = user.iPMSBizAreaCode;
 
                         var updateResult = manager.Update(existingUser);
-                        if (!updateResult.Succeeded)
+                        if (updateResult.Succeeded)
+                        {
+                            // Assign role to existing user based on iPMSRoleCode
+                            if (!string.IsNullOrEmpty(existingUser.iPMSRoleCode))
+                            {
+                                var roleCode = existingUser.iPMSRoleCode.ToUpperInvariant();
+
+                                if (roleCode == "ADMIN")
+                                {
+                                    if (!manager.IsInRole(existingUser.Id, "HQ"))
+                                    {
+                                        manager.AddToRole(existingUser.Id, "HQ");
+                                    }
+                                }
+                                else
+                                {
+                                    var approverRoles = new HashSet<string>
+                                    {
+                                        "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+                                    };
+
+                                    if (approverRoles.Contains(roleCode))
+                                    {
+                                        if (!manager.IsInRole(user.Id, "Approver"))
+                                        {
+                                            manager.AddToRole(user.Id, "Approver");
+                                        }
+
+                                        if (roleCode == "KB" || roleCode == "MM")
+                                        {
+                                            if (!manager.IsInRole(user.Id, "Kilang"))
+                                            {
+                                                manager.AddToRole(user.Id, "Kilang");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            // **Then sign in the user**
+                            signinManager.SignIn(existingUser, RememberMe.Checked, false);
+                        }
+                        else
                         {
                             FailureText.Text = "Failed to update user info.";
                             ErrorMessage.Visible = true;
                             return;
                         }
-
-                        // **Then sign in the user**
-                        signinManager.SignIn(existingUser, RememberMe.Checked, false);
                     }
                 }
 
