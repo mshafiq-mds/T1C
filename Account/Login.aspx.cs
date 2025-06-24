@@ -111,16 +111,18 @@ namespace Prodata.WebForm.Account
                         var result = manager.Create(user);
                         if (result.Succeeded)
                         {
+                            var createdUser = manager.FindByName(user.UserName);
+
                             // Assign role to the user based on iPMSRoleCode
-                            if (!string.IsNullOrEmpty(user.iPMSRoleCode))
+                            if (!string.IsNullOrEmpty(createdUser.iPMSRoleCode))
                             {
-                                var roleCode = user.iPMSRoleCode.ToUpperInvariant();
+                                var roleCode = createdUser.iPMSRoleCode.ToUpperInvariant();
 
                                 if (roleCode == "ADMIN")
                                 {
-                                    if (!manager.IsInRole(user.Id, "HQ"))
+                                    if (!manager.IsInRole(createdUser.Id, "HQ"))
                                     {
-                                        manager.AddToRole(user.Id, "HQ");
+                                        manager.AddToRole(createdUser.Id, "HQ");
                                     }
                                 }
                                 else
@@ -132,16 +134,16 @@ namespace Prodata.WebForm.Account
 
                                     if (approverRoles.Contains(roleCode))
                                     {
-                                        if (!manager.IsInRole(user.Id, "Approver"))
+                                        if (!manager.IsInRole(createdUser.Id, "Approver"))
                                         {
-                                            manager.AddToRole(user.Id, "Approver");
+                                            manager.AddToRole(createdUser.Id, "Approver");
                                         }
 
                                         if (roleCode == "KB" || roleCode == "MM")
                                         {
-                                            if (!manager.IsInRole(user.Id, "Kilang"))
+                                            if (!manager.IsInRole(createdUser.Id, "Kilang"))
                                             {
-                                                manager.AddToRole(user.Id, "Kilang");
+                                                manager.AddToRole(createdUser.Id, "Kilang");
                                             }
                                         }
                                     }
@@ -149,7 +151,7 @@ namespace Prodata.WebForm.Account
                             }
 
                             // **Manually login user**
-                            signinManager.SignIn(user, RememberMe.Checked, false);
+                            signinManager.SignIn(createdUser, RememberMe.Checked, false);
                         }
                         else
                         {
@@ -188,16 +190,16 @@ namespace Prodata.WebForm.Account
 
                                     if (approverRoles.Contains(roleCode))
                                     {
-                                        if (!manager.IsInRole(user.Id, "Approver"))
+                                        if (!manager.IsInRole(existingUser.Id, "Approver"))
                                         {
-                                            manager.AddToRole(user.Id, "Approver");
+                                            manager.AddToRole(existingUser.Id, "Approver");
                                         }
 
                                         if (roleCode == "KB" || roleCode == "MM")
                                         {
-                                            if (!manager.IsInRole(user.Id, "Kilang"))
+                                            if (!manager.IsInRole(existingUser.Id, "Kilang"))
                                             {
-                                                manager.AddToRole(user.Id, "Kilang");
+                                                manager.AddToRole(existingUser.Id, "Kilang");
                                             }
                                         }
                                     }
