@@ -22,6 +22,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 string idStr = Request.QueryString["id"];
                 if (Guid.TryParse(idStr, out Guid requestId))
                 {
+                    hdnTransferId.Value = requestId.ToString();
                     LoadBudgetRequest(requestId);
                     LoadDocument(requestId);
                     Loadhistory(requestId);
@@ -38,15 +39,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
             esCost = string.IsNullOrWhiteSpace(lblAdditionalBudget.Text) ? 0 : Convert.ToDecimal(lblAdditionalBudget.Text);
             HandleApprovalAction("Resubmit");
             UpdateStatusTransferTransaction(0);
-            Response.Redirect("~/Budget/Transfer/Approval/COGS");
+            Response.Redirect("~/Budget/Additional/Approval/COGS");
         }
 
-        protected void btnSubmit_Click1(object sender, EventArgs e)
+        protected void btnSubmit_Click(object sender, EventArgs e)
         {
             esCost = string.IsNullOrWhiteSpace(lblAdditionalBudget.Text) ? 0 : Convert.ToDecimal(lblAdditionalBudget.Text);
             HandleApprovalAction("Approved");
             UpdateStatusTransferTransaction(FindNextStatus());
-            Response.Redirect("~/Budget/Transfer/Approval/COGS");
+            Response.Redirect("~/Budget/Additional/Approval/COGS");
         }
 
         private int FindNextStatus()
@@ -159,7 +160,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 db.AdditionalBudgetLog.Add(logEntry);
                 db.SaveChanges();
 
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget approval recorded.");
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Additional Budget approval recorded.");
             }
         }
         private void LoadBudgetRequest(Guid id)
@@ -194,6 +195,9 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 lblApprovedBudget.Text = model.ApprovedBudget.HasValue ? model.ApprovedBudget.Value.ToString("N2") : "-";
                 lblNewTotalBudget.Text = model.NewTotalBudget.HasValue ? model.NewTotalBudget.Value.ToString("N2") : "-";
                 lblAdditionalBudget.Text = model.AdditionalBudget.HasValue ? model.AdditionalBudget.Value.ToString("N2") : "-";
+
+                lblCheckType.Text = model.CheckType;
+
             }
         }
 

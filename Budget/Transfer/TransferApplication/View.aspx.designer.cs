@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm.Budget.AddBudget
+namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 {
 
 
@@ -33,42 +33,6 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.LinkButton btnPrint;
 
         /// <summary>
-        /// LblBA control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblBA;
-
-        /// <summary>
-        /// LblBAName control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblBAName;
-
-        /// <summary>
-        /// lblBudgetType control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBudgetType;
-
-        /// <summary>
-        /// lblProject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblProject;
-
-        /// <summary>
         /// lblRefNo control.
         /// </summary>
         /// <remarks>
@@ -87,13 +51,40 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.Label lblDate;
 
         /// <summary>
-        /// lblBudgetEstimate control.
+        /// lblProject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBudgetEstimate;
+        protected global::System.Web.UI.WebControls.Label lblProject;
+
+        /// <summary>
+        /// lblBA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblBA;
+
+        /// <summary>
+        /// lblBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblBudgetType;
+
+        /// <summary>
+        /// lblEstimatedCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblEstimatedCost;
 
         /// <summary>
         /// lblEVisa control.
@@ -105,76 +96,121 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.Label lblEVisa;
 
         /// <summary>
-        /// lblCheckType control.
+        /// lblFromGL control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCheckType;
+        protected global::System.Web.UI.WebControls.Label lblFromGL;
 
         /// <summary>
-        /// lblRequestDetails control.
+        /// lblFromBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblRequestDetails;
+        protected global::System.Web.UI.WebControls.Label lblFromBA;
 
         /// <summary>
-        /// lblReason control.
+        /// lblFromBudget control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblReason;
+        protected global::System.Web.UI.WebControls.Label lblFromBudget;
 
         /// <summary>
-        /// lblCostCentre control.
+        /// lblFromBalance control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCostCentre;
+        protected global::System.Web.UI.WebControls.Label lblFromBalance;
 
         /// <summary>
-        /// lblGL control.
+        /// lblFromTransfer control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblGL;
+        protected global::System.Web.UI.WebControls.Label lblFromTransfer;
 
         /// <summary>
-        /// lblApprovedBudget control.
+        /// lblFromAfter control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblApprovedBudget;
+        protected global::System.Web.UI.WebControls.Label lblFromAfter;
 
         /// <summary>
-        /// lblNewTotalBudget control.
+        /// lblToGL control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblNewTotalBudget;
+        protected global::System.Web.UI.WebControls.Label lblToGL;
 
         /// <summary>
-        /// lblAdditionalBudget control.
+        /// lblToBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblAdditionalBudget;
+        protected global::System.Web.UI.WebControls.Label lblToBA;
+
+        /// <summary>
+        /// lblToBudget control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblToBudget;
+
+        /// <summary>
+        /// lblToBalance control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblToBalance;
+
+        /// <summary>
+        /// lblToTransfer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblToTransfer;
+
+        /// <summary>
+        /// lblToAfter control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblToAfter;
+
+        /// <summary>
+        /// litJustification control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litJustification;
 
         /// <summary>
         /// pnlUploadedDocument control.

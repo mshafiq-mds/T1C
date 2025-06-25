@@ -18,7 +18,12 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 BindTransfers();
             }
         }
-        private void BindTransfers()
+        protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
+        private void BindTransfers(string statusFilter = "All")
         {
             string ba = Auth.User().iPMSBizAreaCode;
             string userRole = Auth.User().iPMSRoleCode;
@@ -39,8 +44,8 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     : new List<TransferApprovalLimits>();
 
                 // Query base transfers
-                var query = db.TransfersTransaction
-                              .Where(x => x.DeletedDate == null);
+                var query = db.TransfersTransaction.AsQueryable();
+                //.Where(x => x.DeletedDate == null);
 
                 if (!string.IsNullOrEmpty(ba))
                 {
@@ -69,7 +74,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                         int userLevelApproval = matchingLimit?.Order ?? 0;
 
-                        bool canEdit = (matchingLimit != null && userLevelApproval == currentLevelApproval + 1);//|| Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
+                        bool canEdit = (x.DeletedDate == null && matchingLimit != null && userLevelApproval == currentLevelApproval + 1);//|| Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
 
                         return new
                         {
@@ -79,7 +84,9 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                             x.Project,
                             x.Date,
                             x.EstimatedCost,
-                            Status = x.status == 0 ? "Resubmit" :
+                            Status =
+                                        x.DeletedDate != null ? "Deleted" : 
+                                        x.status == 0 ? "Resubmit" :
                                         //x.status == 1 and null ? "Submitted" :
                                         x.status == 2 ? "Under Review" :
                                         x.status == 3 ? "Completed" :
@@ -87,6 +94,11 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                             CanEdit = canEdit
                         };
                     })
+                    .Where(x =>
+                                statusFilter == "All" ||
+                                (statusFilter == "EditableOnly" && x.CanEdit) ||
+                                x.Status == statusFilter
+                            )
                     .ToList();
 
                 gvTransfers.DataSource = transfers;
@@ -94,31 +106,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             }
         }
 
-        protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                int id = int.Parse(hdnDeleteId.Value);
-
-                using (var db = new AppDbContext())
-                {
-                    var record = db.TransfersTransaction.Find(id);
-                    if (record != null)
-                    {
-                        record.DeletedBy = Auth.Id();
-                        record.DeletedDate = DateTime.Now;
-
-                        db.SaveChanges();
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Record deleted successfully.");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error deleting record: " + ex.Message);
-            }
-
-            BindTransfers();
-        }
+       
     }
 }

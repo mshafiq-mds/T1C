@@ -1,19 +1,23 @@
-﻿<%@ Page Title="Additional Approval Finance Views" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Additional.Approval.Finance.View" %>
+﻿<%@ Page Title="Resubmit Budget Additional" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Additional.Resubmit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:Panel runat="server" CssClass="card p-4">
-        <div class="card-header card-header-sticky">
+    <asp:Panel runat="server" CssClass="card shadow-sm p-4 rounded-3">
+        <!-- Header -->
+                <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
             <div class="card-tools">
-                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/Finance/Default" CausesValidation="false">
+                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-print" CausesValidation="false"
-                    OnClientClick="printPanel(); return false;">
-                    <i class="fas fa-print"></i> Print
-                </asp:LinkButton>   
+<%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
+                    <i class="fas fa-save"></i> Save
+                </asp:LinkButton>--%>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="collectData();"> 
+                    <i class="fas fa-share"></i> Submit Application
+                </asp:LinkButton>
             </div>
         </div>
 
+        <!-- BA Section -->
         <div class="form-group d-flex align-items-center" style="font-size: 2rem;">
             <label class="me-2 mb-0 fw-semibold text-dark">BA :</label>
             <asp:Label ID="LblBA" runat="server" CssClass="fw-bold text-dark me-1" Style="font-size: 2rem;" />
@@ -111,17 +115,38 @@
                     <td class="text-primary fw-bold"><asp:Label ID="lblAdditionalBudget" runat="server" /></td>
                 </tr>
             </tbody>
-        </table> 
+        </table>
 
-        <!-- Uploaded Documents -->
-        <h4 class="mt-4">Uploaded Document</h4>
-        <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group" Visible="false">
-            <asp:PlaceHolder ID="phDocumentList" runat="server" />
+        <h4 class="mt-4">Upload Supporting Document</h4>
+        <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
+        <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
+            ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
+
+        <h4 class="mt-4">Remark Resubmit</h4>
+        <asp:TextBox runat="server" ID="txtResubmit" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="true"/>
+        <asp:RequiredFieldValidator ID="rfvtxtResubmit" runat="server" ControlToValidate="txtResubmit"
+            ErrorMessage="Please Fill Remark" CssClass="text-danger" Display="Dynamic"  />
+        
+        <!-- Document Uploads -->
+        <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group mt-3" Visible="false">
+            <div class="d-flex align-items-center mb-3">
+                <div class="bg-success text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <div class="ml-3">
+                    <h5 class="mb-0">Uploaded Document</h5>
+                    <small class="text-muted">You have already uploaded a supporting file for this request.</small>
+                </div>
+            </div>
+
+            <div class="border p-3 rounded bg-white">
+                <asp:PlaceHolder ID="phDocumentList" runat="server" />
+            </div>
         </asp:Panel>
 
-        
+        <!-- Approval History -->
         <h4 class="mt-4">Approval History</h4>
-         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+         <asp:UpdatePanel ID="pnHistoryApproval" runat="server">
             <ContentTemplate>
                 <asp:GridView ID="gvHistory" runat="server"
                               CssClass="table table-bordered table-sm" 
@@ -139,43 +164,5 @@
                 </asp:GridView>
             </ContentTemplate>
         </asp:UpdatePanel>
-
     </asp:Panel>
-
-    <script type="text/javascript">
-        function printPanel() {
-            var panel = document.querySelector('.card');
-            var printWindow = window.open('', '', 'height=800,width=1000');
-            printWindow.document.write('<html><head><title>Print Report</title>');
-
-            var styles = document.querySelectorAll('link[rel="stylesheet"], style');
-            styles.forEach(function (style) {
-                printWindow.document.write(style.outerHTML);
-            });
-
-            printWindow.document.write(`
-                <style>
-                    .btn, .card-header-sticky, .navbar, .footer {
-                        display: none !important;
-                    }
-                    body, .card {
-                        margin: 0;
-                        padding: 0;
-                        box-shadow: none;
-                    }
-                </style>
-            `);
-
-            printWindow.document.write('</head><body>');
-            printWindow.document.write(panel.outerHTML);
-            printWindow.document.write('</body></html>');
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-
-            printWindow.onafterprint = function () {
-                printWindow.close();
-            };
-        }
-    </script>
 </asp:Content>

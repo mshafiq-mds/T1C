@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm.Budget.AddBudget
+namespace Prodata.WebForm.Budget.Additional
 {
 
 
-    public partial class View
+    public partial class Resubmit
     {
 
         /// <summary>
@@ -24,13 +24,13 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnPrint control.
+        /// btnSubmit1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnPrint;
+        protected global::System.Web.UI.WebControls.LinkButton btnSubmit1;
 
         /// <summary>
         /// LblBA control.
@@ -177,6 +177,42 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.Label lblAdditionalBudget;
 
         /// <summary>
+        /// fuDocument control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fuDocument;
+
+        /// <summary>
+        /// rfvFile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFile;
+
+        /// <summary>
+        /// txtResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtResubmit;
+
+        /// <summary>
+        /// rfvtxtResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvtxtResubmit;
+
+        /// <summary>
         /// pnlUploadedDocument control.
         /// </summary>
         /// <remarks>
@@ -195,13 +231,13 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.PlaceHolder phDocumentList;
 
         /// <summary>
-        /// UpdatePanel1 control.
+        /// pnHistoryApproval control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel UpdatePanel1;
+        protected global::System.Web.UI.UpdatePanel pnHistoryApproval;
 
         /// <summary>
         /// gvHistory control.

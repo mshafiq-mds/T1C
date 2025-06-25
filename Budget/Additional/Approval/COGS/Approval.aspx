@@ -9,10 +9,10 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/COGS/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary btn-revision">
+                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2 btn-revision" OnClick="btnSave_Click">
                     <i class="fas fa-edit"></i> Request Revision
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve">
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve" OnClick="btnSubmit_Click">
                     <i class="fas fa-circle"></i> Approve Transfer
                 </asp:LinkButton>
             </div>
@@ -131,7 +131,7 @@
         <!-- Hidden fields and buttons for sweet alert postback -->
         <asp:HiddenField ID="hdnAction" runat="server" />
         <asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />
-        <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click1" Style="display:none;" />
+        <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click" Style="display:none;" />
         <asp:HiddenField ID="hdnTransferId" runat="server" />
 
         

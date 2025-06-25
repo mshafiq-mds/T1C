@@ -30,7 +30,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnPrint;
+        protected global::System.Web.UI.WebControls.LinkButton btnPrint;
 
         /// <summary>
         /// LblBA control.

@@ -7,7 +7,10 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:Button ID="btnPrint" runat="server" CssClass="btn btn-info" Text="Print" OnClientClick="printPanel(); return false;" />
+                <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-print" CausesValidation="false"
+                    OnClientClick="printPanel(); return false;">
+                    <i class="fas fa-print"></i> Print
+                </asp:LinkButton>
             </div>
         </div>
 

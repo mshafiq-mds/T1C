@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Resubmit Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Resubmit" %>
+﻿<%@ Page Title="Resubmit Budget Additional" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Resubmit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">
         function formatCurrencyInput(input, formatOnBlur = false) {
@@ -54,10 +54,10 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Transfer/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-<%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
+<%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();"> OnClientClick="collectData();"
                     <i class="fas fa-save"></i> Save
                 </asp:LinkButton>--%>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="collectData();"> <%----%>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click">  
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>

@@ -56,7 +56,7 @@ namespace Prodata.WebForm.Budget.Transfer
                     FromAfter = string.IsNullOrWhiteSpace(txtFromAfter.Text) ? 0 : Convert.ToDecimal(txtFromAfter.Text),
 
                     ToGL = txtToGL.Text.Trim(),
-                    ToBA = ddToBA.SelectedValue,
+                    ToBA = lblToBA.Text.Trim(),
                     ToBudget = string.IsNullOrWhiteSpace(txtToBudget.Text) ? 0 : Convert.ToDecimal(txtToBudget.Text),
                     ToBalance = string.IsNullOrWhiteSpace(txtToBalance.Text) ? 0 : Convert.ToDecimal(txtToBalance.Text),
                     ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),
@@ -114,7 +114,8 @@ namespace Prodata.WebForm.Budget.Transfer
 
             if (!isEmptyBA) 
             {
-                LblBA.Text = ba;
+                LblBA.Text = 
+                    lblToBA.Text = ba;
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
                 //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().iPMSBizAreaCode);
             }
@@ -127,13 +128,6 @@ namespace Prodata.WebForm.Budget.Transfer
             ddFromBA.DataTextField = "DisplayName";
             ddFromBA.DataBind();
             ddFromBA.Items.Insert(0, new ListItem("", ""));
-
-            ddToBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            ddToBA.DataValueField = "Code";
-            ddToBA.DataTextField = "DisplayName";
-            ddToBA.DataBind();
-            ddToBA.Items.Insert(0, new ListItem("", "")); 
-
         }
     }
 }

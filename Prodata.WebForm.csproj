@@ -2301,6 +2301,7 @@
     <Content Include="Budget\Additional\Approval\Finance\View.aspx" />
     <Content Include="Budget\Additional\Default.aspx" />
     <Content Include="Budget\Additional\Edit.aspx" />
+    <Content Include="Budget\Additional\Resubmit.aspx" />
     <Content Include="Budget\Additional\View.aspx" />
     <Content Include="Budget\Transfer\Add.aspx" />
     <Content Include="Budget\Transfer\Approval\Approval.aspx" />
@@ -2309,6 +2310,9 @@
     <Content Include="Budget\Transfer\Default.aspx" />
     <Content Include="Budget\Transfer\Edit.aspx" />
     <Content Include="Budget\Transfer\Resubmit.aspx" />
+    <Content Include="Budget\Transfer\TransferApplication\Application.aspx" />
+    <Content Include="Budget\Transfer\TransferApplication\Default.aspx" />
+    <Content Include="Budget\Transfer\TransferApplication\View.aspx" />
     <Content Include="Budget\Transfer\View.aspx" />
     <Content Include="Budget\Upload\Default.aspx" />
     <Content Include="Contact.aspx" />
@@ -2959,6 +2963,13 @@
     <Compile Include="Budget\Additional\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\Additional\Resubmit.aspx.cs">
+      <DependentUpon>Resubmit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Additional\Resubmit.aspx.designer.cs">
+      <DependentUpon>Resubmit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Additional\View.aspx.cs">
       <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3014,6 +3025,27 @@
     </Compile>
     <Compile Include="Budget\Transfer\Resubmit.aspx.designer.cs">
       <DependentUpon>Resubmit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\Application.aspx.cs">
+      <DependentUpon>Application.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\Application.aspx.designer.cs">
+      <DependentUpon>Application.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="Budget\Transfer\View.aspx.cs">
       <DependentUpon>View.aspx</DependentUpon>

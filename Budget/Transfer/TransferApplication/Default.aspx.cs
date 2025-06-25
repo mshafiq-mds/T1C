@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.Budget.Additional.Approval.Finance
+namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 {
     public partial class Default : ProdataPage
     {
@@ -18,7 +18,6 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                 BindTransfers();
             }
         }
-
         protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedStatus = ddlStatusFilter.SelectedValue;
@@ -39,73 +38,60 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
             {
                 // Get approval limits only if userRole is not null
                 var limits = !string.IsNullOrEmpty(userRole)
-                    ? db.AdditionalLoaFinanceLimits
-                        .Where(m => m.FinanceApproverCode == userRole && m.DeletedDate == null)
+                    ? db.TransferApprovalLimits
+                        .Where(m => m.TransApproverCode == userRole && m.DeletedDate == null)
                         .ToList()
-                    : new List<AdditionalLoaFinanceLimits>();
+                    : new List<TransferApprovalLimits>();
 
                 // Query base transfers
-                var query = db.AdditionalBudgetRequests
-                              .Where(x => x.CheckType == "FINANCE");
+                var query = db.TransfersTransaction.AsQueryable();
+                //.Where(x => x.DeletedDate == null);
 
                 if (!string.IsNullOrEmpty(ba))
                 {
                     // If BA is defined, filter by accessible BAs (or user's BA if none found)
                     if (accessibleBizAreas.Count > 0)
-                        query = query.Where(x => accessibleBizAreas.Contains(x.BA));
+                        query = query.Where(x => accessibleBizAreas.Contains(x.FromBA));
                     else
-                        query = query.Where(x => x.BA == ba);
+                        query = query.Where(x => x.FromBA == ba);
                 }
                 // else: ba == null → no filtering, access all
 
                 var transfers = query
-                    .OrderByDescending(x => x.ApplicationDate)
+                    .OrderByDescending(x => x.Date)
                     .ToList()
                     .Select(x =>
-                    {
-                        int currentLevelApproval = db.AdditionalBudgetLog
-                            .Where(w => w.BudgetTransferId == x.Id)
-                            .OrderByDescending(w => w.CreatedDate)
-                            .Select(w => w.StepNumber)
-                            .FirstOrDefault();
-
-                        var matchingLimit = limits.FirstOrDefault(l =>
-                            l.AmountMin <= x.EstimatedCost &&
-                            (l.AmountMax == null || l.AmountMax >= x.EstimatedCost));
-
-                        int userLevelApproval = matchingLimit?.Order ?? 0;
-
-                        bool canEdit = (x.DeletedDate == null && matchingLimit != null && userLevelApproval == currentLevelApproval + 1);//|| Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
-
+                    {   
+                        bool CanEdit = false;
                         return new
                         {
                             x.BA,
                             x.Id,
                             x.RefNo,
                             x.Project,
-                            x.ApplicationDate,
+                            x.Date,
                             x.EstimatedCost,
                             Status =
-                                        x.DeletedDate != null ? "Deleted" : 
-                                        x.Status == 0 ? "Resubmit" :
+                                        x.DeletedDate != null ? "Deleted" :
+                                        x.status == 0 ? "Resubmit" :
                                         //x.status == 1 and null ? "Submitted" :
-                                        x.Status == 2 ? "Under Review" :
-                                        x.Status == 3 ? "Completed" :
+                                        x.status == 2 ? "Under Review" :
+                                        x.status == 3 ? "Completed" :
+                                        x.status == 4 ? "Finalized" :
                                         "Submitted",
-                            CanEdit = canEdit
+                            CanEdit =
+                                        x.status == 3 ? true :
+                                        false,
                         };
                     })
-                    .Where(x =>
-                                statusFilter == "All" ||
-                                (statusFilter == "EditableOnly" && x.CanEdit) ||
-                                x.Status == statusFilter
-                            )
+                    .Where(x => statusFilter == "All" || x.Status == statusFilter)
                     .ToList();
 
-                gvAdditionalBudgetList.DataSource = transfers;
-                gvAdditionalBudgetList.DataBind();
+                gvTransfers.DataSource = transfers;
+                gvTransfers.DataBind();
             }
         }
+
 
     }
 }

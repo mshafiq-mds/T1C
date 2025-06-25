@@ -68,23 +68,43 @@ namespace Prodata.WebForm.Budget.AddBudget
             try
             {
                 Guid id = Guid.Parse(hdnDeleteId.Value);
+                Guid userId = Auth.Id();
+                string roleCode = Auth.User().iPMSRoleCode;
+                string remarks = hdnDeleteRemarks.Value;
 
                 using (var db = new AppDbContext())
                 {
                     var record = db.AdditionalBudgetRequests.Find(id);
-                    if (record != null)
-                    {
-                        record.DeletedBy = Auth.Id();
-                        record.DeletedDate = DateTime.Now;
 
-                        db.SaveChanges();
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Record deleted successfully.");
+                    if (record == null)
+                    {
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "Record not found.");
+                        return;
                     }
+
+                    db.AdditionalBudgetLog.Add(new AdditionalBudgetLog
+                    {
+                        BudgetTransferId = id,
+                        StepNumber = 100,
+                        RoleName = roleCode,
+                        UserId = userId,
+                        ActionType = "Delete",
+                        ActionDate = DateTime.Now,
+                        Status = "Delete",
+                        Remarks = remarks
+                    });
+
+                    record.DeletedBy = userId;
+                    record.DeletedDate = DateTime.Now;
+
+                    db.SaveChanges();
+
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Record deleted successfully.");
                 }
             }
             catch (Exception ex)
             {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error deleting record: " + ex.Message);
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "An error occurred while deleting the record.");
             }
 
             BindTransfers();

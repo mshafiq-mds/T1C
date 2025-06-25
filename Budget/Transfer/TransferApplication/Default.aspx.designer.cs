@@ -7,21 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm.Budget.Additional.Approval.Finance
+namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 {
 
 
     public partial class Default
     {
-
-        /// <summary>
-        /// hdnDeleteId control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnDeleteId;
 
         /// <summary>
         /// ddlStatusFilter control.
@@ -42,12 +33,12 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
         protected global::System.Web.UI.UpdatePanel UpdatePanel1;
 
         /// <summary>
-        /// gvAdditionalBudgetList control.
+        /// gvTransfers control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvAdditionalBudgetList;
+        protected global::System.Web.UI.WebControls.GridView gvTransfers;
     }
 }

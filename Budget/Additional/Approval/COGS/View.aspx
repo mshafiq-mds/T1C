@@ -1,4 +1,4 @@
-﻿<%@ Page Title="View Additional Approval COGS" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Additional.Approval.COGS.View" %>
+﻿<%@ Page Title="Additional Approval COGS Views" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Additional.Approval.COGS.View" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="card-header card-header-sticky">
@@ -7,7 +7,10 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/COGS/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:Button ID="btnPrint" runat="server" CssClass="btn btn-info" Text="Print" OnClientClick="printPanel(); return false;" />
+                <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-print" CausesValidation="false"
+                    OnClientClick="printPanel(); return false;">
+                    <i class="fas fa-print"></i> Print
+                </asp:LinkButton>   
             </div>
         </div>
 

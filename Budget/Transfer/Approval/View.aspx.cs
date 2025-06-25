@@ -77,7 +77,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         {
             using (var db = new AppDbContext())
             {
-                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id && x.DeletedDate == null);
+                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
                 if (transfer == null)
                 {
                     Response.Redirect("~/Budget/Transfer/Approval");

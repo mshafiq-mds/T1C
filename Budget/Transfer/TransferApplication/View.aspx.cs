@@ -8,71 +8,33 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.Budget.Additional.Approval.COGS
+namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 {
     public partial class View : ProdataPage
     {
+        private Guid _transferId;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                string idStr = Request.QueryString["id"];
-                if (Guid.TryParse(idStr, out Guid requestId))
+                if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
-                    LoadBudgetRequest(requestId);
-                    LoadDocument(requestId);
-                    Loadhistory(requestId);
+                    LoadTransfer(_transferId);
+                    LoadDocument(_transferId);
+                    Loadhistory(_transferId);
                 }
                 else
                 {
-                    Response.Redirect("~/Budget/Additional/Approval/COGS");
+                    Response.Redirect("~/Budget/Transfer/TransferApplication");
                 }
             }
         }
-
-        private void LoadBudgetRequest(Guid id)
-        {
-            using (var db = new AppDbContext())
-            {
-                var model = db.AdditionalBudgetRequests.FirstOrDefault(x => x.Id == id);
-                if (model == null)
-                {
-                    Response.Redirect("~/Budget/Additional/Approval/COGS");
-                    return;
-                }
-
-                LblBA.Text = model.BA ?? "-";
-                LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(model.BA ?? "") ?? "-";
-
-                lblBudgetType.Text = model.BudgetType ?? "-";
-                lblProject.Text = model.Project ?? "-";
-                lblRefNo.Text = model.RefNo ?? "-";
-                lblDate.Text = model.ApplicationDate.ToString("yyyy-MM-dd");
-
-                lblBudgetEstimate.Text = model.EstimatedCost.ToString("N2");
-
-                lblEVisa.Text = string.IsNullOrWhiteSpace(model.EVisaNo) ? "-" : model.EVisaNo;
-
-                lblRequestDetails.Text = string.IsNullOrWhiteSpace(model.RequestDetails) ? "-" : model.RequestDetails;
-                lblReason.Text = string.IsNullOrWhiteSpace(model.Reason) ? "-" : model.Reason;
-
-                lblCostCentre.Text = string.IsNullOrWhiteSpace(model.CostCentre) ? "-" : model.CostCentre;
-                lblGL.Text = string.IsNullOrWhiteSpace(model.GLCode) ? "-" : model.GLCode;
-
-                lblApprovedBudget.Text = model.ApprovedBudget.HasValue ? model.ApprovedBudget.Value.ToString("N2") : "-";
-                lblNewTotalBudget.Text = model.NewTotalBudget.HasValue ? model.NewTotalBudget.Value.ToString("N2") : "-";
-                lblAdditionalBudget.Text = model.AdditionalBudget.HasValue ? model.AdditionalBudget.Value.ToString("N2") : "-";
-
-                lblCheckType.Text = model.CheckType;
-            }
-        }
-
-
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())
             {
-                var documents = db.AdditionalBudgetDocuments
+                var documents = db.TransferDocuments
                     .Where(d => d.TransferId == transferId)
                     .OrderByDescending(d => d.UploadedDate)
                     .ToList();
@@ -81,13 +43,14 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 {
                     pnlUploadedDocument.Visible = true;
                     phDocumentList.Controls.Clear();
+
                     foreach (var doc in documents)
                     {
                         var panel = new Panel { CssClass = "mb-2 d-flex align-items-center" };
 
                         var link = new HyperLink
                         {
-                            NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=AdditionalBudgetDocuments",
+                            NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=TransferDocuments",
                             CssClass = "btn btn-outline-success mr-2",
                             Target = "_blank",
                             Text = "<i class='fas fa-external-link-alt'></i> View"
@@ -111,11 +74,52 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 }
             }
         }
+        private void LoadTransfer(Guid id)
+        {
+            using (var db = new AppDbContext())
+            {
+                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
+                if (transfer == null)
+                {
+                    Response.Redirect("~/Budget/Transfer/TransferApplication");
+                    return;
+                }
+
+                // Header
+                lblRefNo.Text = transfer.RefNo;
+                lblProject.Text = transfer.Project;
+                lblDate.Text = transfer.Date.ToString("yyyy-MM-dd");
+                lblEstimatedCost.Text = transfer.EstimatedCost.ToString("F2");
+                lblEVisa.Text = transfer.EVisaNo;
+                lblBudgetType.Text = transfer.BudgetType;
+                lblBA.Text = transfer.BA;
+
+                // From Budget
+                lblFromGL.Text = transfer.FromGL;
+                lblFromBA.Text = transfer.FromBA;
+                lblFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
+                lblFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
+                lblFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
+                lblFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
+
+                // To Budget
+                lblToGL.Text = transfer.ToGL;
+                lblToBA.Text = transfer.ToBA;
+                lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
+                lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
+                lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
+                lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
+
+                // Justification
+                litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");
+            }
+        }
+
         private void Loadhistory(Guid id)
         {
             using (var db = new AppDbContext())
             {
-                var query = db.AdditionalBudgetLog
+                var query = db.TransferApprovalLog
                               .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
 
                 var transfers = query

@@ -76,57 +76,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 // Justification
                 litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");
             }
-        }
-        //protected void btnSave_Click(object sender, EventArgs e)
-        //{
-        //    var action = hdnAction.Value;
-        //    if (action == "revision")
-        //    { 
-
-        //    }
-        //}
-
-        //protected void btnSubmit_Click1(object sender, EventArgs e)
-        //{
-        //    var action = hdnAction.Value;
-        //    if (action == "approve")
-        //    {
-        //        Guid transferId = Guid.Parse(hdnTransferId.Value);
-        //        using (var db = new AppDbContext())
-        //        {
-        //            string role = Auth.User().iPMSRoleCode;
-        //            int step = db.TransferApprovalLimits
-        //                             .Where(x => x.TransApproverCode == role)
-        //                             .Select(x => x.Order)
-        //                             .FirstOrDefault()
-        //                             .GetValueOrDefault();
-        //            if (step == 0)
-        //            {
-        //                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This ID not for approval.");
-        //                Response.Redirect("~/Budget/Transfer/Approval");
-        //            }
-
-        //            var model = new TransferApprovalLog
-        //            {
-        //                    BudgetTransferId = transferId,
-        //                    StepNumber = step,
-        //                    RoleName = role,
-        //                    UserId = Auth.User().Id,
-        //                    ActionType = "Reviewed", // E.g., 'Reviewed', 'Endorsed', 'Approved'
-        //                    ActionDate = DateTime.Now,
-        //                    Status = "Approved", // E.g., 'Pending', 'Approved', 'Rejected'
-        //                    Remarks = txtRemarks.Text,
-        //            };
-
-        //            db.TransferApprovalLog.Add(model);
-        //            db.SaveChanges();
-
-
-        //            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget Approved Complete.");
-        //            Response.Redirect("~/Budget/Transfer/Approval");
-        //        }
-        //    }
-        //}
+        } 
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
@@ -136,7 +86,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             Response.Redirect("~/Budget/Transfer/Approval");
         }
 
-        protected void btnSubmit_Click1(object sender, EventArgs e)
+        protected void btnSubmit_Click(object sender, EventArgs e)
         {
             esCost = string.IsNullOrWhiteSpace(lblEstimatedCost.Text) ? 0 : Convert.ToDecimal(lblEstimatedCost.Text);
             HandleApprovalAction("Approved");

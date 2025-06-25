@@ -15,22 +15,13 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
     {
 
         /// <summary>
-        /// hdnDeleteId control.
+        /// ddlStatusFilter control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnDeleteId;
-
-        /// <summary>
-        /// btnDeleteConfirmed control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDeleteConfirmed;
+        protected global::System.Web.UI.WebControls.DropDownList ddlStatusFilter;
 
         /// <summary>
         /// UpdatePanel1 control.

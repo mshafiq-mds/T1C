@@ -188,8 +188,9 @@
                         <asp:RequiredFieldValidator ID="rfvToGL" runat="server" ControlToValidate="txtToGL" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA"></asp:DropDownList>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required BA" InitialValue=""></asp:RequiredFieldValidator>
+                        <asp:Label runat="server" ID="lblToBA"></asp:Label>
+<%--                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA"></asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
                     <td>
                         <asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />

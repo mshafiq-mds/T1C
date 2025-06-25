@@ -2,6 +2,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnDeleteId" runat="server" />
     <asp:Button ID="btnDeleteConfirmed" runat="server" CssClass="d-none" OnClick="btnDeleteConfirmed_Click" />
+    <asp:HiddenField ID="hdnDeleteRemarks" runat="server" />
 
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
@@ -85,28 +86,39 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $(document).on("click", ".button-delete", function (e) {
-            e.preventDefault();
+    $(document).on("click", ".button-delete", function (e) {
+        e.preventDefault();
 
-            var id = $(this).attr("commandargument");
+        var id = $(this).attr("commandargument");
 
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This transfer will be deleted!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $('#<%= hdnDeleteId.ClientID %>').val(id);
-                    __doPostBack('<%= btnDeleteConfirmed.UniqueID %>', '');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This transfer will be deleted!",
+            input: 'textarea',
+            inputLabel: 'Remarks (required)',
+            inputPlaceholder: 'Enter reason for deletion...',
+            inputAttributes: {
+                'aria-label': 'Remarks for deletion'
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Remarks are required!';
                 }
-            });
+            },
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#<%= hdnDeleteId.ClientID %>').val(id);
+                $('#<%= hdnDeleteRemarks.ClientID %>').val(result.value);
+                __doPostBack('<%= btnDeleteConfirmed.UniqueID %>', '');
+            }
         });
     });
+
 </script>
 </asp:Content>
 

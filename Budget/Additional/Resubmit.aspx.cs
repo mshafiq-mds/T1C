@@ -4,12 +4,11 @@ using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.Budget.Transfer
+namespace Prodata.WebForm.Budget.Additional
 {
     public partial class Resubmit : ProdataPage
     {
@@ -21,13 +20,12 @@ namespace Prodata.WebForm.Budget.Transfer
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
                     LoadTransfer(_transferId);
-                    BindControl();
                     LoadDocument(_transferId);
                     Loadhistory(_transferId);
                 }
                 else
                 {
-                    Response.Redirect("~/Budget/Transfer");
+                    Response.Redirect("~/Budget/Additional");
                 }
             }
         }
@@ -36,39 +34,36 @@ namespace Prodata.WebForm.Budget.Transfer
         {
             using (var db = new AppDbContext())
             {
-                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
-                if (transfer == null)
+                var Additions = db.AdditionalBudgetRequests.FirstOrDefault(x => x.Id == id);
+                if (Additions == null)
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer not found.");
-                    Response.Redirect("~/Budget/Transfer");
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Additional not found.");
+                    Response.Redirect("~/Budget/Additional");
                     return;
                 }
 
-                txtRefNo.Text = transfer.RefNo;
-                txtProject.Text = transfer.Project;
-                txtDate.Text = transfer.Date.ToString("yyyy-MM-dd");
-                txtEstimatedCost.Text = transfer.EstimatedCost.ToString("F2");
-                txtEVisa.Text = transfer.EVisaNo;
-                txtWorkDetails.Text = transfer.WorkDetails;
-                txtJustification.Text = transfer.Justification;
+                LblBA.Text = Additions.BA ?? "-";
+                LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(Additions.BA ?? "") ?? "-";
 
-                rdoOpex.Checked = transfer.BudgetType == "OPEX";
-                rdoCapex.Checked = transfer.BudgetType == "CAPEX";
+                lblBudgetType.Text = Additions.BudgetType ?? "-";
+                lblProject.Text = Additions.Project ?? "-";
+                lblRefNo.Text = Additions.RefNo ?? "-";
+                lblDate.Text = Additions.ApplicationDate.ToString("yyyy-MM-dd");
 
-                txtFromGL.Text = transfer.FromGL;
-                ddFromBA.SelectedValue = transfer.FromBA;
-                txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
-                txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
-                txtFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
-                txtFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
+                lblBudgetEstimate.Text = Additions.EstimatedCost.ToString("N2");
 
-                txtToGL.Text = transfer.ToGL;
-                ddToBA.SelectedValue = transfer.ToBA;
-                txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
-                txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
-                txtToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
-                txtToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
-                LblBA.Text = transfer.BA;
+                lblEVisa.Text = string.IsNullOrWhiteSpace(Additions.EVisaNo) ? "-" : Additions.EVisaNo;
+
+                lblRequestDetails.Text = string.IsNullOrWhiteSpace(Additions.RequestDetails) ? "-" : Additions.RequestDetails;
+                lblReason.Text = string.IsNullOrWhiteSpace(Additions.Reason) ? "-" : Additions.Reason;
+
+                lblCostCentre.Text = string.IsNullOrWhiteSpace(Additions.CostCentre) ? "-" : Additions.CostCentre;
+                lblGL.Text = string.IsNullOrWhiteSpace(Additions.GLCode) ? "-" : Additions.GLCode;
+
+                lblApprovedBudget.Text = Additions.ApprovedBudget.HasValue ? Additions.ApprovedBudget.Value.ToString("N2") : "-";
+                lblNewTotalBudget.Text = Additions.NewTotalBudget.HasValue ? Additions.NewTotalBudget.Value.ToString("N2") : "-";
+                lblAdditionalBudget.Text = Additions.AdditionalBudget.HasValue ? Additions.AdditionalBudget.Value.ToString("N2") : "-";
+                lblCheckType.Text = Additions.CheckType;
             }
         }
 
@@ -78,14 +73,14 @@ namespace Prodata.WebForm.Budget.Transfer
             {
                 using (var db = new AppDbContext())
                 {
-                    var model = db.TransfersTransaction.FirstOrDefault(x => x.Id == _transferId);
+                    var model = db.AdditionalBudgetRequests.FirstOrDefault(x => x.Id == _transferId);
                     if (model == null)
                     {
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer not found.");
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Additions budget not found.");
                         return;
                     }
-                     
-                    model.status = 2;
+
+                    model.Status = 2;
 
                     model.UpdatedBy = Auth.User().Id; // Or your method to get current user
                     model.UpdatedDate = DateTime.Now;
@@ -100,7 +95,7 @@ namespace Prodata.WebForm.Budget.Transfer
 
                             // Check if a document already exists
                             // Always insert a new document
-                            var newDoc = new TransferDocument
+                            var newDoc = new AdditionalBudgetDocuments
                             {
                                 Id = Guid.NewGuid(),
                                 TransferId = _transferId,
@@ -110,7 +105,7 @@ namespace Prodata.WebForm.Budget.Transfer
                                 UploadedBy = Auth.Id(),
                                 UploadedDate = DateTime.Now
                             };
-                            db.TransferDocuments.Add(newDoc);
+                            db.AdditionalBudgetDocuments.Add(newDoc);
 
                             db.SaveChanges();
                         }
@@ -119,13 +114,13 @@ namespace Prodata.WebForm.Budget.Transfer
                     string roleCode = Auth.User().iPMSRoleCode;
                     Guid userId = Auth.User().Id;
 
-                    int currentLevelApproval = db.TransferApprovalLog
+                    int currentLevelApproval = db.AdditionalBudgetLog
                             .Where(w => w.BudgetTransferId == _transferId && w.StepNumber != -1)
                             .OrderByDescending(w => w.CreatedDate)
                             .Select(w => w.StepNumber)
                             .FirstOrDefault();
 
-                    var logEntry = new TransferApprovalLog
+                    var logEntry = new AdditionalBudgetLog
                     {
                         BudgetTransferId = _transferId,
                         StepNumber = currentLevelApproval,
@@ -137,35 +132,21 @@ namespace Prodata.WebForm.Budget.Transfer
                         Remarks = txtResubmit.Text?.Trim()
                     };
 
-                    db.TransferApprovalLog.Add(logEntry);
+                    db.AdditionalBudgetLog.Add(logEntry);
                     db.SaveChanges();
 
 
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget updated.");
-                    Response.Redirect("~/Budget/Transfer");
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Additional Budget updated.");
+                    Response.Redirect("~/Budget/Additional");
                 }
             }
         }
-
-        private void BindControl()
-        {
-            ddFromBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            ddFromBA.DataValueField = "Code";
-            ddFromBA.DataTextField = "DisplayName";
-            ddFromBA.DataBind();
-            ddFromBA.Items.Insert(0, new ListItem("", ""));
-
-            ddToBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            ddToBA.DataValueField = "Code";
-            ddToBA.DataTextField = "DisplayName";
-            ddToBA.DataBind();
-            ddToBA.Items.Insert(0, new ListItem("", ""));
-        }
+         
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())
             {
-                var documents = db.TransferDocuments
+                var documents = db.AdditionalBudgetDocuments
                     .Where(d => d.TransferId == transferId)
                     .OrderByDescending(d => d.UploadedDate)
                     .ToList();
@@ -182,7 +163,7 @@ namespace Prodata.WebForm.Budget.Transfer
                         // View link
                         var link = new HyperLink
                         {
-                            NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=TransferDocuments",
+                            NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=AdditionalBudgetDocuments",
                             CssClass = "btn btn-outline-success mr-2",
                             Target = "_blank",
                             Text = "<i class='fas fa-external-link-alt'></i> View"
@@ -213,10 +194,10 @@ namespace Prodata.WebForm.Budget.Transfer
         {
             using (var db = new AppDbContext())
             {
-                var query = db.TransferApprovalLog
+                var query = db.AdditionalBudgetLog
                               .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
 
-                var transfers = query
+                var Additions = query
                     .OrderByDescending(x => x.ActionDate)
                     .Select(x => new
                     {
@@ -229,11 +210,11 @@ namespace Prodata.WebForm.Budget.Transfer
                     })
                     .ToList();
 
-                if (transfers.Any())
+                if (Additions.Any())
                 {
                     pnHistoryApproval.Visible = true;
                 }
-                gvHistory.DataSource = transfers;
+                gvHistory.DataSource = Additions;
                 gvHistory.DataBind();
             }
         }

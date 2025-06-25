@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Transfer Approval Details" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Approval.View" %>
+﻿<%@ Page Title="Transfer Approval View" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Approval.View" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:Panel runat="server" CssClass="card p-4 shadow-sm rounded">
 
