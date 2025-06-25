@@ -10,7 +10,18 @@ namespace Prodata.WebForm.Class
 {
     public class Form
     {
-        public List<Models.ViewModels.FormListViewModel> GetForms(Guid? entityId = null, Guid? typeId = null, string bizAreaCode = null, string refNo = null, decimal? amountMin = null, decimal? amountMax = null, string procurementType = null)
+        public List<Models.ViewModels.FormListViewModel> GetForms(
+            Guid? entityId = null, 
+            Guid? typeId = null, 
+            string bizAreaCode = null, 
+            int? year = null,
+            string refNo = null, 
+            DateTime? startDate = null,
+            DateTime? endDate = null, 
+            decimal? amountMin = null, 
+            decimal? amountMax = null, 
+            string procurementType = null
+            )
         {
             using (var db = new AppDbContext())
             {
@@ -54,8 +65,17 @@ namespace Prodata.WebForm.Class
                 if (!string.IsNullOrEmpty(bizAreaCode))
                     query = query.Where(q => q.BizAreaCode == bizAreaCode);
 
+                if (year.HasValue)
+                    query = query.Where(q => q.Date.HasValue && q.Date.Value.Year == year.Value);
+
                 if (!string.IsNullOrEmpty(refNo))
                     query = query.Where(q => q.Ref.Contains(refNo));
+
+                if (startDate.HasValue)
+                    query = query.Where(q => q.Date.HasValue && q.Date.Value >= startDate.Value);
+
+                if (endDate.HasValue)
+                    query = query.Where(q => q.Date.HasValue && q.Date.Value <= endDate.Value);
 
                 if (amountMin.HasValue)
                     query = query.Where(q => q.Amount >= amountMin);
