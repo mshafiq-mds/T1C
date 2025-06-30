@@ -5,8 +5,69 @@
     <asp:Button ID="btnDeleteRecord" runat="server" OnClick="btnDeleteRecord_Click" CssClass="d-none" />
     <div class="row">
         <div class="col-md-12">
+            <div id="divCardSearch" runat="server" class="card card-outline collapsed-card">
+                <div class="card-header card-header-sticky" data-card-widget="collapse">
+                    <h3 class="card-title">Search</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <asp:Label ID="lblYear" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="ddlYear" Text="Year"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:DropDownList ID="ddlYear" runat="server" CssClass="form-control select2" data-placeholder="Year"></asp:DropDownList>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblRef" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtRef" Text="Reference No"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:TextBox ID="txtRef" runat="server" CssClass="form-control" TextMode="Search" placeholder="Reference No"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblStartDate" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtStartDate" Text="Start Date"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:TextBox ID="txtStartDate" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblEndDate" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtEndDate" Text="End Date"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:TextBox ID="txtEndDate" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblMinAmount" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtMinAmount" Text="Min Amount"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:TextBox ID="txtMinAmount" runat="server" CssClass="form-control input-number" TextMode="Number" placeholder="Min Amount"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblMaxAmount" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtMaxAmount" Text="Max Amount"></asp:Label>
+                                <div class="col-md-5">
+                                    <asp:TextBox ID="txtMaxAmount" runat="server" CssClass="form-control input-number" TextMode="Number" placeholder="Max Amount"></asp:TextBox>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-9 offset-md-3">
+                                    <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnSearch_Click">
+                                        <i class="fas fa-search"></i> Search
+                                    </asp:LinkButton>
+                                    <asp:LinkButton ID="btnReset" runat="server" CssClass="btn btn-link" PostBackUrl="~/T1C/Default">
+                                        <i class="fas fa-sync"></i> Reset
+                                    </asp:LinkButton>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
             <div class="card card-outline">
-                <div class="card-header">
+                <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
                         <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/T1C/Add" CausesValidation="false">
@@ -29,11 +90,28 @@
                                                         <%# Container.DataItemIndex + 1 %>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
-                                                <asp:BoundField DataField="Ref" HeaderText="No. Rujukan" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
-                                                <asp:BoundField DataField="Date" HeaderText="Tarikh" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Details" HeaderText="Butir-butir" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Amount" HeaderText="Anggaran Kerja (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
-                                                <asp:BoundField DataField="Status" HeaderText="Status" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-center" />
+                                                <asp:BoundField DataField="Ref" HeaderText="Reference No" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
+                                                <asp:BoundField DataField="Date" HeaderText="Date" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                <asp:BoundField DataField="Details" HeaderText="Details" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                <asp:BoundField DataField="Amount" HeaderText="Amount (RM)" HeaderStyle-CssClass="align-middle text-nowrap text-center" ItemStyle-CssClass="text-right" />
+                                                <%--<asp:BoundField DataField="Status" HeaderText="Status" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-center" />--%>
+                                                <asp:TemplateField HeaderText="Status">
+                                                    <HeaderStyle CssClass="width-80 text-center align-middle" />
+                                                    <ItemStyle CssClass="width-80 text-center" />
+                                                    <ItemTemplate>
+                                                        <asp:Label runat="server" 
+                                                            CssClass='<%# 
+                                                                Eval("Status") != null ? (
+                                                                    Eval("Status").ToString().ToLower() == "approved" ? "badge badge-success badge-pill" :
+                                                                    Eval("Status").ToString().ToLower() == "pending" ? "badge badge-warning badge-pill" :
+                                                                    Eval("Status").ToString().ToLower() == "rejected" ? "badge badge-danger badge-pill" :
+                                                                    Eval("Status").ToString().ToLower() == "draft" ? "badge badge-secondary badge-pill" :
+                                                                    "badge badge-light badge-pill"
+                                                                ) : "badge badge-light badge-pill"
+                                                            %>' 
+                                                            Text='<%# Eval("Status") %>'></asp:Label>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                                                     <ItemStyle CssClass="width-80 text-center" />
