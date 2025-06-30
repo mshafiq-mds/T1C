@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.Budget.Additional.Approval.Finance
+namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 {
     public partial class Default : ProdataPage
     {
@@ -18,46 +18,37 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                 BindTransfers();
             }
         }
-
         protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedStatus = ddlStatusFilter.SelectedValue;
             BindTransfers(selectedStatus);
         }
-
         private void BindTransfers(string statusFilter = "All")
         {
             string ba = Auth.User().iPMSBizAreaCode;
             string userRole = Auth.User().iPMSRoleCode;
 
-            // Handle null gracefully: null ba = access all, null role = no approval limit filter
             List<string> accessibleBizAreas = !string.IsNullOrEmpty(ba)
                 ? new Class.IPMSBizArea().GetBizAreaCodes(ba)
-                : new List<string>(); // Empty list means access all later
-            //List<string> accessibleBizAreas = Auth.IPMSBizAreaCodes();
+                : new List<string>();
 
             using (var db = new AppDbContext())
             {
-                // Get approval limits only if userRole is not null
-                var limits = !string.IsNullOrEmpty(userRole)
-                    ? db.AdditionalLoaFinanceLimits
-                        .Where(m => m.FinanceApproverCode == userRole && m.DeletedDate == null)
-                        .ToList()
-                    : new List<AdditionalLoaFinanceLimits>();
+                // Load all active cumulative limits ordered by level (Order)
+                var limits = db.AdditionalCumulativeLimits
+                    .Where(m => m.DeletedDate == null)
+                    .OrderBy(m => m.Order)
+                    .ToList();
 
-                // Query base transfers
-                var query = db.AdditionalBudgetRequests
-                              .Where(x => x.CheckType == "FINANCE");
+                var query = db.AdditionalBudgetRequests.AsQueryable();
 
                 if (!string.IsNullOrEmpty(ba))
                 {
-                    // If BA is defined, filter by accessible BAs (or user's BA if none found)
                     if (accessibleBizAreas.Count > 0)
                         query = query.Where(x => accessibleBizAreas.Contains(x.BA));
                     else
                         query = query.Where(x => x.BA == ba);
                 }
-                // else: ba == null → no filtering, access all
 
                 var transfers = query
                     .OrderByDescending(x => x.ApplicationDate)
@@ -70,13 +61,16 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                             .Select(w => w.StepNumber)
                             .FirstOrDefault();
 
-                        var matchingLimit = limits.FirstOrDefault(l =>
-                            l.AmountMin <= x.AdditionalBudget &&
-                            (l.AmountMax == null || l.AmountMax >= x.AdditionalBudget));
+                        // Determine the correct approver based on cumulative limits
+                        var eligibleLimit = limits
+                            .Where(l => l.AmountCumulativeBalance.GetValueOrDefault() >= x.AdditionalBudget)
+                            .OrderBy(l => l.Order)
+                            .FirstOrDefault();
 
-                        int userLevelApproval = matchingLimit?.Order ?? 0;
-
-                        bool canEdit = (x.DeletedDate == null && matchingLimit != null && userLevelApproval == currentLevelApproval + 1);//|| Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-edit");
+                        bool canEdit = (x.DeletedDate == null &&
+                            eligibleLimit != null &&
+                            eligibleLimit.CumulativeApproverCode == userRole &&
+                            eligibleLimit.Order == currentLevelApproval + 1);
 
                         return new
                         {
@@ -101,14 +95,13 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                                 statusFilter == "All" ||
                                 (statusFilter == "EditableOnly" && x.CanEdit) ||
                                 x.Status == statusFilter
-                            )
+                          )
                     .ToList();
 
                 gvAdditionalBudgetList.DataSource = transfers;
                 gvAdditionalBudgetList.DataBind();
             }
         }
-
 
 
     }

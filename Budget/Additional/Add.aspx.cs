@@ -1,4 +1,5 @@
 ﻿using FGV.Prodata.Web.UI;
+using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ namespace Prodata.WebForm.Budget.AddBudget
             {
                 BindBALabel();
 
+                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("TB", true);
+                txtEVisa.Enabled = txtRefNo.Enabled = false;
+
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
         }
@@ -31,18 +35,20 @@ namespace Prodata.WebForm.Budget.AddBudget
                     newId = Guid.NewGuid();
                 } while (db.AdditionalBudgetRequests.Any(x => x.Id == newId));
 
+                string refNo = Functions.GetGeneratedRefNo("PB", false);
+
                 var model = new AdditionalBudgetRequests
                 {
                     Id = newId,
 
                     // Application Metadata
-                    RefNo = txtRefNo.Text.Trim(),
+                    RefNo = refNo,
                     Project = txtProject.Text.Trim(),
                     ApplicationDate = DateTime.TryParse(txtDate.Text, out var appDate) ? appDate : DateTime.Today,
                     BudgetType = rdoOpex.Checked ? "OPEX" : "CAPEX",
                     CheckType = rdoFinance.Checked ? "FINANCE" : "COGS",
                     EstimatedCost = decimal.TryParse(txtBudgetEstimate.Text, out var estimated) ? estimated : 0,
-                    EVisaNo = txtEVisa.Text.Trim(),
+                    EVisaNo = refNo,
 
                     // Main Justification
                     RequestDetails = txtRequestDetails.Text.Trim(),

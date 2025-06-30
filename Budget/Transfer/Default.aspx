@@ -16,6 +16,7 @@
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
                     <asp:ListItem Text="Under Review" Value="Under Review" />
                     <asp:ListItem Text="Completed" Value="Completed" />
+                    <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
                 </asp:DropDownList>
             </div>
@@ -46,12 +47,13 @@
                             <ItemTemplate>
                                 <asp:Label ID="lblStatus" runat="server"
                                     Text='<%# Eval("Status") %>'
-                                    CssClass='<%#
-                                        Eval("Status").ToString() == "Deleted" ? "text-danger font-weight-bold" :
-                                        Eval("Status").ToString() == "Resubmit" ? "text-warning font-weight-bold" :
-                                        Eval("Status").ToString() == "Under Review" ? "text-info" :
-                                        Eval("Status").ToString() == "Completed" ? "text-success" :
-                                        "text-primary"
+                                    CssClass='<%# 
+                                          Eval("Status").ToString() == "Deleted" ? "text-danger fw-bold" :
+                                          Eval("Status").ToString() == "Resubmit" ? "text-warning fw-bold" :
+                                          Eval("Status").ToString() == "Under Review" ? "text-primary" :
+                                          Eval("Status").ToString() == "Completed" ? "text-success" :
+                                          Eval("Status").ToString() == "Finalized" ? "text-muted fst-italic" :
+                                          ""
                                     %>'>
                                 </asp:Label>
                             </ItemTemplate>
@@ -61,7 +63,7 @@
                             <HeaderStyle CssClass="width-80 text-center align-middle" />
                             <ItemStyle CssClass="width-80 text-center" />
                             <ItemTemplate>
-                                <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review"|| Eval("Status").ToString() == "Deleted") ? 
+                                <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
                                     "<a class='btn btn-info btn-xs' href='/Budget/Transfer/View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
                                 <%# (Eval("Status").ToString() == "Resubmit") ? 

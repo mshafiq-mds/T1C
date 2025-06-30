@@ -2296,6 +2296,9 @@
     <Content Include="Budget\Additional\Approval\COGS\Approval.aspx" />
     <Content Include="Budget\Additional\Approval\COGS\Default.aspx" />
     <Content Include="Budget\Additional\Approval\COGS\View.aspx" />
+    <Content Include="Budget\Additional\Approval\Cumulative\Approval.aspx" />
+    <Content Include="Budget\Additional\Approval\Cumulative\Default.aspx" />
+    <Content Include="Budget\Additional\Approval\Cumulative\View.aspx" />
     <Content Include="Budget\Additional\Approval\Finance\Approval.aspx" />
     <Content Include="Budget\Additional\Approval\Finance\Default.aspx" />
     <Content Include="Budget\Additional\Approval\Finance\View.aspx" />
@@ -2928,6 +2931,27 @@
     <Compile Include="Budget\Additional\Approval\COGS\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\Approval.aspx.cs">
+      <DependentUpon>Approval.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\Approval.aspx.designer.cs">
+      <DependentUpon>Approval.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Additional\Approval\Cumulative\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Additional\Approval\Finance\Approval.aspx.cs">
       <DependentUpon>Approval.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3064,6 +3088,7 @@
     <Compile Include="Class\AllocationItem.cs" />
     <Compile Include="Class\Budget.cs" />
     <Compile Include="Class\Form.cs" />
+    <Compile Include="Class\Functions.cs" />
     <Compile Include="Class\IPMSBizArea.cs" />
     <Compile Include="Class\IPMSRole.cs" />
     <Compile Include="Class\Mill.cs" />
@@ -3180,6 +3205,7 @@
     <Compile Include="Models\AdditionalBudgetDocuments.cs" />
     <Compile Include="Models\AdditionalBudgetLog.cs" />
     <Compile Include="Models\AdditionalBudgetRequests.cs" />
+    <Compile Include="Models\AdditionalCumulativeLimits.cs" />
     <Compile Include="Models\AdditionalLoaCogsLimits.cs" />
     <Compile Include="Models\AdditionalLoaFinanceLimits.cs" />
     <Compile Include="Models\Approval.cs" />

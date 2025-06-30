@@ -85,12 +85,13 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                             x.Date,
                             x.EstimatedCost,
                             Status =
-                                        x.DeletedDate != null ? "Deleted" : 
+                                        x.DeletedDate != null ? "Deleted" :
                                         x.status == 0 ? "Resubmit" :
-                                        //x.status == 1 and null ? "Submitted" :
+                                        x.status == 1 ? "Submitted" :
                                         x.status == 2 ? "Under Review" :
                                         x.status == 3 ? "Completed" :
-                                        "Submitted",
+                                        x.status == 4 ? "Finalized" :
+                                        "Unknown",
                             CanEdit = canEdit
                         };
                     })

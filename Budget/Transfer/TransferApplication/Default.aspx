@@ -13,7 +13,9 @@
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
                     <asp:ListItem Text="Under Review" Value="Under Review" />
                     <asp:ListItem Text="Completed" Value="Completed" />
+                    <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
+                    <asp:ListItem Text="User Action" Value="EditableOnly" />
                 </asp:DropDownList>
             </div>
         </div>

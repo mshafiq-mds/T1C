@@ -36,7 +36,7 @@ namespace Prodata.WebForm.Models
         [StringLength(50)]
         public string Status { get; set; }
 
-        public int? Order { get; set; }
+        public int? Order { get; set; } 
 
         public AdditionalLoaFinanceLimits()
         {

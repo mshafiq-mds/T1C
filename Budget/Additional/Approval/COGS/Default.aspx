@@ -12,6 +12,7 @@
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
                     <asp:ListItem Text="Under Review" Value="Under Review" />
                     <asp:ListItem Text="Completed" Value="Completed" />
+                    <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
                     <asp:ListItem Text="User Action" Value="EditableOnly" />
                 </asp:DropDownList>
@@ -32,17 +33,18 @@
                         <asp:BoundField DataField="RefNo" HeaderText="Reference No" />
                         <asp:BoundField DataField="Project" HeaderText="Project" />
                         <asp:BoundField DataField="ApplicationDate" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
-                        <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
+                        <asp:BoundField DataField="AdditionalBudget" HeaderText="Additional Budget (RM)" DataFormatString="{0:N2}" /> 
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <asp:Label ID="lblStatus" runat="server"
                                     Text='<%# Eval("Status") %>'
-                                    CssClass='<%#
-                                        Eval("Status").ToString() == "Deleted" ? "text-danger font-weight-bold" :
-                                        Eval("Status").ToString() == "Resubmit" ? "text-warning font-weight-bold" :
-                                        Eval("Status").ToString() == "Under Review" ? "text-info" :
-                                        Eval("Status").ToString() == "Completed" ? "text-success" :
-                                        "text-primary"
+                                    CssClass='<%# 
+                                          Eval("Status").ToString() == "Deleted" ? "text-danger fw-bold" :
+                                          Eval("Status").ToString() == "Resubmit" ? "text-warning fw-bold" :
+                                          Eval("Status").ToString() == "Under Review" ? "text-primary" :
+                                          Eval("Status").ToString() == "Completed" ? "text-success" :
+                                          Eval("Status").ToString() == "Finalized" ? "text-muted fst-italic" :
+                                          ""
                                     %>'>
                                 </asp:Label>
                             </ItemTemplate>

@@ -119,8 +119,11 @@ namespace Prodata.WebForm.Models
         public DbSet<AdditionalLoaCogsLimits> AdditionalLoaCogsLimits { get; set; } 
 
         public DbSet<AdditionalLoaFinanceLimits> AdditionalLoaFinanceLimits { get; set; }
+
         public DbSet<AdditionalBudgetLog> AdditionalBudgetLog { get; set; }
-        
+
+        public DbSet<AdditionalCumulativeLimits> AdditionalCumulativeLimits { get; set; }
+
 
     }
 }

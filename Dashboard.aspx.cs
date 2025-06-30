@@ -26,6 +26,7 @@ namespace Prodata.WebForm
                 {
                     // Additional Budget
                     LblAdditionalDeleted.Text = db.AdditionalBudgetRequests.Count(x => x.DeletedDate != null).ToString();
+                    LblAdditionalFinalized.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 4).ToString();
                     LblAdditionalComplete.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 3).ToString();
                     LblAdditionalReview.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 2).ToString();
                     LblAdditionalResubmit.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 0).ToString();
@@ -33,6 +34,7 @@ namespace Prodata.WebForm
 
                     // Transfers
                     LblTransferDeleted.Text = db.TransfersTransaction.Count(x => x.DeletedDate != null).ToString();
+                    LblTransferFinalized.Text = db.TransfersTransaction.Count(x => x.status == 4).ToString();
                     LblTransferComplete.Text = db.TransfersTransaction.Count(x => x.status == 3).ToString();
                     LblTransferReview.Text = db.TransfersTransaction.Count(x => x.status == 2).ToString();
                     LblTransferResubmit.Text = db.TransfersTransaction.Count(x => x.status == 0).ToString();

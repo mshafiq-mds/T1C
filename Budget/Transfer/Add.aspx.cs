@@ -1,6 +1,7 @@
 ﻿using FGV.Prodata.Web.UI;
 using NPOI.SS.Formula.Functions;
 using Prodata.WebForm.Models;
+using Prodata.WebForm.Class;
 using Prodata.WebForm.Models.Auth;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,9 @@ namespace Prodata.WebForm.Budget.Transfer
                 BindControl();
                 BindBALabel();
 
+                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true);
+                txtEVisa.Enabled = txtRefNo.Enabled = false;
+
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
         }
@@ -35,17 +39,19 @@ namespace Prodata.WebForm.Budget.Transfer
                     newId = Guid.NewGuid();
                 } while (db.TransfersTransaction.Any(x => x.Id == newId));
 
+                string refNo = Functions.GetGeneratedRefNo("PB", false);
+
                 var model = new TransfersTransaction
                 {
                     BA = Auth.User().iPMSBizAreaCode,
                     Id = newId,
-                    RefNo = txtRefNo.Text.Trim(),
+                    RefNo = refNo,
                     Project = txtProject.Text.Trim(),
                     Date = string.IsNullOrWhiteSpace(txtDate.Text) ? DateTime.Today : DateTime.Parse(txtDate.Text),
                     BudgetType = rdoOpex.Checked ? "OPEX" : "CAPEX",
                     EstimatedCost = string.IsNullOrWhiteSpace(txtEstimatedCost.Text) ? 0 : Convert.ToDecimal(txtEstimatedCost.Text),
                     Justification = txtJustification.Text.Trim(),
-                    EVisaNo = txtEVisa.Text.Trim(),
+                    EVisaNo = refNo,
                     WorkDetails = txtWorkDetails.Text.Trim(),
 
                     FromGL = txtFromGL.Text.Trim(),
@@ -117,7 +123,6 @@ namespace Prodata.WebForm.Budget.Transfer
                 LblBA.Text = 
                     lblToBA.Text = ba;
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
-                //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().iPMSBizAreaCode);
             }
         }
 

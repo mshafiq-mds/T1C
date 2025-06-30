@@ -134,7 +134,7 @@
 
             <!-- Preloader -->
             <div class="preloader flex-column justify-content-center align-items-center">
-                <img runat="server" class="animation__shake" src="~/App_Themes/AdminLTE-3.2.0/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+                <img runat="server" class="animation__shake" src="~/Images/Felda_Global_Ventures_Logo.png" alt="AdminLTELogo" height="200" width="200">
             </div>
 
             <!-- Navbar -->

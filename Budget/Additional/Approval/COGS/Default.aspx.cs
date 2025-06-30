@@ -69,8 +69,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                             .FirstOrDefault();
 
                         var matchingLimit = limits.FirstOrDefault(l =>
-                            l.AmountMin <= x.EstimatedCost &&
-                            (l.AmountMax == null || l.AmountMax >= x.EstimatedCost));
+                            l.AmountMin <= x.AdditionalBudget &&
+                            (l.AmountMax == null || l.AmountMax >= x.AdditionalBudget));
 
                         int userLevelApproval = matchingLimit?.Order ?? 0;
 
@@ -83,14 +83,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                             x.RefNo,
                             x.Project,
                             x.ApplicationDate,
-                            x.EstimatedCost,
+                            x.AdditionalBudget,
                             Status =
-                                        x.DeletedDate != null ? "Deleted" : 
-                                        x.Status == 0 ? "Resubmit" :
-                                        //x.status == 1 and null ? "Submitted" :
-                                        x.Status == 2 ? "Under Review" :
-                                        x.Status == 3 ? "Completed" :
-                                        "Submitted",
+                                x.DeletedDate != null ? "Deleted" :
+                                x.Status == 0 ? "Resubmit" :
+                                x.Status == 1 ? "Submitted" :
+                                x.Status == 2 ? "Under Review" :
+                                x.Status == 3 ? "Completed" :
+                                x.Status == 4 ? "Finalized" :
+                                "Unknown",
                             CanEdit = canEdit
                         };
                     })

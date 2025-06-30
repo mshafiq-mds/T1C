@@ -74,17 +74,21 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                             Status =
                                         x.DeletedDate != null ? "Deleted" :
                                         x.status == 0 ? "Resubmit" :
-                                        //x.status == 1 and null ? "Submitted" :
+                                        x.status == 1 ? "Submitted" :
                                         x.status == 2 ? "Under Review" :
                                         x.status == 3 ? "Completed" :
                                         x.status == 4 ? "Finalized" :
-                                        "Submitted",
+                                        "Unknown",
                             CanEdit =
                                         x.status == 3 ? true :
                                         false,
                         };
                     })
-                    .Where(x => statusFilter == "All" || x.Status == statusFilter)
+                    .Where(x =>
+                                statusFilter == "All" ||
+                                (statusFilter == "EditableOnly" && x.CanEdit) ||
+                                x.Status == statusFilter
+                            )
                     .ToList();
 
                 gvTransfers.DataSource = transfers;

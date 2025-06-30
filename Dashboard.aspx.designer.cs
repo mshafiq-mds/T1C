@@ -69,6 +69,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblAdditionalDeleted;
 
         /// <summary>
+        /// LblAdditionalFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblAdditionalFinalized;
+
+        /// <summary>
         /// LblTransferSubmitted control.
         /// </summary>
         /// <remarks>
@@ -112,5 +121,14 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblTransferDeleted;
+
+        /// <summary>
+        /// LblTransferFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblTransferFinalized;
     }
 }
