@@ -10,7 +10,15 @@ namespace Prodata.WebForm.Class
 {
 	public class Budget
 	{
-		public List<Models.ViewModels.BudgetListViewModel> GetBudgets(Guid? entityId = null, Guid? typeId = null, int? year = null, int? month = null, string bizAreaCode = null, string refNo = null, decimal? amountMin = null, decimal? amountMax = null)
+		public List<Models.ViewModels.BudgetListViewModel> GetBudgets(
+            Guid? entityId = null, 
+            Guid? typeId = null, 
+            int? year = null, 
+            int? month = null, 
+            string bizAreaCode = null, 
+            string refNo = null, 
+            decimal? amountMin = null, 
+            decimal? amountMax = null)
 		{
 			using (var db = new AppDbContext())
 			{

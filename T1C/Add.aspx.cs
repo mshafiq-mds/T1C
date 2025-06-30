@@ -1,4 +1,5 @@
-﻿using FGV.Prodata.App;
+﻿using CustomGuid.AspNet.Identity;
+using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
 using Newtonsoft.Json;
 using Prodata.WebForm.Class;
@@ -19,7 +20,7 @@ namespace Prodata.WebForm.T1C
         {
             if (!IsPostBack)
             {
-                BindControl();
+                BindControl(Auth.User().iPMSBizAreaCode);
                 BindData();
             }
         }
@@ -30,7 +31,7 @@ namespace Prodata.WebForm.T1C
             {
                 bool isSuccess = false;
                 string formId = string.Empty;
-                string ba = ddlBA.SelectedValue;
+                string ba = string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
                 string details = txtDetails.Text.Trim();
@@ -54,7 +55,7 @@ namespace Prodata.WebForm.T1C
                 string type = string.Empty;
                 if (amount <= 100000)
                 {
-                    if (procurementType.Equals("direct_award", StringComparison.OrdinalIgnoreCase))
+                    if (procurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
                     {
                         type = "B";
                     }
@@ -65,7 +66,7 @@ namespace Prodata.WebForm.T1C
                 }
                 else
                 {
-                    if (procurementType.Equals("direct_award", StringComparison.OrdinalIgnoreCase))
+                    if (procurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
                     {
                         type = "D";
                     }
@@ -205,7 +206,7 @@ namespace Prodata.WebForm.T1C
             {
                 bool isSuccess = false;
                 string formId = string.Empty;
-                string ba = ddlBA.SelectedValue;
+                string ba = string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
                 string details = txtDetails.Text.Trim();
@@ -229,7 +230,7 @@ namespace Prodata.WebForm.T1C
                 string type = string.Empty;
                 if (amount <= 100000)
                 {
-                    if (procurementType.Equals("direct_award", StringComparison.OrdinalIgnoreCase))
+                    if (procurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
                     {
                         type = "B";
                     }
@@ -240,7 +241,7 @@ namespace Prodata.WebForm.T1C
                 }
                 else
                 {
-                    if (procurementType.Equals("direct_award", StringComparison.OrdinalIgnoreCase))
+                    if (procurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
                     {
                         type = "D";
                     }
@@ -404,13 +405,41 @@ namespace Prodata.WebForm.T1C
             }
         }
 
+        protected void cvAmountLimit_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            string roleCode = Auth.User().iPMSRoleCode;
+            decimal amount;
+
+            // Remove commas before parsing
+            string rawText = txtAmount.Text.Replace(",", "");
+
+            if (!decimal.TryParse(rawText, out amount))
+            {
+                args.IsValid = false;
+                return;
+            }
+
+            if (roleCode.Equals("kb", StringComparison.OrdinalIgnoreCase))
+            {
+                args.IsValid = amount <= 10000;
+            }
+            else if (roleCode.Equals("mm", StringComparison.OrdinalIgnoreCase))
+            {
+                args.IsValid = amount >= 10000.01m;
+            }
+            else
+            {
+                args.IsValid = true;
+            }
+        }
+
         [WebMethod]
         public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
         {
-            return new Class.Budget().GetBudgets();
+            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
         }
 
-        private void BindControl()
+        private void BindControl(string ipmsBizAreaCode)
         {
             ddlBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
             ddlBA.DataValueField = "Code";
@@ -418,10 +447,11 @@ namespace Prodata.WebForm.T1C
             ddlBA.DataBind();
             ddlBA.Items.Insert(0, new ListItem("", ""));
 
-            var budgets = new Class.Budget().GetBudgets();
+            var budgets = new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: ipmsBizAreaCode);
             ddlAllocation.DataSource = budgets;
             ddlAllocation.DataValueField = "Id";
             ddlAllocation.DataTextField = "DisplayName";
+            ddlAllocation.Attributes["data-amount"] = budgets.Any() ? budgets.First().Amount : "0";
             ddlAllocation.DataBind();
             ddlAllocation.Items.Insert(0, new ListItem("", ""));
 
@@ -453,6 +483,13 @@ namespace Prodata.WebForm.T1C
                 ddlBA.Visible = true;
                 rfvBA.Visible = true;
             }
+
+            string year = DateTime.Now.Year.ToString();
+            string monthDay = DateTime.Now.ToString("MMdd");
+            string randomDigits = new Random().Next(100000, 999999).ToString();
+            txtRefNo.Text = $"T1C/{year}/{monthDay}/{randomDigits}";
+
+            txtDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
 }
