@@ -2702,6 +2702,7 @@
     <Content Include="Iframe.Master" />
     <Content Include="DocumentHandler.ashx" />
     <Content Include="Budget\Template_Budget.xlsx" />
+    <Content Include="DownloadAttachment.ashx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -3095,6 +3096,9 @@
     <Compile Include="DocumentHandler.ashx.cs">
       <DependentUpon>DocumentHandler.ashx</DependentUpon>
     </Compile>
+    <Compile Include="DownloadAttachment.ashx.cs">
+      <DependentUpon>DownloadAttachment.ashx</DependentUpon>
+    </Compile>
     <Compile Include="Error\404.aspx.cs">
       <DependentUpon>404.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3210,6 +3214,7 @@
     <Compile Include="Models\AdditionalLoaFinanceLimits.cs" />
     <Compile Include="Models\Approval.cs" />
     <Compile Include="Models\ApprovalLimit.cs" />
+    <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\Form.cs" />
     <Compile Include="Models\FormBudget.cs" />
