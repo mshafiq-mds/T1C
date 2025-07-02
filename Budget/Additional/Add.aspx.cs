@@ -35,7 +35,10 @@ namespace Prodata.WebForm.Budget.AddBudget
                     newId = Guid.NewGuid();
                 } while (db.AdditionalBudgetRequests.Any(x => x.Id == newId));
 
-                string refNo = Functions.GetGeneratedRefNo("PB", false);
+                string refNo = Functions.GetGeneratedRefNo("TB", false);
+
+                if (txtRefNo.Text != refNo)
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Ref No. " + txtRefNo.Text + " already exists and has been updated to a new Ref No: " + refNo + ".");
 
                 var model = new AdditionalBudgetRequests
                 {
@@ -98,6 +101,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                         db.SaveChanges();
                     }
                 }
+                Emails.EmailsAdditionalBudgetForNewRequest(newId, model, Auth.User().iPMSRoleCode);
             }
 
             SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Additional Budget Requested.");

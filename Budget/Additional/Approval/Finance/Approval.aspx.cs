@@ -1,5 +1,6 @@
 ﻿using FGV.Prodata.Web.UI;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                     model.Status = status;
 
                     db.SaveChanges();
+                    Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
                 }
             }
         }
@@ -135,7 +137,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                 if (section == "Unknown")
                 {
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This role has no approval authority.");
-                    Response.Redirect("~/Budget/Transfer/Approval/Finance");
+                    Response.Redirect("~/Budget/Additional/Approval/Finance");
                     return;
                 }
 

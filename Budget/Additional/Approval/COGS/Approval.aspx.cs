@@ -1,5 +1,6 @@
 ﻿using FGV.Prodata.Web.UI;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -94,6 +95,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                     model.Status = status;
 
                     db.SaveChanges();
+                    Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
                 }
             }
         }

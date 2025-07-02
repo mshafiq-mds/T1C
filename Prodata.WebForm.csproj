@@ -3087,6 +3087,8 @@
     </Compile>
     <Compile Include="Class\AllocationItem.cs" />
     <Compile Include="Class\Budget.cs" />
+    <Compile Include="Class\Emails.cs" />
+    <Compile Include="Class\EmailTemplateBuilder.cs" />
     <Compile Include="Class\Form.cs" />
     <Compile Include="Class\Functions.cs" />
     <Compile Include="Class\IPMSBizArea.cs" />

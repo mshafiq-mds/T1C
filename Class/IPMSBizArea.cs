@@ -269,5 +269,36 @@ namespace Prodata.WebForm.Class
 
             return bizAreaCodes;
         }
+        public static string GetZoneCodeByBizAreaCode(string bizAreaCode)
+        {
+            string zoneCode = null;
+
+            string connectionString = ConfigurationManager.ConnectionStrings["iPMSConnection"].ConnectionString;
+
+            string query = @"
+        SELECT TOP 1 W.zone_code
+        FROM iPMS.dbo.BizArea B
+        JOIN iPMS.dbo.Wilayah W ON B.kod_wilayah = W.kod_wilayah
+        WHERE B.code = @BizAreaCode
+          AND B.type = 'MILL'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@BizAreaCode", bizAreaCode);
+
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        zoneCode = reader["zone_code"].ToString();
+                    }
+                }
+            }
+
+            return zoneCode;
+        }
+
     }
 }

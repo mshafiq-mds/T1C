@@ -23,7 +23,7 @@ namespace Prodata.WebForm.Budget.Transfer
                 BindBALabel();
 
                 txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true);
-                txtEVisa.Enabled = txtRefNo.Enabled = false;
+                txtEVisa.ReadOnly = txtRefNo.ReadOnly = true;
 
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
@@ -40,6 +40,9 @@ namespace Prodata.WebForm.Budget.Transfer
                 } while (db.TransfersTransaction.Any(x => x.Id == newId));
 
                 string refNo = Functions.GetGeneratedRefNo("PB", false);
+
+                if(txtRefNo.Text != refNo)
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Ref No. " + txtRefNo.Text + " already exists and has been updated to a new Ref No: " + refNo + ".");
 
                 var model = new TransfersTransaction
                 {
@@ -102,7 +105,7 @@ namespace Prodata.WebForm.Budget.Transfer
                         db.SaveChanges();
                     }
                 }
-
+                Emails.EmailsReqTransferBudget(newId, model, Auth.User().iPMSRoleCode);
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget added.");
                 Response.Redirect("~/Budget/Transfer");
