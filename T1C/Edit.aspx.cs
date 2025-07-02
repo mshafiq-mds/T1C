@@ -1,11 +1,13 @@
 ﻿using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
 using Newtonsoft.Json;
+using NPOI.HSSF.Record.Chart;
 using Prodata.WebForm.Class;
 using Prodata.WebForm.Helpers;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -34,6 +36,20 @@ namespace Prodata.WebForm.T1C
 
                         hdnFormId.Value = id;
                         BindData(id);
+
+                        LoadAttachment(guid, "Picture", lnkPicture, pnlPictureView, pnlPictureUpload);
+                        LoadAttachment(guid, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, pnlMachineRepairHistoryUpload);
+                        LoadAttachment(guid, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, pnlJobSpecificationUpload);
+                        LoadAttachment(guid, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, pnlEngineerEstimatePriceUpload);
+                        LoadAttachment(guid, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, pnlDecCostReportCurrentYearUpload);
+                        LoadAttachment(guid, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, pnlDecCostReportLastYearUpload);
+                        LoadAttachment(guid, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, pnlCostReportLastMonthUpload);
+                        LoadAttachment(guid, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, pnlDrawingSketchingUpload);
+                        LoadAttachment(guid, "Quotation", lnkQuotation, pnlQuotationView, pnlQuotationUpload);
+                        LoadAttachment(guid, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, pnlDamageInvestigationReportUpload);
+                        LoadAttachment(guid, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, pnlVendorRegistrationRecordUpload);
+                        LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, pnlBudgetTransferAddApprovalUpload);
+                        LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, pnlOtherSupportingDocumentUpload);
                     }
                 }
                 else
@@ -112,7 +128,7 @@ namespace Prodata.WebForm.T1C
                             form.BizAreaCode = ba;
                             form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
-                            form.Ref = refNo;
+                            //form.Ref = refNo;
                             form.Details = details;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;
@@ -206,6 +222,21 @@ namespace Prodata.WebForm.T1C
                                 db.SaveChanges();
                             }
 
+                            // Add or update attachments
+                            SaveAttachment(form.Id, fuPicture, "Picture");
+                            SaveAttachment(form.Id, fuMachineRepairHistory, "MachineRepairHistory");
+                            SaveAttachment(form.Id, fuJobSpecification, "JobSpecification");
+                            SaveAttachment(form.Id, fuEngineerEstimatePrice, "EngineerEstimatePrice");
+                            SaveAttachment(form.Id, fuDecCostReportCurrentYear, "DecCostReportCurrentYear");
+                            SaveAttachment(form.Id, fuDecCostReportLastYear, "DecCostReportLastYear");
+                            SaveAttachment(form.Id, fuCostReportLastMonth, "CostReportLastMonth");
+                            SaveAttachment(form.Id, fuDrawingSketching, "DrawingSketching");
+                            SaveAttachment(form.Id, fuQuotation, "Quotation");
+                            SaveAttachment(form.Id, fuDamageInvestigationReport, "DamageInvestigationReport");
+                            SaveAttachment(form.Id, fuVendorRegistrationRecord, "VendorRegistrationRecord");
+                            SaveAttachment(form.Id, fuBudgetTransferAddApproval, "BudgetTransferAddApproval");
+                            SaveAttachment(form.Id, fuOtherSupportingDocument, "OtherSupportingDocument");
+
                             trans.Commit();
                             isSuccess = true;
                         }
@@ -298,7 +329,7 @@ namespace Prodata.WebForm.T1C
                             form.BizAreaCode = ba;
                             form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
-                            form.Ref = refNo;
+                            //form.Ref = refNo;
                             form.Details = details;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;
@@ -409,6 +440,21 @@ namespace Prodata.WebForm.T1C
                                 db.FormVendors.AddRange(formVendors);
                                 db.SaveChanges();
                             }
+
+                            // Add or update attachments
+                            SaveAttachment(form.Id, fuPicture, "Picture");
+                            SaveAttachment(form.Id, fuMachineRepairHistory, "MachineRepairHistory");
+                            SaveAttachment(form.Id, fuJobSpecification, "JobSpecification");
+                            SaveAttachment(form.Id, fuEngineerEstimatePrice, "EngineerEstimatePrice");
+                            SaveAttachment(form.Id, fuDecCostReportCurrentYear, "DecCostReportCurrentYear");
+                            SaveAttachment(form.Id, fuDecCostReportLastYear, "DecCostReportLastYear");
+                            SaveAttachment(form.Id, fuCostReportLastMonth, "CostReportLastMonth");
+                            SaveAttachment(form.Id, fuDrawingSketching, "DrawingSketching");
+                            SaveAttachment(form.Id, fuQuotation, "Quotation");
+                            SaveAttachment(form.Id, fuDamageInvestigationReport, "DamageInvestigationReport");
+                            SaveAttachment(form.Id, fuVendorRegistrationRecord, "VendorRegistrationRecord");
+                            SaveAttachment(form.Id, fuBudgetTransferAddApproval, "BudgetTransferAddApproval");
+                            SaveAttachment(form.Id, fuOtherSupportingDocument, "OtherSupportingDocument");
 
                             db.Approvals.Add(new Models.Approval
                             {
@@ -574,5 +620,171 @@ namespace Prodata.WebForm.T1C
                 rfvBA.Visible = true;
             }
         }
+
+        #region Attachment Handling
+        private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Panel uploadPanel)
+        {
+            using (var db = new AppDbContext())
+            {
+                var attachment = db.Attachments
+                    .FirstOrDefault(a => a.ObjectId == formId && a.ObjectType == "Form" && a.Type == type);
+
+                if (attachment != null)
+                {
+                    viewPanel.Visible = true;
+                    uploadPanel.Visible = false;
+                    link.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachment.Id}";
+                    link.Text = attachment.FileName;
+                }
+                else
+                {
+                    viewPanel.Visible = false;
+                    uploadPanel.Visible = true;
+                }
+            }
+        }
+
+        private void DeleteAttachment(Guid formId, string type)
+        {
+            using (var db = new AppDbContext())
+            {
+                var attachment = db.Attachments
+                    .FirstOrDefault(a => a.ObjectId == formId && a.ObjectType == "Form" && a.Type == type);
+
+                if (attachment != null)
+                {
+                    db.Attachments.Remove(attachment);
+                    db.SaveChanges();
+                }
+            }
+        }
+
+        private void SaveAttachment(Guid formId, FileUpload fileUpload, string type)
+        {
+            if (!fileUpload.HasFile) return;
+
+            using (var db = new AppDbContext())
+            {
+                // Delete old if exists
+                var existing = db.Attachments
+                    .FirstOrDefault(a => a.ObjectId == formId && a.ObjectType == "Form" && a.Type == type);
+
+                if (existing != null)
+                    db.Attachments.Remove(existing);
+
+                var fileBytes = fileUpload.FileBytes;
+                var fileName = Path.GetFileName(fileUpload.FileName);
+
+                var attachment = new Attachment
+                {
+                    ObjectId = formId,
+                    ObjectType = "Form",
+                    Type = type,
+                    Name = Path.GetFileNameWithoutExtension(fileName),
+                    FileName = fileName,
+                    ContentType = fileUpload.PostedFile.ContentType,
+                    Content = fileBytes,
+                    Ext = Path.GetExtension(fileName),
+                    Size = fileBytes.Length,
+                    UploadedDate = DateTime.Now,
+                    UploadedBy = Prodata.WebForm.Auth.Id()
+                };
+
+                db.Attachments.Add(attachment);
+                db.SaveChanges();
+            }
+        }
+
+        protected void btnDeletePicture_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "Picture");
+            LoadAttachment(formId, "Picture", lnkPicture, pnlPictureView, pnlPictureUpload);
+        }
+
+        protected void btnDeleteMachineRepairHistory_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "MachineRepairHistory");
+            LoadAttachment(formId, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, pnlMachineRepairHistoryUpload);
+        }
+
+        protected void btnDeleteJobSpecification_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "JobSpecification");
+            LoadAttachment(formId, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, pnlJobSpecificationUpload);
+        }
+
+        protected void btnDeleteEngineerEstimatePrice_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "EngineerEstimatePrice");
+            LoadAttachment(formId, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, pnlEngineerEstimatePriceUpload);
+        }
+
+        protected void btnDeleteDecCostReportCurrentYear_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "DecCostReportCurrentYear");
+            LoadAttachment(formId, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, pnlDecCostReportCurrentYearUpload);
+        }
+
+        protected void btnDeleteDecCostReportLastYear_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "DecCostReportLastYear");
+            LoadAttachment(formId, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, pnlDecCostReportLastYearUpload);
+        }
+
+        protected void btnDeleteCostReportLastMonth_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "CostReportLastMonth");
+            LoadAttachment(formId, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, pnlCostReportLastMonthUpload);
+        }
+
+        protected void btnDeleteDrawingSketching_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "DrawingSketching");
+            LoadAttachment(formId, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, pnlDrawingSketchingUpload);
+        }
+
+        protected void btnDeleteQuotation_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "Quotation");
+            LoadAttachment(formId, "Quotation", lnkQuotation, pnlQuotationView, pnlQuotationUpload);
+        }
+
+        protected void btnDeleteDamageInvestigationReport_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "DamageInvestigationReport");
+            LoadAttachment(formId, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, pnlDamageInvestigationReportUpload);
+        }
+
+        protected void btnDeleteVendorRegistrationRecord_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "VendorRegistrationRecord");
+            LoadAttachment(formId, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, pnlVendorRegistrationRecordUpload);
+        }
+
+        protected void btnDeleteBudgetTransferAddApproval_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "BudgetTransferAddApproval");
+            LoadAttachment(formId, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, pnlBudgetTransferAddApprovalUpload);
+        }
+
+        protected void btnDeleteOtherSupportingDocument_Click(object sender, EventArgs e)
+        {
+            var formId = Guid.Parse(hdnFormId.Value);
+            DeleteAttachment(formId, "OtherSupportingDocument");
+            LoadAttachment(formId, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, pnlOtherSupportingDocumentUpload);
+        }
+        #endregion
     }
 }

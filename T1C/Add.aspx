@@ -45,7 +45,7 @@
                                     <div class="form-group row">
                                         <asp:Label ID="lblRefNo" runat="server" CssClass="col-lg-3 col-sm-5 col-form-label" AssociatedControlID="txtRefNo" Text="Reference No"></asp:Label>
                                         <div class="col-lg-9 col-sm-7">
-                                            <asp:TextBox ID="txtRefNo" runat="server" CssClass="form-control" placeholder="Reference No"></asp:TextBox>
+                                            <asp:TextBox ID="txtRefNo" runat="server" CssClass="form-control" placeholder="Reference No" ReadOnly="true"></asp:TextBox>
                                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtRefNo" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter reference no"></asp:RequiredFieldValidator>
                                         </div>
                                     </div>
@@ -214,6 +214,144 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="form-group row mt-4">
+                                <asp:Label ID="lblDocument" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label text-bold" Text="Documents"></asp:Label>
+                                <div class="col-lg-10 col-sm-9">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Picture"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuPicture" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuPicture" CssClass="custom-file-label" Text="Choose picture"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Machine Repair History"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuMachineRepairHistory" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuMachineRepairHistory" CssClass="custom-file-label" Text="Choose machine repair history (IW38)"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Job Specification"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuJobSpecification" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuJobSpecification" CssClass="custom-file-label" Text="Choose job specification"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Engineer's Estimate Price"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuEngineerEstimatePrice" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuEngineerEstimatePrice" CssClass="custom-file-label" Text="Choose engineer's estimate price"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (current year)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuDecCostReportCurrentYear" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuDecCostReportCurrentYear" CssClass="custom-file-label" Text="Choose dec cost report (current year)"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (last year)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuDecCostReportLastYear" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuDecCostReportLastYear" CssClass="custom-file-label" Text="Choose dec cost report (last year)"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Cost Report (last month)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuCostReportLastMonth" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuCostReportLastMonth" CssClass="custom-file-label" Text="Choose cost report (last month)"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Drawing / Sketching"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuDrawingSketching" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuDrawingSketching" CssClass="custom-file-label" Text="Choose drawing / sketching"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Quotation (direct negotiation only)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuQuotation" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuQuotation" CssClass="custom-file-label" Text="Choose quotation (direct negotiation only)"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Damage Investigation Report (Shovel / Prime Mover / Turbine / Alternator / Genset)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuDamageInvestigationReport" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuDamageInvestigationReport" CssClass="custom-file-label" Text="Choose damage investigation report"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Vendor Registration Record"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuVendorRegistrationRecord" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuVendorRegistrationRecord" CssClass="custom-file-label" Text="Choose vendor registration record"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Approval of Budget Transfer/Add"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuBudgetTransferAddApproval" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuBudgetTransferAddApproval" CssClass="custom-file-label" Text="Choose approval of budget tranfer/add"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Other Supporting Documents (JKKP/JAS/SHO/NDT Report)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <div class="custom-file">
+                                                        <asp:FileUpload ID="fuOtherSupportingDocument" runat="server" CssClass="custom-file-input" />
+                                                        <asp:Label runat="server" AssociatedControlID="fuOtherSupportingDocument" CssClass="custom-file-label" Text="Choose other supporting document"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -222,6 +360,8 @@
     </div>
     <script>
         $(document).ready(function () {
+            bsCustomFileInput.init();
+
             let radioListId = "<%= rblProcurementType.ClientID %>";
             let $radioList = $("#" + radioListId);
             let $extraDiv = $("#divJustificationDirectAward");
