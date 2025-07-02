@@ -85,7 +85,7 @@
                                         <asp:TextBox ID="txtAmount" runat="server" CssClass="form-control input-number2" placeholder="Estimate Amount"></asp:TextBox>
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter estimate amount (RM)"></asp:RequiredFieldValidator>
-                                    <asp:CustomValidator ID="cvAmountLimit" runat="server" 
+                                    <asp:CustomValidator ID="cvAmountLimit" runat="server"
                                         ControlToValidate="txtAmount"
                                         OnServerValidate="cvAmountLimit_ServerValidate"
                                         ClientValidationFunction="validateAmountLimit"
@@ -112,7 +112,7 @@
 
                                     <!-- Plus button below dropdowns -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddAllocation">
-                                        <i class="fa fa-plus"></i> Add Allocation
+                                        <i class="fa fa-plus"></i>Add Allocation
                                     </button>
                                 </div>
                             </div>
@@ -142,7 +142,7 @@
 
                                     <!-- Plus button below textboxes -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
-                                        <i class="fa fa-plus"></i> Add Contractor
+                                        <i class="fa fa-plus"></i>Add Contractor
                                     </button>
                                 </div>
                             </div>
@@ -211,6 +211,253 @@
                                     </table>
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblDocuments" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label text-bold" Text="Documents"></asp:Label>
+                                <div class="col-lg-10 col-sm-9">
+                                    <div class="row">
+                                        <div class="col-12">
+
+                                            <%-- Utility function for each document type --%>
+                                            <%-- Repeat this block for each document --%>
+                                            <%-- Replace XXX with each file identifier --%>
+
+                                            <!-- Picture -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Picture"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlPictureView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkPicture" runat="server" Target="_blank" Text="View Picture" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeletePicture" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeletePicture_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlPictureUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuPicture" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuPicture" CssClass="custom-file-label" Text="Choose picture" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Machine Repair History -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Machine Repair History"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlMachineRepairHistoryView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkMachineRepairHistory" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteMachineRepairHistory" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteMachineRepairHistory_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlMachineRepairHistoryUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuMachineRepairHistory" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuMachineRepairHistory" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Job Specification -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Job Specification"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlJobSpecificationView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkJobSpecification" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteJobSpecification" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteJobSpecification_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlJobSpecificationUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuJobSpecification" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuJobSpecification" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Engineer Estimate Price -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Engineer's Estimate Price"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlEngineerEstimatePriceView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkEngineerEstimatePrice" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteEngineerEstimatePrice" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteEngineerEstimatePrice_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlEngineerEstimatePriceUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuEngineerEstimatePrice" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuEngineerEstimatePrice" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Dec Cost Report Current Year -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Current Year)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlDecCostReportCurrentYearView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkDecCostReportCurrentYear" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteDecCostReportCurrentYear" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteDecCostReportCurrentYear_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlDecCostReportCurrentYearUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuDecCostReportCurrentYear" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportCurrentYear" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Dec Cost Report Last Year -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Last Year)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlDecCostReportLastYearView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkDecCostReportLastYear" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteDecCostReportLastYear" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteDecCostReportLastYear_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlDecCostReportLastYearUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuDecCostReportLastYear" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportLastYear" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Cost Report Last Month -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Cost Report (Last Month)"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlCostReportLastMonthView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkCostReportLastMonth" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteCostReportLastMonth" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteCostReportLastMonth_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlCostReportLastMonthUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuCostReportLastMonth" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuCostReportLastMonth" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Drawing/Sketching -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Drawing/Sketching"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlDrawingSketchingView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkDrawingSketching" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteDrawingSketching" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteDrawingSketching_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlDrawingSketchingUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuDrawingSketching" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDrawingSketching" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Quotation -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Quotation"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlQuotationView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkQuotation" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteQuotation" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteQuotation_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlQuotationUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuQuotation" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuQuotation" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Damage Investigation Report -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Damage Investigation Report"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlDamageInvestigationReportView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkDamageInvestigationReport" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteDamageInvestigationReport" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteDamageInvestigationReport_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlDamageInvestigationReportUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuDamageInvestigationReport" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDamageInvestigationReport" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Vendor Registration Record -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Vendor Registration Record"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlVendorRegistrationRecordView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkVendorRegistrationRecord" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteVendorRegistrationRecord" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteVendorRegistrationRecord_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlVendorRegistrationRecordUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuVendorRegistrationRecord" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuVendorRegistrationRecord" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Budget Transfer/Add Approval -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Budget Transfer/Add Approval"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlBudgetTransferAddApprovalView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkBudgetTransferAddApproval" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteBudgetTransferAddApproval" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteBudgetTransferAddApproval_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlBudgetTransferAddApprovalUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuBudgetTransferAddApproval" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuBudgetTransferAddApproval" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+                                            <hr class="mt-0" />
+
+                                            <!-- Other Supporting Document -->
+                                            <div class="form-group row">
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Other Supporting Document"></asp:Label>
+                                                <div class="col-lg-9">
+                                                    <asp:Panel ID="pnlOtherSupportingDocumentView" runat="server" Visible="false">
+                                                        <asp:HyperLink ID="lnkOtherSupportingDocument" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
+                                                        <asp:Button ID="btnDeleteOtherSupportingDocument" runat="server" Text="Delete" CssClass="btn btn-danger btn-sm" OnClick="btnDeleteOtherSupportingDocument_Click" CausesValidation="false" />
+                                                    </asp:Panel>
+                                                    <asp:Panel ID="pnlOtherSupportingDocumentUpload" runat="server" Visible="true">
+                                                        <div class="custom-file">
+                                                            <asp:FileUpload ID="fuOtherSupportingDocument" runat="server" CssClass="custom-file-input" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuOtherSupportingDocument" CssClass="custom-file-label" Text="Choose file" />
+                                                        </div>
+                                                    </asp:Panel>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -219,6 +466,8 @@
     </div>
     <script>
         $(document).ready(function () {
+            bsCustomFileInput.init();
+
             let radioListId = "<%= rblProcurementType.ClientID %>";
             let $radioList = $("#" + radioListId);
             let $extraDiv = $("#divJustificationDirectAward");

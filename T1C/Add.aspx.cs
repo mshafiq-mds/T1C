@@ -6,6 +6,7 @@ using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
@@ -94,7 +95,7 @@ namespace Prodata.WebForm.T1C
                                 BizAreaCode = ba,
                                 BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba),
                                 Date = date,
-                                Ref = refNo,
+                                Ref = Functions.GetGeneratedRefNo("T1C", false),
                                 Details = details,
                                 JustificationOfNeed = justificationOfNeed,
                                 Amount = amount,
@@ -175,6 +176,21 @@ namespace Prodata.WebForm.T1C
 
                                 db.FormVendors.AddRange(formVendors);
                             }
+
+                            // insert attachments
+                            SaveAttachment(db, fuPicture, "Picture", form.Id);
+                            SaveAttachment(db, fuMachineRepairHistory, "MachineRepairHistory", form.Id);
+                            SaveAttachment(db, fuJobSpecification, "JobSpecification", form.Id);
+                            SaveAttachment(db, fuEngineerEstimatePrice, "EngineerEstimatePrice", form.Id);
+                            SaveAttachment(db, fuDecCostReportCurrentYear, "DecCostReportCurrentYear", form.Id);
+                            SaveAttachment(db, fuDecCostReportLastYear, "DecCostReportLastYear", form.Id);
+                            SaveAttachment(db, fuCostReportLastMonth, "CostReportLastMonth", form.Id);
+                            SaveAttachment(db, fuDrawingSketching, "DrawingSketching", form.Id);
+                            SaveAttachment(db, fuQuotation, "Quotation", form.Id);
+                            SaveAttachment(db, fuDamageInvestigationReport, "DamageInvestigationReport", form.Id);
+                            SaveAttachment(db, fuVendorRegistrationRecord, "VendorRegistrationRecord", form.Id);
+                            SaveAttachment(db, fuBudgetTransferAddApproval, "BudgetTransferAddApproval", form.Id);
+                            SaveAttachment(db, fuOtherSupportingDocument, "OtherSupportingDocument", form.Id);
 
                             db.SaveChanges();
                             trans.Commit();
@@ -269,7 +285,7 @@ namespace Prodata.WebForm.T1C
                                 BizAreaCode = ba,
                                 BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba),
                                 Date = date,
-                                Ref = refNo,
+                                Ref = Functions.GetGeneratedRefNo("T1C", false), //refNo,
                                 Details = details,
                                 JustificationOfNeed = justificationOfNeed,
                                 Amount = amount,
@@ -369,6 +385,21 @@ namespace Prodata.WebForm.T1C
                                 db.FormVendors.AddRange(formVendors);
                             }
 
+                            // insert attachments
+                            SaveAttachment(db, fuPicture, "Picture", form.Id);
+                            SaveAttachment(db, fuMachineRepairHistory, "MachineRepairHistory", form.Id);
+                            SaveAttachment(db, fuJobSpecification, "JobSpecification", form.Id);
+                            SaveAttachment(db, fuEngineerEstimatePrice, "EngineerEstimatePrice", form.Id);
+                            SaveAttachment(db, fuDecCostReportCurrentYear, "DecCostReportCurrentYear", form.Id);
+                            SaveAttachment(db, fuDecCostReportLastYear, "DecCostReportLastYear", form.Id);
+                            SaveAttachment(db, fuCostReportLastMonth, "CostReportLastMonth", form.Id);
+                            SaveAttachment(db, fuDrawingSketching, "DrawingSketching", form.Id);
+                            SaveAttachment(db, fuQuotation, "Quotation", form.Id);
+                            SaveAttachment(db, fuDamageInvestigationReport, "DamageInvestigationReport", form.Id);
+                            SaveAttachment(db, fuVendorRegistrationRecord, "VendorRegistrationRecord", form.Id);
+                            SaveAttachment(db, fuBudgetTransferAddApproval, "BudgetTransferAddApproval", form.Id);
+                            SaveAttachment(db, fuOtherSupportingDocument, "OtherSupportingDocument", form.Id);
+
                             db.Approvals.Add(new Models.Approval
                             {
                                 ObjectId = form.Id,
@@ -401,6 +432,37 @@ namespace Prodata.WebForm.T1C
                 else
                 {
                     Response.Redirect(Request.Url.GetCurrentUrl());
+                }
+            }
+        }
+
+        private void SaveAttachment(AppDbContext db, FileUpload fileUpload, string type, Guid formId)
+        {
+            if (fileUpload.HasFile)
+            {
+                var fileName = Path.GetFileName(fileUpload.FileName);
+                var ext = Path.GetExtension(fileName);
+                var contentType = fileUpload.PostedFile.ContentType;
+                var size = fileUpload.PostedFile.ContentLength;
+
+                using (var binaryReader = new BinaryReader(fileUpload.PostedFile.InputStream))
+                {
+                    var fileBytes = binaryReader.ReadBytes(size);
+
+                    var attachment = new Attachment
+                    {
+                        ObjectId = formId,
+                        ObjectType = "Form",
+                        Type = type,
+                        Name = fileName,
+                        FileName = fileName,
+                        ContentType = contentType,
+                        Content = fileBytes,
+                        Ext = ext,
+                        Size = size
+                    };
+
+                    db.Attachments.Add(attachment);
                 }
             }
         }
@@ -484,11 +546,12 @@ namespace Prodata.WebForm.T1C
                 rfvBA.Visible = true;
             }
 
-            string year = DateTime.Now.Year.ToString();
-            string monthDay = DateTime.Now.ToString("MMdd");
-            string randomDigits = new Random().Next(100000, 999999).ToString();
-            txtRefNo.Text = $"T1C/{year}/{monthDay}/{randomDigits}";
+            //string year = DateTime.Now.Year.ToString();
+            //string monthDay = DateTime.Now.ToString("MMdd");
+            //string randomDigits = new Random().Next(100000, 999999).ToString();
+            //txtRefNo.Text = $"T1C/{year}/{monthDay}/{randomDigits}";
 
+            txtRefNo.Text = Functions.GetGeneratedRefNo("T1C", true);
             txtDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
         }
     }
