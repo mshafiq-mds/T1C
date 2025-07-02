@@ -128,7 +128,7 @@ namespace Prodata.WebForm.T1C
                             form.BizAreaCode = ba;
                             form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
-                            form.Ref = refNo;
+                            //form.Ref = refNo;
                             form.Details = details;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;
@@ -329,7 +329,7 @@ namespace Prodata.WebForm.T1C
                             form.BizAreaCode = ba;
                             form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
-                            form.Ref = refNo;
+                            //form.Ref = refNo;
                             form.Details = details;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;

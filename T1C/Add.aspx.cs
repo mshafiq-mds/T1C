@@ -546,11 +546,6 @@ namespace Prodata.WebForm.T1C
                 rfvBA.Visible = true;
             }
 
-            //string year = DateTime.Now.Year.ToString();
-            //string monthDay = DateTime.Now.ToString("MMdd");
-            //string randomDigits = new Random().Next(100000, 999999).ToString();
-            //txtRefNo.Text = $"T1C/{year}/{monthDay}/{randomDigits}";
-
             txtRefNo.Text = Functions.GetGeneratedRefNo("T1C", true);
             txtDate.Text = DateTime.Now.ToString("yyyy-MM-dd");
         }

@@ -46,7 +46,7 @@
                                     <div class="form-group row">
                                         <asp:Label ID="lblRefNo" runat="server" CssClass="col-lg-3 col-sm-5 col-form-label" AssociatedControlID="txtRefNo" Text="Reference No"></asp:Label>
                                         <div class="col-lg-9 col-sm-7">
-                                            <asp:TextBox ID="txtRefNo" runat="server" CssClass="form-control" placeholder="Reference No"></asp:TextBox>
+                                            <asp:TextBox ID="txtRefNo" runat="server" CssClass="form-control" placeholder="Reference No" ReadOnly="true"></asp:TextBox>
                                             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtRefNo" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter reference no"></asp:RequiredFieldValidator>
                                         </div>
                                     </div>
@@ -250,7 +250,7 @@
                                                     <asp:Panel ID="pnlMachineRepairHistoryUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuMachineRepairHistory" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuMachineRepairHistory" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuMachineRepairHistory" CssClass="custom-file-label" Text="Choose machine repair history (IW38)" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -268,7 +268,7 @@
                                                     <asp:Panel ID="pnlJobSpecificationUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuJobSpecification" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuJobSpecification" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuJobSpecification" CssClass="custom-file-label" Text="Choose job specification" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -286,7 +286,7 @@
                                                     <asp:Panel ID="pnlEngineerEstimatePriceUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuEngineerEstimatePrice" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuEngineerEstimatePrice" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuEngineerEstimatePrice" CssClass="custom-file-label" Text="Choose engineer's estimate price" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -304,7 +304,7 @@
                                                     <asp:Panel ID="pnlDecCostReportCurrentYearUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuDecCostReportCurrentYear" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportCurrentYear" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportCurrentYear" CssClass="custom-file-label" Text="Choose dec cost report (current year)" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -322,7 +322,7 @@
                                                     <asp:Panel ID="pnlDecCostReportLastYearUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuDecCostReportLastYear" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportLastYear" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDecCostReportLastYear" CssClass="custom-file-label" Text="Choose dec cost report (last year)" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -340,7 +340,7 @@
                                                     <asp:Panel ID="pnlCostReportLastMonthUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuCostReportLastMonth" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuCostReportLastMonth" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuCostReportLastMonth" CssClass="custom-file-label" Text="Choose cost report (last month)" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -358,7 +358,7 @@
                                                     <asp:Panel ID="pnlDrawingSketchingUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuDrawingSketching" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuDrawingSketching" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDrawingSketching" CssClass="custom-file-label" Text="Choose drawing / sketching" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -376,7 +376,7 @@
                                                     <asp:Panel ID="pnlQuotationUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuQuotation" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuQuotation" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuQuotation" CssClass="custom-file-label" Text="Choose quotation (direct negotiation only)" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -394,7 +394,7 @@
                                                     <asp:Panel ID="pnlDamageInvestigationReportUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuDamageInvestigationReport" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuDamageInvestigationReport" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuDamageInvestigationReport" CssClass="custom-file-label" Text="Choose damage investigation report" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -412,7 +412,7 @@
                                                     <asp:Panel ID="pnlVendorRegistrationRecordUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuVendorRegistrationRecord" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuVendorRegistrationRecord" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuVendorRegistrationRecord" CssClass="custom-file-label" Text="Choose vendor registration record" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -430,7 +430,7 @@
                                                     <asp:Panel ID="pnlBudgetTransferAddApprovalUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuBudgetTransferAddApproval" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuBudgetTransferAddApproval" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuBudgetTransferAddApproval" CssClass="custom-file-label" Text="Choose approval of budget tranfer/add" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
@@ -448,7 +448,7 @@
                                                     <asp:Panel ID="pnlOtherSupportingDocumentUpload" runat="server" Visible="true">
                                                         <div class="custom-file">
                                                             <asp:FileUpload ID="fuOtherSupportingDocument" runat="server" CssClass="custom-file-input" />
-                                                            <asp:Label runat="server" AssociatedControlID="fuOtherSupportingDocument" CssClass="custom-file-label" Text="Choose file" />
+                                                            <asp:Label runat="server" AssociatedControlID="fuOtherSupportingDocument" CssClass="custom-file-label" Text="Choose other supporting document" />
                                                         </div>
                                                     </asp:Panel>
                                                 </div>
