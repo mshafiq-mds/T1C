@@ -22,10 +22,11 @@
                                                         <%# Container.DataItemIndex + 1 %>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
-                                                <asp:BoundField DataField="Ref" HeaderText="No. Rujukan" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
-                                                <asp:BoundField DataField="Date" HeaderText="Tarikh" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Details" HeaderText="Butir-butir" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Amount" HeaderText="Anggaran Kerja (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
+                                                <asp:BoundField DataField="BizAreaDisplayName" HeaderText="BA" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="Ref" HeaderText="Reference No. Rujukan" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
+                                                <asp:BoundField DataField="Date" HeaderText="Date" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                <asp:BoundField DataField="Details" HeaderText="Details" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                <asp:BoundField DataField="Amount" HeaderText="Amount (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                                                     <ItemStyle CssClass="width-80 text-center" />

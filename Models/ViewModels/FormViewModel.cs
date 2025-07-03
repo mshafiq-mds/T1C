@@ -11,6 +11,7 @@ namespace Prodata.WebForm.Models.ViewModels
         public string Type { get; set; }
         public string BizAreaCode { get; set; }
         public string BizAreaName { get; set; }
+        public string BizAreaDisplayName { get; set; }
         public string Date { get; set; }
         public string Ref { get; set; }
         public string Details { get; set; }

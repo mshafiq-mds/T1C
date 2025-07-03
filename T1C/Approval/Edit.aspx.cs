@@ -25,6 +25,21 @@ namespace Prodata.WebForm.T1C.Approval
                     {
                         hdnFormId.Value = id;
                         BindData(id);
+                        BindAuditTrails(guid);
+
+                        LoadAttachment(guid, "Picture", lnkPicture, pnlPictureView, lblPictureDash);
+                        LoadAttachment(guid, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, lblMachineHistoryDash);
+                        LoadAttachment(guid, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, lblJobSpecificationDash);
+                        LoadAttachment(guid, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, lblEngineerEstimatePriceDash);
+                        LoadAttachment(guid, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, lblDecCostReportCurrentYearDash);
+                        LoadAttachment(guid, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, lblDecCostReportLastYearDash);
+                        LoadAttachment(guid, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, lblCostReportLastMonthDash);
+                        LoadAttachment(guid, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, lblDrawingSketchingDash);
+                        LoadAttachment(guid, "Quotation", lnkQuotation, pnlQuotationView, lblQuotationDash);
+                        LoadAttachment(guid, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, lblDamageInvestigationReportDash);
+                        LoadAttachment(guid, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, lblVendorRegistrationRecordDash);
+                        LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
+                        LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
                     }
                 }
                 else
@@ -122,7 +137,47 @@ namespace Prodata.WebForm.T1C.Approval
                 Response.Redirect(Request.Url.GetCurrentUrl(true));
             }
 
-            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Rejected.");
+            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "T1C application has been rejected.");
+            Response.Redirect("~/T1C/Approval");
+        }
+
+        protected void btnSendBack_Click(object sender, EventArgs e)
+        {
+            string formId = hdnFormId.Value;
+            string remark = hdnRemark.Value;
+            Guid parsedFormId = Guid.Parse(formId);
+
+            try
+            {
+                using (var db = new AppDbContext())
+                {
+                    var form = db.Forms.Find(parsedFormId);
+
+                    db.Approvals.Add(new Models.Approval
+                    {
+                        ObjectId = form.Id,
+                        ObjectType = "Form",
+                        ActionById = Auth.User().Id,
+                        ActionByType = "User",
+                        ActionByCode = Auth.User().iPMSRoleCode,
+                        ActionByName = Auth.User().Name,
+                        Action = "Sent Back",
+                        Remark = remark,
+                        Order = 0, // Reset order to 0 when sending back
+                    });
+
+                    form.Status = "SentBack";
+                    db.Entry(form).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
+                Response.Redirect(Request.Url.GetCurrentUrl(true));
+            }
+
+            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "T1C application sent back to the applicant.");
             Response.Redirect("~/T1C/Approval");
         }
 
@@ -135,7 +190,7 @@ namespace Prodata.WebForm.T1C.Approval
                     var form = db.Forms.Find(Guid.Parse(id));
                     if (form != null)
                     {
-                        lblBA.Text = form.BizAreaName;
+                        lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
                         lblRefNo.Text = form.Ref;
                         lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
                         lblDetails.Text = form.Details;
@@ -155,7 +210,7 @@ namespace Prodata.WebForm.T1C.Approval
 
                         if (budgets.Any())
                         {
-                            string html = "<ol style='padding-left: 15px;'>";  // 👈 added style here
+                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";  // 👈 added style here
 
                             foreach (var budget in budgets)
                             {
@@ -182,7 +237,7 @@ namespace Prodata.WebForm.T1C.Approval
 
                         if (vendorNames.Any())
                         {
-                            string html = "<ol style='padding-left: 15px;'>";
+                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";
                             foreach (var name in vendorNames)
                             {
                                 html += $"<li>{Server.HtmlEncode(name)}</li>";
@@ -196,24 +251,20 @@ namespace Prodata.WebForm.T1C.Approval
                         }
                         #endregion
 
-                        lblJustificationDirectAward.Visible = false;
+                        divJustificationDirectNegotiation.Visible = false;
                         string procurementType = string.Empty;
-                        if (form.ProcurementType.Equals("quotation", StringComparison.OrdinalIgnoreCase))
+                        if (form.ProcurementType.Equals("quotation_inclusive", StringComparison.OrdinalIgnoreCase))
                         {
-                            procurementType = "Kaedah Sebutharga";
+                            procurementType = "Inclusive Quotation";
                         }
-                        else if (form.ProcurementType.Equals("selective_tender", StringComparison.OrdinalIgnoreCase))
+                        else if (form.ProcurementType.Equals("quotation_selective", StringComparison.OrdinalIgnoreCase))
                         {
-                            procurementType = "Tender Selektif";
+                            procurementType = "Selective Quotation";
                         }
-                        else if (form.ProcurementType.Equals("open_tender", StringComparison.OrdinalIgnoreCase))
+                        else if (form.ProcurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
                         {
-                            procurementType = "Tender Terbuka";
-                        }
-                        else if (form.ProcurementType.Equals("direct_award", StringComparison.OrdinalIgnoreCase))
-                        {
-                            procurementType = "Rundingan Terus";
-                            lblJustificationDirectAward.Visible = true;
+                            procurementType = "Direct Negotiation";
+                            divJustificationDirectNegotiation.Visible = true;
                         }
 
                         lblProcurementType.Text = procurementType;
@@ -232,5 +283,48 @@ namespace Prodata.WebForm.T1C.Approval
                 }
             }
         }
+
+        #region Documents
+        private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Label dashLabel)
+        {
+            using (var db = new AppDbContext())
+            {
+                var attachment = db.Attachments.FirstOrDefault(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase) && a.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+
+                if (attachment != null)
+                {
+                    link.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachment.Id}";
+                    link.Text = attachment.FileName;
+                    link.Visible = true;
+                    viewPanel.Visible = true;
+                    dashLabel.Visible = false; // Hide the dash label if the link is visible
+                }
+                else
+                {
+                    link.Visible = false;
+                    viewPanel.Visible = false;
+                    dashLabel.Visible = true; // Show the dash label if no attachment exists
+                }
+            }
+        }
+        #endregion
+
+        #region Audit trails
+        protected void gvAuditTrails_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            ViewState["pageIndex"] = e.NewPageIndex.ToString();
+            BindAuditTrails(Guid.Parse(hdnFormId.Value));
+        }
+
+        private void BindAuditTrails(Guid formId)
+        {
+            ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
+
+            var auditTrails = new Class.Approval().GetApprovals(formId, "Form");
+            gvAuditTrails.DataSource = auditTrails;
+            gvAuditTrails.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
+            gvAuditTrails.DataBind();
+        }
+        #endregion
     }
 }

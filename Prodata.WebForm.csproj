@@ -3087,6 +3087,7 @@
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Class\AllocationItem.cs" />
+    <Compile Include="Class\Approval.cs" />
     <Compile Include="Class\Budget.cs" />
     <Compile Include="Class\Emails.cs" />
     <Compile Include="Class\EmailTemplateBuilder.cs" />
@@ -3230,6 +3231,7 @@
     <Compile Include="Models\TransfersTransaction.cs" />
     <Compile Include="Models\Vendor.cs" />
     <Compile Include="Models\ViewModels\ApprovalLimitViewModel.cs" />
+    <Compile Include="Models\ViewModels\ApprovalViewModel.cs" />
     <Compile Include="Models\ViewModels\BudgetViewModel.cs" />
     <Compile Include="Models\ViewModels\FormBudgetViewModel.cs" />
     <Compile Include="Models\ViewModels\FormViewModel.cs" />
