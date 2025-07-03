@@ -3,8 +3,11 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnFormId" runat="server" />
     <asp:HiddenField ID="hdnRemark" runat="server" />
+
+    <asp:Button ID="btnApproveConfirm" runat="server" CssClass="d-none" OnClick="btnApprove_Click" />
     <asp:Button ID="btnRejectConfirm" runat="server" CssClass="d-none" OnClick="btnReject_Click" />
     <asp:Button ID="btnSendBackConfirm" runat="server" CssClass="d-none" OnClick="btnSendBack_Click" />
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card card-outline">
@@ -14,7 +17,7 @@
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/T1C/Approval/Default" CausesValidation="false">
                         <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnApprove" runat="server" CssClass="btn btn-success" OnClick="btnApprove_Click">
+                        <asp:LinkButton ID="btnApprove" runat="server" CssClass="btn btn-success" OnClientClick="showApproveModal(); return false;">
                         <i class="fas fa-check"></i> Approve
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnReject" runat="server" CssClass="btn btn-danger" OnClientClick="showRejectModal(); return false;">
@@ -346,6 +349,7 @@
                                                                 <asp:BoundField DataField="ActionByName" HeaderText="Name" />
                                                                 <asp:BoundField DataField="ActionByRole" HeaderText="Role" />
                                                                 <asp:BoundField DataField="Action" HeaderText="Action" />
+                                                                <asp:BoundField DataField="Remark" HeaderText="Remark" />
                                                                 <asp:BoundField DataField="Datetime" HeaderText="Date & Time" HeaderStyle-CssClass="text-nowrap" ItemStyle-CssClass="text-nowrap" />
                                                             </Columns>
                                                             <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" />
@@ -393,6 +397,13 @@
             });
         });
 
+        function showApproveModal() {
+            $('#remarkModal').modal('show');
+            $('#remarkModal').find('.modal-title').text('Enter remark to approve application');
+            $('#remarkModal').find('#modalSubmit').removeClass().addClass('btn btn-success btn-sm');
+            $('#remarkModal').find('#modalSubmit').removeAttr('onclick').attr('onclick', 'submitApprove();');
+        }
+
         function showRejectModal() {
             $('#remarkModal').modal('show');
             $('#remarkModal').find('.modal-title').text('Enter remark to reject application');
@@ -405,6 +416,14 @@
             $('#remarkModal').find('.modal-title').text('Enter remark to send back application');
             $('#remarkModal').find('#modalSubmit').removeClass().addClass('btn btn-info btn-sm');
             $('#remarkModal').find('#modalSubmit').removeAttr('onclick').attr('onclick', 'submitSendBack();');
+        }
+
+        function submitApprove() {
+            var remark = document.getElementById("txtRemark").value;
+            document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
+
+            // Trigger hidden button for server postback
+            document.getElementById("<%= btnApproveConfirm.ClientID %>").click();
         }
 
         function submitReject() {

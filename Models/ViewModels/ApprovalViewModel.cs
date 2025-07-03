@@ -10,6 +10,7 @@ namespace Prodata.WebForm.Models.ViewModels
         public string ActionByName { get; set; }
         public string ActionByRole { get; set; }
         public string Action { get; set; }
+        public string Remark { get; set; }
         public string Datetime { get; set; }
     }
 }
