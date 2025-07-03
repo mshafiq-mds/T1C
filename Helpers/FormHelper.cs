@@ -23,11 +23,50 @@ namespace Prodata.WebForm.Helpers
 
         public static bool IsFormEditable(this Models.Form form)
         {
-            if (form.Status.Equals("draft", StringComparison.OrdinalIgnoreCase))
+            if (form.Status.Equals("draft", StringComparison.OrdinalIgnoreCase) || form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
             return false;
+        }
+
+        public static bool IsFormSentBack(Guid formId)
+        {
+            using (var db = new AppDbContext())
+            {
+                var form = db.Forms.Find(formId);
+                if (form != null)
+                {
+                    return form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase);
+                }
+            }
+            return false;
+        }
+
+        public static bool IsFormSentBack(this Models.Form form)
+        {
+            return form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static string getLatestFormRemark(Guid formId)
+        {
+            using (var db = new AppDbContext())
+            {
+                var approval = db.Approvals
+                    .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .OrderByDescending(a => a.CreatedDate)
+                    .FirstOrDefault();
+                if (approval != null)
+                {
+                    return approval.Remark;
+                }
+            }
+            return string.Empty;
+        }
+
+        public static string getLatestFormRemark(this Models.Form form)
+        {
+            return getLatestFormRemark(form.Id);
         }
     }
 }

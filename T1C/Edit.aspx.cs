@@ -34,6 +34,18 @@ namespace Prodata.WebForm.T1C
                             Response.Redirect("~/T1C");
                         }
 
+                        if (FormHelper.IsFormSentBack(guid))
+                        {
+                            alert.Visible = true;
+                            lblAlert.Text = FormHelper.getLatestFormRemark(guid);
+                            btnSubmitLabel.Text = "Resubmit";
+                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This form has been sent back for correction. Please review the comments and make necessary changes before submitting again.");
+                        }
+                        else
+                        {
+                            alert.Visible = false;
+                        }
+
                         hdnFormId.Value = id;
                         BindData(id);
 
