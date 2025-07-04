@@ -144,6 +144,9 @@
             </div>
         </asp:Panel>
 
+        <!-- Hidden Fields -->
+        <asp:HiddenField ID="hdncurentRoleApprover" runat="server" />
+
         <!-- Approval History -->
         <h4 class="mt-4">Approval History</h4>
          <asp:UpdatePanel ID="pnHistoryApproval" runat="server">

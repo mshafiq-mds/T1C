@@ -231,6 +231,15 @@ namespace Prodata.WebForm.Budget.Additional
         protected global::System.Web.UI.WebControls.PlaceHolder phDocumentList;
 
         /// <summary>
+        /// hdncurentRoleApprover control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdncurentRoleApprover;
+
+        /// <summary>
         /// pnHistoryApproval control.
         /// </summary>
         /// <remarks>

@@ -20,6 +20,14 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
             if (!IsPostBack)
             {
                 string idStr = Request.QueryString["id"];
+                string idUserStr = Request.QueryString["userId"];
+
+                // Redirect only if userId exists and does not match the current user
+                if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
+                {
+                    Response.Redirect("~/Budget/Additional/Approval/Cumulative");
+                }
+
                 if (Guid.TryParse(idStr, out Guid requestId))
                 {
                     hdnTransferId.Value = requestId.ToString();

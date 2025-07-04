@@ -1,43 +1,65 @@
 ﻿<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">
+        function parseFloatSafe(val) {
+            const num = parseFloat(val.replace(/[^0-9.]/g, ''));
+            return isNaN(num) ? 0 : num;
+        }
+
         function formatCurrencyInput(input, formatOnBlur = false) {
-            let value = input.value.replace(/[^0-9.]/g, ''); // Remove all except digits and dot
+            let value = input.value.replace(/[^0-9.]/g, ''); // Remove invalid characters
             const parts = value.split('.');
-
             if (parts.length > 2) {
-                // More than one dot — keep only the first two parts
-                value = parts[0] + '.' + parts[1];
+                value = parts[0] + '.' + parts[1]; // Keep only first decimal
             }
-
             if (parts[1]) {
-                // Limit to two decimal places
-                value = parts[0] + '.' + parts[1].substring(0, 2);
+                value = parts[0] + '.' + parts[1].substring(0, 2); // Max two decimals
             }
-
-            // Format to two decimal places only on blur or final format
             if (formatOnBlur && value) {
                 const number = parseFloat(value);
                 if (!isNaN(number)) {
-                    value = number.toFixed(2); // Ensures 345 => 345.00
+                    value = number.toFixed(2); // Format to 2 decimals
                 }
             }
-
             input.value = value;
         }
 
+        function updateCalculatedFields() {
+            const fromBalance = parseFloatSafe(document.getElementById("txtFromBalance").value);
+            const fromTransfer = parseFloatSafe(document.getElementById("txtFromTransfer").value);
+            const toBalance = parseFloatSafe(document.getElementById("txtToBalance").value);
+
+            const fromAfter = fromBalance - fromTransfer;
+            const toTransfer = fromTransfer;
+            const toAfter = toBalance + fromTransfer;
+
+            if (!isNaN(fromAfter)) {
+                document.getElementById("txtFromAfter").value = fromAfter.toFixed(2);
+            }
+
+            if (!isNaN(toTransfer)) {
+                document.getElementById("txtToTransfer").value = toTransfer.toFixed(2);
+            }
+
+            if (!isNaN(toAfter)) {
+                document.getElementById("txtToAfter").value = toAfter.toFixed(2);
+            }
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
-            const rmInputs = document.querySelectorAll("input[id*=txtEstimatedCost], input[id*=txtFromBudget], input[id*=txtFromBalance], input[id*=txtFromTransfer], input[id*=txtFromAfter], input[id*=txtToBudget], input[id*=txtToBalance], input[id*=txtToTransfer], input[id*=txtToAfter]");
-
-            rmInputs.forEach(input => {
-                input.addEventListener("input", function () {
-                    formatCurrencyInput(input, false);
-                });
-
-                // Format as currency when user finishes typing (on blur)
-                input.addEventListener("blur", function () {
-                    formatCurrencyInput(input, true);
-                });
+            const fields = ["txtFromBalance", "txtFromTransfer", "txtToBalance"];
+            fields.forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                if (input) {
+                    input.addEventListener("input", function () {
+                        formatCurrencyInput(input, false);
+                        updateCalculatedFields();
+                    });
+                    input.addEventListener("blur", function () {
+                        formatCurrencyInput(input, true);
+                        updateCalculatedFields();
+                    });
+                }
             });
         });
     </script>
@@ -169,16 +191,22 @@
                         <asp:RequiredFieldValidator ID="rfvFromBudget" runat="server" ControlToValidate="txtFromBudget" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
+                        <asp:TextBox ID="txtFromBalance" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)"  ClientIDMode="Static" />--%>
                         <asp:RequiredFieldValidator ID="rfvFromBalance" runat="server" ControlToValidate="txtFromBalance" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
+                        <asp:TextBox ID="txtFromTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)"  ClientIDMode="Static" />--%>
                         <asp:RequiredFieldValidator ID="rfvFromTransfer" runat="server" ControlToValidate="txtFromTransfer" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
-                        <asp:RequiredFieldValidator ID="rfvFromAfter" runat="server" ControlToValidate="txtFromAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:TextBox ID="txtFromAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvFromAfter" runat="server" ControlToValidate="txtFromAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
                     </td>
                 </tr>
                 <tr>
@@ -197,16 +225,22 @@
                         <asp:RequiredFieldValidator ID="rfvToBudget" runat="server" ControlToValidate="txtToBudget" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
+                        <asp:TextBox ID="txtToBalance" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ClientIDMode="Static"  />--%>
                         <asp:RequiredFieldValidator ID="rfvToBalance" runat="server" ControlToValidate="txtToBalance" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
-                        <asp:RequiredFieldValidator ID="rfvToTransfer" runat="server" ControlToValidate="txtToTransfer" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:TextBox ID="txtToTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvToTransfer" runat="server" ControlToValidate="txtToTransfer" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
                     </td>
                     <td>
-                        <asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
-                        <asp:RequiredFieldValidator ID="rfvToAfter" runat="server" ControlToValidate="txtToAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:TextBox ID="txtToAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true" ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvToAfter" runat="server" ControlToValidate="txtToAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
                     </td>
                 </tr>
             </tbody>

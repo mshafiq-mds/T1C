@@ -105,7 +105,7 @@ namespace Prodata.WebForm.Budget.Transfer
                         db.SaveChanges();
                     }
                 }
-                Emails.EmailsReqTransferBudget(newId, model, Auth.User().iPMSRoleCode);
+                Emails.EmailsReqTransferBudgetForNewRequest(newId, model, Auth.User().iPMSRoleCode);
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget added.");
                 Response.Redirect("~/Budget/Transfer");
@@ -137,5 +137,6 @@ namespace Prodata.WebForm.Budget.Transfer
             ddFromBA.DataBind();
             ddFromBA.Items.Insert(0, new ListItem("", ""));
         }
+
     }
 }

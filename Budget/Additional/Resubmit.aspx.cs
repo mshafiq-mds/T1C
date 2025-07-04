@@ -1,5 +1,7 @@
 ﻿using FGV.Prodata.Web.UI;
+using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,14 @@ namespace Prodata.WebForm.Budget.Additional
         {
             if (!IsPostBack)
             {
+                string idUserStr = Request.QueryString["userId"];
+
+                // Redirect only if userId exists and does not match the current user
+                if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
+                {
+                    Response.Redirect("~/Budget/Additional");
+                }
+
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
                     LoadTransfer(_transferId);
@@ -135,7 +145,7 @@ namespace Prodata.WebForm.Budget.Additional
                     db.AdditionalBudgetLog.Add(logEntry);
                     db.SaveChanges();
 
-
+                    Emails.EmailsAdditionalBudgetForResubmit(_transferId, model, hdncurentRoleApprover.Value);
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Additional Budget updated.");
                     Response.Redirect("~/Budget/Additional");
                 }
@@ -209,6 +219,9 @@ namespace Prodata.WebForm.Budget.Additional
                         x.Remarks
                     })
                     .ToList();
+
+                // Set first/top RoleName to curentRoleApprover
+                hdncurentRoleApprover.Value = Additions.Any() ? Additions.First().RoleName : null;
 
                 if (Additions.Any())
                 {

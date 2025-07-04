@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Resubmit Budget Additional" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Resubmit" %>
+﻿<%@ Page Title="Resubmit Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Resubmit.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Resubmit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">
         function formatCurrencyInput(input, formatOnBlur = false) {
@@ -172,6 +172,9 @@
 
 
     </asp:Panel>
+    
+    <!-- Hidden Fields -->
+    <asp:HiddenField ID="hdncurentRoleApprover" runat="server" />
 
     <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group mt-3" Visible="false">
         <div class="d-flex align-items-center mb-3">

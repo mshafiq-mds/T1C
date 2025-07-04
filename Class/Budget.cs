@@ -10,7 +10,116 @@ namespace Prodata.WebForm.Class
 {
 	public class Budget
 	{
-		public List<Models.ViewModels.BudgetListViewModel> GetBudgets(
+        // ===========================================
+        // ✅ Shared status label function
+        // ===========================================
+        public static string GetStatusName(int? status, DateTime? deletedDate)
+        {
+            if (deletedDate != null) return "Deleted";
+
+            switch (status)
+            {
+                case 0: return "Resubmit";
+                case 1: return "Submitted";
+                case 2: return "Under Review";
+                case 3: return "Completed";
+                case 4: return "Finalized";
+                default: return "Unknown";
+            }
+        }
+
+        // ===========================================
+        // ✅ Additional Budget / Finance Logic
+        // ===========================================
+        public static AdditionalLoaFinanceLimits GetMatchingFinanceLimit(List<AdditionalLoaFinanceLimits> limits, decimal? amount)
+        {
+            return limits.FirstOrDefault(l =>
+                l.AmountMin <= (amount ?? 0m) &&
+                (l.AmountMax == null || l.AmountMax >= (amount ?? 0m)));
+        }
+
+        public static bool CanEditFinanceRequest(AdditionalLoaFinanceLimits limit, int userLevel, int currentLevel, DateTime? deletedDate)
+        {
+            return deletedDate == null && limit != null && userLevel == currentLevel + 1;
+        }
+
+        // ===========================================
+        // ✅ Additional Budget / COGS Logic
+        // ===========================================
+        public static AdditionalLoaCogsLimits GetMatchingAdditionalLimit(List<AdditionalLoaCogsLimits> limits, decimal? amount)
+        {
+            return limits.FirstOrDefault(l =>
+                l.AmountMin <= (amount ?? 0m) &&
+                (l.AmountMax == null || l.AmountMax >= (amount ?? 0m)));
+        }
+
+        public static bool CanEditAdditionalBudget(AdditionalLoaCogsLimits limit, int userLevel, int currentLevel, DateTime? deletedDate)
+        {
+            return deletedDate == null && limit != null && userLevel == currentLevel + 1;
+        }
+
+        // ===========================================
+        // ✅ Additional Budget / Cumulative Logic
+        // ===========================================
+        public static AdditionalCumulativeLimits GetEligibleCumulativeLimit(List<AdditionalCumulativeLimits> limits, decimal? requestedAmount)
+        {
+            decimal amount = requestedAmount ?? 0m;
+            return limits
+                .Where(l => (l.AmountCumulativeBalance ?? 0m) >= amount)
+                .OrderBy(l => l.Order)
+                .FirstOrDefault();
+        }
+
+        public static bool CanEditCumulativeRequest(AdditionalCumulativeLimits limit, string userRole, int currentLevel, DateTime? deletedDate)
+        {
+            return deletedDate == null &&
+                   limit != null &&
+                   limit.CumulativeApproverCode == userRole &&
+                   limit.Order == currentLevel + 1;
+        }
+
+        // ===========================================
+        // ✅ Shared for Additional Budget Logs
+        // ===========================================
+        public static int GetAdditionalBudgetApprovalLevel(AppDbContext db, Guid budgetId)
+        {
+            return db.AdditionalBudgetLog
+                .Where(w => w.BudgetTransferId == budgetId)
+                .OrderByDescending(w => w.CreatedDate)
+                .Select(w => w.StepNumber)
+                .FirstOrDefault();
+        }
+
+        // ===========================================
+        // ✅ Transfer Budget Logic
+        // ===========================================
+        public static TransferApprovalLimits GetMatchingTransferLimit(List<TransferApprovalLimits> limits, decimal amount)
+        {
+            return limits.FirstOrDefault(l =>
+                l.AmountMin <= amount &&
+                (l.AmountMax == null || l.AmountMax >= amount));
+        }
+
+        public static bool CanEditTransfer(TransferApprovalLimits limit, int userLevel, int currentLevel, DateTime? deletedDate)
+        {
+            return deletedDate == null && limit != null && userLevel == currentLevel + 1;
+        }
+
+        public static int GetTransferApprovalLevel(AppDbContext db, Guid transferId)
+        {
+            return db.TransferApprovalLog
+                .Where(w => w.BudgetTransferId == transferId)
+                .OrderByDescending(w => w.CreatedDate)
+                .Select(w => w.StepNumber)
+                .FirstOrDefault();
+        }
+
+
+        // ===========================================
+        // ✅ T1C Budget Logic
+        // ===========================================
+
+        public List<Models.ViewModels.BudgetListViewModel> GetBudgets(
             Guid? entityId = null, 
             Guid? typeId = null, 
             int? year = null, 

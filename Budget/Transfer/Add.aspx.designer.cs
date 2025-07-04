@@ -294,15 +294,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtFromAfter;
 
         /// <summary>
-        /// rfvFromAfter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromAfter;
-
-        /// <summary>
         /// txtToGL control.
         /// </summary>
         /// <remarks>
@@ -375,15 +366,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtToTransfer;
 
         /// <summary>
-        /// rfvToTransfer control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToTransfer;
-
-        /// <summary>
         /// txtToAfter control.
         /// </summary>
         /// <remarks>
@@ -391,15 +373,6 @@ namespace Prodata.WebForm.Budget.Transfer
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtToAfter;
-
-        /// <summary>
-        /// rfvToAfter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToAfter;
 
         /// <summary>
         /// txtJustification control.

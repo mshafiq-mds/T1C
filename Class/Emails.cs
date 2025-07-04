@@ -11,47 +11,154 @@ namespace Prodata.WebForm.Class
 {
     public class Emails
     {
-        #region Public call email Function
+        #region Public call email Function EmailsTransferBudgetForResubmit
+        // Public methods to trigger email notifications for different scenarios
+
+        // For new requests
         public static void EmailsAdditionalBudgetForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         { EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode); }
-        public static void EmailsAdditionalBudgetForApprover(Guid id, AdditionalBudgetRequests ABR, string roleCode)
-        { EmailsReqAdditionalBudgetForApproverModified(id, ABR, roleCode); }
+        public static void EmailsReqTransferBudgetForNewRequest(Guid id, TransfersTransaction TT, string roleCode)
+        { EmailsTransferBudgetForNewRequestModified(id, TT, roleCode); }
 
-        public static void EmailsReqTransferBudget(Guid id, TransfersTransaction TT, string roleCode)
-        { EmailsReqTransferBudgetModified(id, TT, roleCode); }
+        // For submissions next approver
+        public static void EmailsAdditionalBudgetForApprover(Guid id, AdditionalBudgetRequests ABR, string roleCode = "")
+        { EmailsReqAdditionalBudgetForApproverModified(id, ABR, roleCode); }
+        public static void EmailsReqTransferBudgetForApprover(Guid id, TransfersTransaction TT, string roleCode = "")
+        { EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode); }
+
+        // For resubmissions to creator
+        public static void EmailsAdditionalBudgetForResubmit(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        { EmailsReqAdditionalBudgetForResubmitModified(id, ABR, roleCode); }
+        public static void EmailsTransferBudgetForResubmit(Guid id, TransfersTransaction ABR, string roleCode)
+        { EmailsReqTransferBudgetForResubmitModified(id, ABR, roleCode); }
         #endregion
 
         #region Transfer budget Logic
-        public static void EmailsReqTransferBudgetModified(Guid id, TransfersTransaction TT, string roleCode)
+        public static void EmailsReqTransferBudgetModifiedForApprover(Guid id, TransfersTransaction TT, string roleCode)
         {
-            string nextApproverCode = GetNextApproverCode(TT.FromTransfer ?? 0, roleCode, out var db);
+            string nextApproverCode = GetNextTransferApproverCode(TT.FromTransfer ?? 0, roleCode, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
 
-            List<User> userRole = GetUsersForNextApprover(db, nextApproverCode, TT.BA);
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, TT.BA);
             string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
-            string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}";
-            string actionName = "Transfer Budget Request";
-
-            string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
+            string actionName = "";
+            string fullUrl = "";
 
             foreach (var user in userRole)
             {
+                if (roleCode == "") // resubmit approver to creator
+                {
+                    fullUrl = $"{baseUrl}/Budget/Transfer/Resubmit?Id={id}&userId={user.Id}";
+                    actionName = "Transfer Budget Request Revision";
+                }
+                else
+                {
+                    fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                    actionName = "Transfer Budget Request";
+                }
+
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
-        private static string GetNextApproverCode(decimal amount, string roleCode, out AppDbContext db)
+        private static string GetNextTransferApproverCode(decimal amount, string roleCode, out AppDbContext db, Guid? id = null)
         {
-            db = new AppDbContext();
-            var eligible = db.TransferApprovalLimits
-                .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
-                .OrderBy(x => x.Order)
+            if (roleCode == "") // resubmit approver to creator
+            {
+                db = new AppDbContext();
+                Guid? eligibleID = Guid.Empty;
+
+                if (id.HasValue)
+                {
+                    eligibleID = db.TransfersTransaction
+                        .Where(x => x.Id == id.Value)
+                        .Select(x => x.CreatedBy)
+                        .FirstOrDefault();
+                }
+
+                var user = db.Users
+                    .Where(x => x.Id == eligibleID)
+                    .FirstOrDefault();
+
+                return user?.iPMSRoleCode;
+            }
+            else // verify approver to next approver
+            {
+                db = new AppDbContext();
+                var eligible = db.TransferApprovalLimits
+                    .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
+                    .OrderBy(x => x.Order)
+                    .ToList();
+
+                var current = eligible.FirstOrDefault(x => x.TransApproverCode == roleCode);
+                var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+
+                return next?.TransApproverCode;
+            }
+
+        }
+        #endregion
+
+        #region  Transfer budget For Requestor Logic
+        public static void EmailsTransferBudgetForNewRequestModified(Guid id, TransfersTransaction TT, string roleCode)
+        {
+            decimal amount = TT.FromTransfer ?? 0;
+
+            List<string> nextApproverCodes = GetNextApproverCodesForTransferBudgetForNewRequest(amount, roleCode, out var db);
+            if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
+
+            // First try direct match on BizArea
+            List<User> userRole = db.Users
+                .Where(x => nextApproverCodes.Contains(x.iPMSRoleCode) && x.iPMSBizAreaCode == TT.BA)
                 .ToList();
 
-            var current = eligible.FirstOrDefault(x => x.TransApproverCode == roleCode);
-            var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+            // Fallback: Try zone-level using helper
+            if (!userRole.Any())
+            {
+                foreach (var code in nextApproverCodes)
+                {
+                    var fallbackUsers = GetUsersDetails(db, code, TT.BA);
+                    if (fallbackUsers.Any())
+                    {
+                        userRole.AddRange(fallbackUsers);
+                    }
+                }
 
-            return next?.TransApproverCode;
+                // Optional: remove duplicates by Email if multiple fallback hits
+                userRole = userRole.GroupBy(u => u.Email).Select(g => g.First()).ToList();
+            }
+
+            if (!userRole.Any()) return; // Still no users, exit
+
+            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            string actionName = "Transfer Budget Request";
+
+
+            foreach (var user in userRole)
+            {
+                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
         }
+
+
+
+        private static List<string> GetNextApproverCodesForTransferBudgetForNewRequest(decimal amount, string roleCode, out AppDbContext db)
+        {
+            db = new AppDbContext();
+             
+                return db.TransferApprovalLimits
+                    .Where(x => x.DeletedDate == null &&
+                                x.AmountMin <= amount &&
+                                (x.AmountMax == null || amount <= x.AmountMax) &&
+                                x.Order == 1)
+                    .Select(x => x.TransApproverCode)
+                    .Distinct()
+                    .ToList();
+             
+        }
+
         #endregion
 
         #region  Additional budget For Requestor Logic
@@ -73,7 +180,7 @@ namespace Prodata.WebForm.Class
             {
                 foreach (var code in nextApproverCodes)
                 {
-                    var fallbackUsers = GetUsersForNextApprover(db, code, ABR.BA);
+                    var fallbackUsers = GetUsersDetails(db, code, ABR.BA);
                     if (fallbackUsers.Any())
                     {
                         userRole.AddRange(fallbackUsers);
@@ -87,13 +194,13 @@ namespace Prodata.WebForm.Class
             if (!userRole.Any()) return; // Still no users, exit
 
             string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
-            string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}";
             string actionName = "Additional Budget Request";
 
-            string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
 
             foreach (var user in userRole)
             {
+                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
@@ -129,63 +236,136 @@ namespace Prodata.WebForm.Class
 
         #endregion
 
+        #region  Additional budget For Resubmit Logic
+        public static void EmailsReqAdditionalBudgetForResubmitModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        {
+            string type = ABR.CheckType == "FINANCE" ? "Finance" : "COGS";
+            decimal amount = ABR.AdditionalBudget ?? 0;
+
+            var db = new AppDbContext();
+            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA);
+            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            string actionName = "Additional Budget Request";
+
+            foreach (var user in userRole)
+            {
+                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        #endregion
+
+        #region  Transfer budget For Resubmit Logic
+        public static void EmailsReqTransferBudgetForResubmitModified(Guid id, TransfersTransaction ABR, string roleCode)
+        {
+            decimal amount = ABR.FromTransfer ?? 0;
+
+            var db = new AppDbContext();
+            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA);
+            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            string actionName = "Transfer Budget Request";
+
+            foreach (var user in userRole)
+            {
+                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(ABR, actionName, fullUrl);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        #endregion
+
         #region  Additional budget For Approver Logic
+
         public static void EmailsReqAdditionalBudgetForApproverModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         {
             string type = ABR.CheckType == "FINANCE" ? "Finance" : "COGS";
             decimal amount = ABR.AdditionalBudget ?? 0;
 
-            string nextApproverCode = GetNextApproverCodeForAdditionalBudget(amount, roleCode, type, out var db);
+            string nextApproverCode = GetNextApproverCodeForAdditionalBudget(amount, roleCode, type, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
 
-            List<User> userRole = GetUsersForNextApprover(db, nextApproverCode, ABR.BA);
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA);
             string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
-            string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}";
             string actionName = "Additional Budget Request";
 
-            string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
 
             foreach (var user in userRole)
             {
+                string fullUrl;
+                if (roleCode == "") // resubmit approver to creator
+                {
+                    fullUrl = $"{baseUrl}/Budget/Additional/Resubmit?Id={id}&userId={user.Id}";
+                    actionName = "Transfer Budget Request Revision";
+                }
+                else
+                {
+                    fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                    actionName = "Transfer Budget Request";
+                } 
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
 
-        private static string GetNextApproverCodeForAdditionalBudget(decimal amount, string roleCode, string type, out AppDbContext db)
+        private static string GetNextApproverCodeForAdditionalBudget(decimal amount, string roleCode, string type, out AppDbContext db, Guid? id = null)
         {
             db = new AppDbContext();
-            if (type == "Finance")
+            if (roleCode == "") // resubmit approver to creator
             {
-                var eligible = db.AdditionalLoaFinanceLimits
-                    .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
-                    .OrderBy(x => x.Order)
-                    .ToList();
+                db = new AppDbContext();
+                Guid? eligibleID = Guid.Empty;
 
-                var current = eligible.FirstOrDefault(x => x.FinanceApproverCode == roleCode);
-                var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+                if (id.HasValue)
+                {
+                    eligibleID = db.TransfersTransaction
+                        .Where(x => x.Id == id.Value)
+                        .Select(x => x.CreatedBy)
+                        .FirstOrDefault();
+                }
 
-                return next?.FinanceApproverCode;
+                var user = db.Users
+                    .Where(x => x.Id == eligibleID)
+                    .FirstOrDefault();
+
+                return user?.iPMSRoleCode;
             }
             else
             {
-                var eligible = db.AdditionalLoaCogsLimits
-                    .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
-                    .OrderBy(x => x.Order)
-                    .ToList();
+                if (type == "Finance")
+                {
+                    var eligible = db.AdditionalLoaFinanceLimits
+                        .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
+                        .OrderBy(x => x.Order)
+                        .ToList();
 
-                var current = eligible.FirstOrDefault(x => x.CogsApproverCode == roleCode);
-                var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+                    var current = eligible.FirstOrDefault(x => x.FinanceApproverCode == roleCode);
+                    var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
 
-                return next?.CogsApproverCode;
+                    return next?.FinanceApproverCode;
+                }
+                else
+                {
+                    var eligible = db.AdditionalLoaCogsLimits
+                        .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
+                        .OrderBy(x => x.Order)
+                        .ToList();
+
+                    var current = eligible.FirstOrDefault(x => x.CogsApproverCode == roleCode);
+                    var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+
+                    return next?.CogsApproverCode;
+                }
             }
         }
         #endregion
 
-        #region Function
-        private static List<User> GetUsersForNextApprover(AppDbContext db, string nextApproverCode, string bizAreaCode)
+        #region Function 
+
+        private static List<User> GetUsersDetails(AppDbContext db, string ApproverCode, string bizAreaCode)
         {
             string zoneCode = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(bizAreaCode);
-            var users = db.Users.Where(x => x.iPMSRoleCode == nextApproverCode).ToList();
+            var users = db.Users.Where(x => x.iPMSRoleCode == ApproverCode).ToList();
 
             var filtered = !string.IsNullOrEmpty(zoneCode)
                 ? users.Where(x => x.iPMSBizAreaCode == zoneCode).ToList()

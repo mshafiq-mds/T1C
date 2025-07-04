@@ -1,4 +1,5 @@
-﻿using FGV.Prodata.Web.UI;
+﻿using Antlr.Runtime.Misc;
+using FGV.Prodata.Web.UI;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
@@ -21,6 +22,14 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
             if (!IsPostBack)
             {
                 string idStr = Request.QueryString["id"];
+                string idUserStr = Request.QueryString["userId"];
+
+                // Redirect only if userId exists and does not match the current user
+                if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
+                {
+                    Response.Redirect("~/Budget/Additional/Approval/Finance");
+                }
+
                 if (Guid.TryParse(idStr, out Guid requestId))
                 {
                     hdnTransferId.Value = requestId.ToString();
@@ -95,7 +104,16 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                     model.Status = status;
 
                     db.SaveChanges();
-                    Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+
+                    string action = hdnAction.Value?.ToLower();
+                    if (action == "approve")
+                    {
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+                    }
+                    else
+                    {
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model);
+                    }
                 }
             }
         }

@@ -34,7 +34,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
             using (var db = new AppDbContext())
             {
-                // Load all active cumulative limits ordered by level (Order)
+                // Load all active cumulative limits
                 var limits = db.AdditionalCumulativeLimits
                     .Where(m => m.DeletedDate == null)
                     .OrderBy(m => m.Order)
@@ -44,10 +44,9 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
                 if (!string.IsNullOrEmpty(ba))
                 {
-                    if (accessibleBizAreas.Count > 0)
-                        query = query.Where(x => accessibleBizAreas.Contains(x.BA));
-                    else
-                        query = query.Where(x => x.BA == ba);
+                    query = accessibleBizAreas.Any()
+                        ? query.Where(x => accessibleBizAreas.Contains(x.BA))
+                        : query.Where(x => x.BA == ba);
                 }
 
                 var transfers = query
@@ -55,22 +54,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .ToList()
                     .Select(x =>
                     {
-                        int currentLevelApproval = db.AdditionalBudgetLog
+                        int currentLevel = db.AdditionalBudgetLog
                             .Where(w => w.BudgetTransferId == x.Id)
                             .OrderByDescending(w => w.CreatedDate)
                             .Select(w => w.StepNumber)
                             .FirstOrDefault();
 
-                        // Determine the correct approver based on cumulative limits
-                        var eligibleLimit = limits
-                            .Where(l => l.AmountCumulativeBalance.GetValueOrDefault() >= x.AdditionalBudget)
-                            .OrderBy(l => l.Order)
-                            .FirstOrDefault();
-
-                        bool canEdit = (x.DeletedDate == null &&
-                            eligibleLimit != null &&
-                            eligibleLimit.CumulativeApproverCode == userRole &&
-                            eligibleLimit.Order == currentLevelApproval + 1);
+                        var eligibleLimit = Class.Budget.GetEligibleCumulativeLimit(limits, x.AdditionalBudget);
+                        bool canEdit = Class.Budget.CanEditCumulativeRequest(eligibleLimit, userRole, currentLevel, x.DeletedDate);
+                        string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
 
                         return new
                         {
@@ -80,29 +72,20 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                             x.Project,
                             x.ApplicationDate,
                             x.AdditionalBudget,
-                            Status =
-                                x.DeletedDate != null ? "Deleted" :
-                                x.Status == 0 ? "Resubmit" :
-                                x.Status == 1 ? "Submitted" :
-                                x.Status == 2 ? "Under Review" :
-                                x.Status == 3 ? "Completed" :
-                                x.Status == 4 ? "Finalized" :
-                                "Unknown",
+                            Status = status,
                             CanEdit = canEdit
                         };
                     })
                     .Where(x =>
-                                statusFilter == "All" ||
-                                (statusFilter == "EditableOnly" && x.CanEdit) ||
-                                x.Status == statusFilter
-                          )
+                        statusFilter == "All" ||
+                        (statusFilter == "EditableOnly" && x.CanEdit) ||
+                        x.Status == statusFilter)
                     .ToList();
 
                 gvAdditionalBudgetList.DataSource = transfers;
                 gvAdditionalBudgetList.DataBind();
             }
         }
-
 
     }
 }

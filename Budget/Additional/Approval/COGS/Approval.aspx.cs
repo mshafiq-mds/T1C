@@ -21,6 +21,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
             if (!IsPostBack)
             {
                 string idStr = Request.QueryString["id"];
+                string idUserStr = Request.QueryString["userId"];
+
+                // Redirect only if userId exists and does not match the current user
+                if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
+                {
+                    Response.Redirect("~/Budget/Additional/Approval/COGS");
+                }
+
+                // Proceed only if a valid request ID is provided
                 if (Guid.TryParse(idStr, out Guid requestId))
                 {
                     hdnTransferId.Value = requestId.ToString();
@@ -65,8 +74,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                 {
                     int currentorder = db.AdditionalBudgetLog.Where(x => x.BudgetTransferId == _transferId).OrderByDescending(x => x.ActionDate).Select(x => x.StepNumber).FirstOrDefault();
                     int currentLimitorder = db.TransferApprovalLimits
-                    .Where(x => x.DeletedDate == null &&
-                    x.AmountMin <= esCost &&
+                        .Where(x => x.DeletedDate == null &&
+                                    x.AmountMin <= esCost &&
                                     (x.AmountMax == null || esCost <= x.AmountMax))
                         .OrderByDescending(x => x.Order).Select(x => x.Order).FirstOrDefault().GetValueOrDefault();
                     if (currentorder == currentLimitorder)
@@ -94,8 +103,16 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
 
                     model.Status = status;
 
-                    db.SaveChanges();
-                    Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+                    db.SaveChanges(); 
+                    string action = hdnAction.Value?.ToLower();
+                    if (action == "approve")
+                    {
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+                    }
+                    else
+                    {
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model);
+                    }
                 }
             }
         }
