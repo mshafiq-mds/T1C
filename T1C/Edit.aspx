@@ -622,10 +622,12 @@
         }
 
         function loadAllocations(dropdown) {
+            var formId = $('#<%= hdnFormId.ClientID %>').val();
             $.ajax({
                 type: "POST",
                 url: "Edit.aspx/GetBudgets",
                 contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ excludedFormId: formId }),
                 dataType: "json",
                 success: function (response) {
                     var options = '<option value=""></option>';

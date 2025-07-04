@@ -18,7 +18,8 @@ namespace Prodata.WebForm.Class
             string bizAreaCode = null, 
             string refNo = null, 
             decimal? amountMin = null, 
-            decimal? amountMax = null)
+            decimal? amountMax = null,
+            Guid? excludedFormId = null)
 		{
 			using (var db = new AppDbContext())
 			{
@@ -74,25 +75,50 @@ namespace Prodata.WebForm.Class
                     .ThenBy(q => q.Ref)
                     .ToList();
 
-                return query2.Select(q => new Models.ViewModels.BudgetListViewModel
+                // ✅ Step 1: Extract budget IDs
+                var budgetIds = query2.Select(q => q.Id).ToList();
+
+                // ✅ Step 2: Batch load utilized amounts per budget
+                var utilizedMap = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t => budgetIds.Contains(t.FromId.Value)
+                             && t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase)
+                             && (excludedFormId == null || (t.ToId != excludedFormId.Value && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase)))
+                             && !t.Status.Equals("rejected", StringComparison.OrdinalIgnoreCase))
+                    .GroupBy(t => t.FromId)
+                    .Select(g => new
+                    {
+                        BudgetId = g.Key,
+                        Utilized = g.Sum(t => t.Amount) ?? 0m
+                    })
+                    .ToDictionary(x => x.BudgetId, x => x.Utilized);
+
+                // ✅ Step 3: Project into view model with balance
+                return query2.Select(q =>
                 {
-                    Id = q.Id,
-                    Type = q.Type,
-                    BizAreaCode = q.BizAreaCode,
-                    BizAreaName = q.BizAreaName,
-                    Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
-                    Month = q.Month.HasValue && q.Month.Value >= 1 && q.Month.Value <= 12
-                        ? new DateTime(2000, q.Month.Value, 1).ToString("MMM", CultureInfo.CurrentCulture).ToUpper()
-                        : string.Empty,
-                    Ref = q.Ref,
-                    Name = q.Name,
-                    DisplayName = q.Ref + " - " + q.Details + " (RM" + (q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : "0.00") + ")",
-                    Details = q.Details,
-                    Wages = q.Wages.HasValue ? q.Wages.Value.ToString("#,##0.00") : string.Empty,
-                    Purchase = q.Purchase.HasValue ? q.Purchase.Value.ToString("#,##0.00") : string.Empty,
-                    Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
-                    Vendor = q.Vendor,
-                    Status = q.Status
+                    decimal amount = q.Amount ?? 0m;
+                    decimal utilized = utilizedMap.ContainsKey(q.Id) ? utilizedMap[q.Id] : 0m;
+                    decimal balance = amount - utilized;
+
+                    return new Models.ViewModels.BudgetListViewModel
+                    {
+                        Id = q.Id,
+                        Type = q.Type,
+                        BizAreaCode = q.BizAreaCode,
+                        BizAreaName = q.BizAreaName,
+                        Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+                        Month = q.Month.HasValue && q.Month.Value >= 1 && q.Month.Value <= 12
+                            ? new DateTime(2000, q.Month.Value, 1).ToString("MMM", CultureInfo.CurrentCulture).ToUpper()
+                            : string.Empty,
+                        Ref = q.Ref,
+                        Name = q.Name,
+                        DisplayName = q.Ref + " - " + q.Details + " (RM" + balance.ToString("#,##0.00") + ")",
+                        Details = q.Details,
+                        Wages = q.Wages.HasValue ? q.Wages.Value.ToString("#,##0.00") : string.Empty,
+                        Purchase = q.Purchase.HasValue ? q.Purchase.Value.ToString("#,##0.00") : string.Empty,
+                        Amount = balance.ToString("#,##0.00"), // ✅ Use balance instead of amount
+                        Vendor = q.Vendor,
+                        Status = q.Status
+                    };
                 }).ToList();
             }
 		}

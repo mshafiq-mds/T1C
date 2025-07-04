@@ -132,6 +132,25 @@ namespace Prodata.WebForm.T1C
                                     }).ToList();
 
                                     db.FormBudgets.AddRange(budgets);
+                                    db.SaveChanges();
+
+                                    var transactions = budgets
+                                        .Where(x => x.Amount > 0)
+                                        .Select(x => new Models.Transaction
+                                        {
+                                            FromId = x.BudgetId,
+                                            FromType = "Budget",
+                                            ToId = form.Id,
+                                            ToType = "Form",
+                                            Date = DateTime.Now,
+                                            Ref = form.Ref,
+                                            Name = "-",
+                                            Amount = x.Amount,
+                                            Status = "Floating"
+                                        }).ToList();
+
+                                    db.Transactions.AddRange(transactions);
+                                    db.SaveChanges();
                                 }
                                 catch (Exception ex)
                                 {
@@ -335,7 +354,8 @@ namespace Prodata.WebForm.T1C
                                             Date = DateTime.Now,
                                             Ref = form.Ref,
                                             Name = "-",
-                                            Amount = x.Amount
+                                            Amount = x.Amount,
+                                            Status = "Submitted"
                                         }).ToList();
 
                                     db.Transactions.AddRange(transactions);

@@ -3109,6 +3109,7 @@
     <Compile Include="Error\404.aspx.designer.cs">
       <DependentUpon>404.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\BudgetHelper.cs" />
     <Compile Include="Helpers\Encryptor2.cs" />
     <Compile Include="Helpers\FormHelper.cs" />
     <Compile Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx.cs">

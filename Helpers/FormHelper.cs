@@ -1,4 +1,5 @@
-﻿using Prodata.WebForm.Models;
+﻿using CustomGuid.AspNet.Identity;
+using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,11 +49,11 @@ namespace Prodata.WebForm.Helpers
             return form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase);
         }
 
-        public static string getLatestFormRemark(Guid formId)
+        public static string GetLatestFormRemark(Guid formId)
         {
             using (var db = new AppDbContext())
             {
-                var approval = db.Approvals
+                var approval = db.Approvals.ExcludeSoftDeleted()
                     .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(a => a.CreatedDate)
                     .FirstOrDefault();
@@ -64,9 +65,23 @@ namespace Prodata.WebForm.Helpers
             return string.Empty;
         }
 
-        public static string getLatestFormRemark(this Models.Form form)
+        public static string GetLatestFormRemark(this Models.Form form)
         {
-            return getLatestFormRemark(form.Id);
+            return GetLatestFormRemark(form.Id);
+        }
+
+        public static void SoftDeleteTransactions(this Models.Form form)
+        {
+            using (var db = new AppDbContext())
+            {
+                var transactions = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t => t.FromId == form.Id && t.FromType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                foreach (var transaction in transactions)
+                {
+                    db.SoftDelete(transaction);
+                }
+            }
         }
     }
 }
