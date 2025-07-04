@@ -24,7 +24,7 @@
                             <i class="fas fa-save"></i> Save
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return collectData();">
-                            <i class="fas fa-share"></i> Submit
+                            <i class="fas fa-share"></i> <asp:Label ID="btnSubmitLabel" runat="server" Text="Submit"></asp:Label>
                         </asp:LinkButton>
                     </div>
                 </div>
@@ -33,6 +33,10 @@
                     <asp:HiddenField ID="hdnVendorList" runat="server" />
                     <div class="row">
                         <div class="col-lg-12">
+                            <div id="alert" class="alert alert-danger alert-dismissable" role="alert" runat="server">
+			                    <button href="#" class="close" data-dismiss="alert" aria-label="close">&times;</button>
+                                <asp:Label ID="lblAlert" runat="server"></asp:Label>
+                            </div>
                             <div class="form-group row">
                                 <asp:Label ID="lblBA" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="ddlBA" Text="BA"></asp:Label>
                                 <div class="col-lg-6 col-sm-5">
@@ -112,7 +116,7 @@
 
                                     <!-- Plus button below dropdowns -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddAllocation">
-                                        <i class="fa fa-plus"></i>Add Allocation
+                                        <i class="fa fa-plus"></i> Add Allocation
                                     </button>
                                 </div>
                             </div>
@@ -142,7 +146,7 @@
 
                                     <!-- Plus button below textboxes -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
-                                        <i class="fa fa-plus"></i>Add Contractor
+                                        <i class="fa fa-plus"></i> Add Contractor
                                     </button>
                                 </div>
                             </div>
@@ -295,7 +299,7 @@
 
                                             <!-- Dec Cost Report Current Year -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Current Year)"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (current year)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlDecCostReportCurrentYearView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkDecCostReportCurrentYear" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -313,7 +317,7 @@
 
                                             <!-- Dec Cost Report Last Year -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Last Year)"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (last year)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlDecCostReportLastYearView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkDecCostReportLastYear" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -331,7 +335,7 @@
 
                                             <!-- Cost Report Last Month -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Cost Report (Last Month)"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Cost Report (last month)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlCostReportLastMonthView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkCostReportLastMonth" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -349,7 +353,7 @@
 
                                             <!-- Drawing/Sketching -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Drawing/Sketching"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Drawing / Sketching"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlDrawingSketchingView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkDrawingSketching" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -367,7 +371,7 @@
 
                                             <!-- Quotation -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Quotation"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Quotation (direct negotiation only)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlQuotationView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkQuotation" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -385,7 +389,7 @@
 
                                             <!-- Damage Investigation Report -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Damage Investigation Report"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Damage Investigation Report (Shovel / Prime Mover / Turbine / Alternator / Genset)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlDamageInvestigationReportView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkDamageInvestigationReport" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -421,7 +425,7 @@
 
                                             <!-- Budget Transfer/Add Approval -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Budget Transfer/Add Approval"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Approval of Budget Transfer/Add"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlBudgetTransferAddApprovalView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkBudgetTransferAddApproval" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -439,7 +443,7 @@
 
                                             <!-- Other Supporting Document -->
                                             <div class="form-group row">
-                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Other Supporting Document"></asp:Label>
+                                                <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Other Supporting Documents (JKKP/JAS/SHO/NDT Report)"></asp:Label>
                                                 <div class="col-lg-9">
                                                     <asp:Panel ID="pnlOtherSupportingDocumentView" runat="server" Visible="false">
                                                         <asp:HyperLink ID="lnkOtherSupportingDocument" runat="server" Target="_blank" Text="View File" CssClass="btn btn-link" />
@@ -618,10 +622,12 @@
         }
 
         function loadAllocations(dropdown) {
+            var formId = $('#<%= hdnFormId.ClientID %>').val();
             $.ajax({
                 type: "POST",
                 url: "Edit.aspx/GetBudgets",
                 contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ excludedFormId: formId }),
                 dataType: "json",
                 success: function (response) {
                     var options = '<option value=""></option>';

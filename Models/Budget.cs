@@ -50,5 +50,7 @@ namespace Prodata.WebForm.Models
 
 		[ForeignKey("TypeId")]
         public virtual BudgetType Type { get; set; }
+
+		public virtual ICollection<FormBudget> FormBudgets { get; set; }
     }
 }

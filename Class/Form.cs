@@ -113,11 +113,10 @@ namespace Prodata.WebForm.Class
                     C = q.C.HasValue ? q.C.Value.ToString("#,##0.00") : string.Empty,
                     D = q.D.HasValue ? q.D.Value.ToString("#,##0.00") : string.Empty,
                     Status = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status), //q.Status,
-                    IsEditable = q.Status.Equals("draft", StringComparison.OrdinalIgnoreCase)
+                    IsEditable = (q.Status.Equals("draft", StringComparison.OrdinalIgnoreCase) || q.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase))
                 }).ToList();
             }
         }
-
         public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string ipmsRoleCode = null, List<string> ipmsBizAreaCodes = null)
         {
             using (var db = new AppDbContext())
@@ -166,7 +165,8 @@ namespace Prodata.WebForm.Class
                     where al.Order == nextOrder &&
                           f.Amount >= al.AmountMin &&
                           (al.AmountMax == null || f.Amount <= al.AmountMax) &&
-                          (ipmsBizAreaCodes == null || !ipmsBizAreaCodes.Any() || ipmsBizAreaCodes.Contains(f.BizAreaCode))
+                          (ipmsBizAreaCodes == null || !ipmsBizAreaCodes.Any() || ipmsBizAreaCodes.Contains(f.BizAreaCode)) &&
+                          !new[] { "Draft", "SentBack", "Approved", "Rejected" }.Contains(f.Status)
                     orderby f.Date
                     select new Models.ViewModels.FormListViewModel
                     {
@@ -174,6 +174,7 @@ namespace Prodata.WebForm.Class
                         Type = tName,
                         BizAreaCode = f.BizAreaCode,
                         BizAreaName = f.BizAreaName,
+                        BizAreaDisplayName = f.BizAreaCode + " - " + f.BizAreaName,
                         Date = f.Date.HasValue ? f.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
                         Ref = f.Ref,
                         Details = f.Details,

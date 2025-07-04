@@ -1,6 +1,7 @@
 ﻿using CustomGuid.AspNet.Identity;
 using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
+using Prodata.WebForm.Helpers;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,16 @@ namespace Prodata.WebForm.T1C
                     bool isSuccess = db.SoftDelete(form);
                     if (isSuccess)
                     {
+                        // Soft delete transactions related to the form
+                        form.SoftDeleteTransactions();
+
+                        // Delete form budgets related to the form
+                        foreach (var formBudget in form.FormBudgets)
+                        {
+                            db.FormBudgets.Remove(formBudget);
+                        }
+                        db.SaveChanges();
+
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Form deleted.");
                     }
                     else

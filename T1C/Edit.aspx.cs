@@ -1,4 +1,5 @@
-﻿using FGV.Prodata.App;
+﻿using CustomGuid.AspNet.Identity;
+using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
 using Newtonsoft.Json;
 using NPOI.HSSF.Record.Chart;
@@ -32,6 +33,18 @@ namespace Prodata.WebForm.T1C
                         if (!FormHelper.IsFormEditable(guid))
                         {
                             Response.Redirect("~/T1C");
+                        }
+
+                        if (FormHelper.IsFormSentBack(guid))
+                        {
+                            alert.Visible = true;
+                            lblAlert.Text = FormHelper.GetLatestFormRemark(guid);
+                            btnSubmitLabel.Text = "Resubmit";
+                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This form has been sent back for correction. Please review the comments and make necessary changes before submitting again.");
+                        }
+                        else
+                        {
+                            alert.Visible = false;
                         }
 
                         hdnFormId.Value = id;
@@ -167,13 +180,45 @@ namespace Prodata.WebForm.T1C
                                         BudgetId = Guid.Parse(x.id),
                                         Amount = decimal.Parse(x.amount)
                                     }).ToList();
-
                                     db.FormBudgets.AddRange(budgets);
                                     db.SaveChanges(); // Save additions
+
+                                    // Remove existing transactions for this form
+                                    var existingTransactions = db.Transactions
+                                        .Where(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) 
+                                                 && t.ToId == form.Id 
+                                                 && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                                        .ToList();
+                                    foreach (var transaction in existingTransactions)
+                                    {
+                                        db.SoftDelete(transaction); // Soft delete existing transactions
+                                    }
+
+                                    // Add new transactions
+                                    var transactions = budgets
+                                        .Where(x => x.Amount > 0)
+                                        .Select(x => new Models.Transaction
+                                        {
+                                            FromId = x.BudgetId,
+                                            FromType = "Budget",
+                                            ToId = form.Id,
+                                            ToType = "Form",
+                                            Date = DateTime.Now,
+                                            Ref = form.Ref,
+                                            Name = "-",
+                                            Amount = x.Amount,
+                                            Status = form.Status.Equals("Draft", StringComparison.OrdinalIgnoreCase)
+                                                     ? "Floating"
+                                                     : form.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase) 
+                                                        ? "Submitted" 
+                                                        : form.Status
+                                        }).ToList();
+                                    db.Transactions.AddRange(transactions);
+                                    db.SaveChanges();
                                 }
                                 catch (Exception ex)
                                 {
-                                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
+                                    throw ex;
                                 }
                             }
 
@@ -369,10 +414,21 @@ namespace Prodata.WebForm.T1C
                                         BudgetId = Guid.Parse(x.id),
                                         Amount = decimal.Parse(x.amount)
                                     }).ToList();
-
                                     db.FormBudgets.AddRange(budgets);
                                     db.SaveChanges(); // Save additions
 
+                                    // Remove existing transactions for this form
+                                    var existingTransactions = db.Transactions
+                                        .Where(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) 
+                                                 && t.ToId == form.Id 
+                                                 && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                                        .ToList();
+                                    foreach (var transaction in existingTransactions)
+                                    {
+                                        db.SoftDelete(transaction); // Soft delete existing transactions
+                                    }
+
+                                    // Add new transactions
                                     var transactions = budgets
                                         .Where(x => x.Amount > 0)
                                         .Select(x => new Models.Transaction
@@ -384,7 +440,12 @@ namespace Prodata.WebForm.T1C
                                             Date = DateTime.Now,
                                             Ref = form.Ref,
                                             Name = "-",
-                                            Amount = x.Amount
+                                            Amount = x.Amount,
+                                            Status = form.Status.Equals("Draft", StringComparison.OrdinalIgnoreCase)
+                                                     ? "Floating"
+                                                     : form.Status.Equals("Pending", StringComparison.OrdinalIgnoreCase)
+                                                        ? "Submitted"
+                                                        : form.Status
                                         }).ToList();
 
                                     db.Transactions.AddRange(transactions);
@@ -392,7 +453,7 @@ namespace Prodata.WebForm.T1C
                                 }
                                 catch (Exception ex)
                                 {
-                                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
+                                    throw ex;
                                 }
                             }
 
@@ -521,9 +582,9 @@ namespace Prodata.WebForm.T1C
         }
 
         [WebMethod]
-        public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
+        public static List<Models.ViewModels.BudgetListViewModel> GetBudgets(string excludedFormId)
         {
-            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
+            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode, excludedFormId: Guid.Parse(excludedFormId));
         }
 
         [WebMethod]

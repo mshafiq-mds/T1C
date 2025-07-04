@@ -59,5 +59,7 @@ namespace Prodata.WebForm.Models
 
         [StringLength(50)]
         public string Status { get; set; }
+
+        public virtual ICollection<FormBudget> FormBudgets { get; set; }
     }
 }
