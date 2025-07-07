@@ -116,7 +116,7 @@
                                                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                                                     <ItemStyle CssClass="width-80 text-center text-nowrap" />
                                                     <ItemTemplate>
-                                                        <asp:LinkButton ID="btnView" runat="server" CssClass="btn btn-outline-info btn-xs">
+                                                        <asp:LinkButton ID="btnView" runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/View?Id={Eval("Id")}" %>'>
                                                             <i class="fas fa-eye"></i>
                                                         </asp:LinkButton>
                                                         <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='/T1C/Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>

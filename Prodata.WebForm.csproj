@@ -2736,6 +2736,7 @@
     <Content Include="T1C\Approval\Edit.aspx" />
     <Content Include="T1C\Default.aspx" />
     <Content Include="T1C\Edit.aspx" />
+    <Content Include="T1C\View.aspx" />
     <Content Include="Uploads\readme.txt" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
@@ -3340,6 +3341,13 @@
     </Compile>
     <Compile Include="T1C\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>

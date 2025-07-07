@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm.T1C.Approval
+namespace Prodata.WebForm.T1C
 {
 
 
-    public partial class Edit
+    public partial class View
     {
 
         /// <summary>
@@ -24,40 +24,13 @@ namespace Prodata.WebForm.T1C.Approval
         protected global::System.Web.UI.WebControls.HiddenField hdnFormId;
 
         /// <summary>
-        /// hdnRemark control.
+        /// lblTitle control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnRemark;
-
-        /// <summary>
-        /// btnApproveConfirm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnApproveConfirm;
-
-        /// <summary>
-        /// btnRejectConfirm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRejectConfirm;
-
-        /// <summary>
-        /// btnSendBackConfirm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSendBackConfirm;
+        protected global::System.Web.UI.WebControls.Label lblTitle;
 
         /// <summary>
         /// btnBack control.
@@ -69,31 +42,13 @@ namespace Prodata.WebForm.T1C.Approval
         protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnApprove control.
+        /// btnEdit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnApprove;
-
-        /// <summary>
-        /// btnReject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnReject;
-
-        /// <summary>
-        /// btnSendBack control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnSendBack;
+        protected global::System.Web.UI.WebControls.LinkButton btnEdit;
 
         /// <summary>
         /// lblBA control.

@@ -1,4 +1,5 @@
 ﻿using CustomGuid.AspNet.Identity;
+using Microsoft.AspNet.Identity;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -49,11 +50,62 @@ namespace Prodata.WebForm.Helpers
             return form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase);
         }
 
+        public static bool IsFormPendingUserAction(Guid formId, Guid? userId = null)
+        {
+            using (var db = new AppDbContext())
+            {
+                var user = userId.HasValue ? db.Users.Find(userId.Value) : Auth.User();
+                if (user == null) return false;
+
+                var form = db.Forms.Find(formId);
+                if (form == null) return false;
+
+                // Get all approval limits for the form's amount, ordered by approval step
+                var approvalLimits = db.ApprovalLimits.ExcludeSoftDeleted()
+                    .Where(al => al.AmountMin <= form.Amount && form.Amount <= al.AmountMax)
+                    .OrderBy(al => al.Order)
+                    .ToList();
+
+                if (!approvalLimits.Any()) return false;
+
+                // Get all approval codes already used to approve this form
+                var approvedCodes = db.Approvals
+                    .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .Select(a => a.ActionByCode)
+                    .ToList();
+
+                // ✅ Return false if no approvals have been made yet
+                if (approvedCodes == null || !approvedCodes.Any())
+                    return false;
+
+                // Find the first approval step not yet approved
+                foreach (var limit in approvalLimits)
+                {
+                    if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
+                    {
+                        // This is the next required approval step
+                        if (user.iPMSRoleCode == limit.ApproverCode)
+                        {
+                            return true; // Current user is the next expected approver
+                        }
+                        break; // Stop after first unapproved step
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public static bool IsFormPendingUserAction(this Models.Form form)
+        {
+            return IsFormPendingUserAction(form.Id);
+        }
+
         public static string GetLatestFormRemark(Guid formId)
         {
             using (var db = new AppDbContext())
             {
-                var approval = db.Approvals.ExcludeSoftDeleted()
+                var approval = db.Approvals
                     .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(a => a.CreatedDate)
                     .FirstOrDefault();
@@ -75,7 +127,7 @@ namespace Prodata.WebForm.Helpers
             using (var db = new AppDbContext())
             {
                 var transactions = db.Transactions.ExcludeSoftDeleted()
-                    .Where(t => t.FromId == form.Id && t.FromType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .Where(t => t.ToId == form.Id && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase))
                     .ToList();
                 foreach (var transaction in transactions)
                 {
