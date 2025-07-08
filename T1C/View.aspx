@@ -1,30 +1,21 @@
-﻿<%@ Page Title="T1C Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.Approval.Edit" %>
+﻿<%@ Page Title="T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.T1C.View" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnFormId" runat="server" />
-    <asp:HiddenField ID="hdnRemark" runat="server" />
-
-    <asp:Button ID="btnApproveConfirm" runat="server" CssClass="d-none" OnClick="btnApprove_Click" />
-    <asp:Button ID="btnRejectConfirm" runat="server" CssClass="d-none" OnClick="btnReject_Click" />
-    <asp:Button ID="btnSendBackConfirm" runat="server" CssClass="d-none" OnClick="btnSendBack_Click" />
 
     <div class="row">
         <div class="col-lg-12">
             <div class="card card-outline">
                 <div class="card-header card-header-sticky">
-                    <h3 class="card-title d-none d-sm-inline"><%: Page.Title %></h3>
+                    <h3 class="card-title">
+                        <asp:Label ID="lblTitle" runat="server"></asp:Label>
+                    </h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/T1C/Approval/Default" CausesValidation="false">
-                        <i class="fas fa-angle-double-left"></i> Back
+                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/Default" CausesValidation="false">
+                            <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnApprove" runat="server" CssClass="btn btn-success" OnClientClick="showApproveModal(); return false;">
-                        <i class="fas fa-check"></i> Approve
-                        </asp:LinkButton>
-                        <asp:LinkButton ID="btnReject" runat="server" CssClass="btn btn-danger" OnClientClick="showRejectModal(); return false;">
-                        <i class="fas fa-times"></i> Reject
-                        </asp:LinkButton>
-                        <asp:LinkButton ID="btnSendBack" runat="server" CssClass="btn btn-info" OnClientClick="showSendBackModal(); return false;">
-                            <i class="fas fa-undo"></i> Send Back
+                        <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnEdit_Click" CausesValidation="false">
+                            <i class="fas fa-edit"></i> Edit
                         </asp:LinkButton>
                     </div>
                 </div>
@@ -374,78 +365,4 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="remarkModal" tabindex="-1" role="dialog" aria-labelledby="remarkModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="remarkModalLabel">Enter Remark</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <textarea id="txtRemark" class="form-control" rows="4" placeholder="Enter your remark here..."></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button id="modalSubmit" type="button" class="btn btn-primary">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        $(document).ready(function () {
-            $('#remarkModal').on('hidden.bs.modal', function () {
-                // Clear the textarea when the modal is fully hidden
-                $('#txtRemark').val('');
-            });
-        });
-
-        function showApproveModal() {
-            $('#remarkModal').modal('show');
-            $('#remarkModal').find('.modal-title').text('Enter remark to approve application');
-            $('#remarkModal').find('#modalSubmit').removeClass().addClass('btn btn-success btn-sm');
-            $('#remarkModal').find('#modalSubmit').removeAttr('onclick').attr('onclick', 'submitApprove();');
-        }
-
-        function showRejectModal() {
-            $('#remarkModal').modal('show');
-            $('#remarkModal').find('.modal-title').text('Enter remark to reject application');
-            $('#remarkModal').find('#modalSubmit').removeClass().addClass('btn btn-danger btn-sm');
-            $('#remarkModal').find('#modalSubmit').removeAttr('onclick').attr('onclick', 'submitReject();');
-        }
-
-        function showSendBackModal() {
-            $('#remarkModal').modal('show');
-            $('#remarkModal').find('.modal-title').text('Enter remark to send back application');
-            $('#remarkModal').find('#modalSubmit').removeClass().addClass('btn btn-info btn-sm');
-            $('#remarkModal').find('#modalSubmit').removeAttr('onclick').attr('onclick', 'submitSendBack();');
-        }
-
-        function submitApprove() {
-            var remark = document.getElementById("txtRemark").value;
-            document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
-
-            // Trigger hidden button for server postback
-            document.getElementById("<%= btnApproveConfirm.ClientID %>").click();
-        }
-
-        function submitReject() {
-            var remark = document.getElementById("txtRemark").value;
-            document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
-
-            // Trigger hidden button for server postback
-            document.getElementById("<%= btnRejectConfirm.ClientID %>").click();
-        }
-
-        function submitSendBack() {
-            var remark = document.getElementById("txtRemark").value;
-            document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
-
-            // Trigger hidden button for server postback
-            document.getElementById("<%= btnSendBackConfirm.ClientID %>").click();
-        }
-    </script>
 </asp:Content>

@@ -32,5 +32,6 @@ namespace Prodata.WebForm.Models.ViewModels
         public string Status { get; set; }
 
         public bool IsEditable { get; set; }
+        public bool IsPendingUserAction { get; set; }
     }
 }

@@ -1,6 +1,4 @@
-﻿using FGV.Prodata.App;
-using FGV.Prodata.Web.UI;
-using Org.BouncyCastle.Asn1.Ocsp;
+﻿using FGV.Prodata.Web.UI;
 using Prodata.WebForm.Helpers;
 using Prodata.WebForm.Models;
 using System;
@@ -10,9 +8,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.T1C.Approval
+namespace Prodata.WebForm.T1C
 {
-    public partial class Edit : ProdataPage
+    public partial class View : ProdataPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -42,150 +40,33 @@ namespace Prodata.WebForm.T1C.Approval
                         LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
                         LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
                     }
+                    else
+                    {
+                        lblTitle.Text = "Invalid ID format.";
+                    }
                 }
                 else
                 {
-                    Response.Redirect("~/T1C/Approval");
+                    Response.Redirect("~/T1C");
                 }
             }
         }
 
-        protected void btnApprove_Click(object sender, EventArgs e)
+        protected void btnEdit_Click(object sender, EventArgs e)
         {
-            string formId = hdnFormId.Value;
-            string remark = hdnRemark.Value;
-            Guid parsedFormId = Guid.Parse(formId);
-
-            try
+            using (var db = new AppDbContext())
             {
-                using (var db = new AppDbContext())
+                string id = hdnFormId.Value;
+                var form = db.Forms.Find(Guid.Parse(id));
+                if (form != null)
                 {
-                    var formClass = new Class.Form();
-                    var form = db.Forms.Find(parsedFormId);
-                    var lastApproval = db.Approvals
-                        .Where(a => a.ObjectId == form.Id && a.ObjectType == "Form")
-                        .OrderByDescending(a => a.CreatedDate)
-                        .FirstOrDefault();
-                    int lastApprovalOrder = lastApproval != null && lastApproval.Order.HasValue ? lastApproval.Order.Value : 0;
-
-                    db.Approvals.Add(new Models.Approval
-                    {
-                        ObjectId = form.Id,
-                        ObjectType = "Form",
-                        ActionById = Auth.User().Id,
-                        ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
-                        ActionByName = Auth.User().Name,
-                        Action = "Approved",
-                        Remark = remark,
-                        Order = lastApprovalOrder + 1,
-                    });
-                    db.SaveChanges();
-
-                    if (!formClass.IsFormHasNextApprover(form.Id))
-                    {
-                        form.Status = "Approved";
-                        db.Entry(form).State = System.Data.Entity.EntityState.Modified;
-                        db.SaveChanges();
-                    }
+                    Response.Redirect($"~/T1C/Edit.aspx?Id={id}");
+                }
+                else
+                {
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "An error occured.");
                 }
             }
-            catch (Exception ex)
-            {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                Response.Redirect(Request.Url.GetCurrentUrl(true));
-            }
-
-            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Approved.");
-            Response.Redirect("~/T1C/Approval");
-        }
-
-        protected void btnReject_Click(object sender, EventArgs e)
-        {
-            string formId = hdnFormId.Value;
-            string remark = hdnRemark.Value;
-            Guid parsedFormId = Guid.Parse(formId);
-
-            try
-            {
-                using (var db = new AppDbContext())
-                {
-                    var form = db.Forms.Find(parsedFormId);
-                    var lastApproval = db.Approvals
-                        .Where(a => a.ObjectId == form.Id && a.ObjectType == "Form")
-                        .OrderByDescending(a => a.CreatedDate)
-                        .FirstOrDefault();
-                    int lastApprovalOrder = lastApproval != null && lastApproval.Order.HasValue ? lastApproval.Order.Value : 0;
-
-                    db.Approvals.Add(new Models.Approval
-                    {
-                        ObjectId = form.Id,
-                        ObjectType = "Form",
-                        ActionById = Auth.User().Id,
-                        ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
-                        ActionByName = Auth.User().Name,
-                        Action = "Rejected",
-                        Remark = remark,
-                        Order = lastApprovalOrder + 1,
-                    });
-
-                    form.Status = "Rejected";
-                    db.Entry(form).State = System.Data.Entity.EntityState.Modified;
-
-                    form.SoftDeleteTransactions(); // Soft delete related transactions
-
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                Response.Redirect(Request.Url.GetCurrentUrl(true));
-            }
-
-            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "T1C application has been rejected.");
-            Response.Redirect("~/T1C/Approval");
-        }
-
-        protected void btnSendBack_Click(object sender, EventArgs e)
-        {
-            string formId = hdnFormId.Value;
-            string remark = hdnRemark.Value;
-            Guid parsedFormId = Guid.Parse(formId);
-
-            try
-            {
-                using (var db = new AppDbContext())
-                {
-                    var form = db.Forms.Find(parsedFormId);
-
-                    db.Approvals.Add(new Models.Approval
-                    {
-                        ObjectId = form.Id,
-                        ObjectType = "Form",
-                        ActionById = Auth.User().Id,
-                        ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
-                        ActionByName = Auth.User().Name,
-                        Action = "Sent Back",
-                        Remark = remark,
-                        Order = 0, // Reset order to 0 when sending back
-                    });
-
-                    form.Status = "SentBack";
-                    db.Entry(form).State = System.Data.Entity.EntityState.Modified;
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception ex)
-            {
-                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                Response.Redirect(Request.Url.GetCurrentUrl(true));
-            }
-
-            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "T1C application sent back to the applicant.");
-            Response.Redirect("~/T1C/Approval");
         }
 
         private void BindData(string id = null)
@@ -197,18 +78,16 @@ namespace Prodata.WebForm.T1C.Approval
                     var form = db.Forms.Find(Guid.Parse(id));
                     if (form != null)
                     {
-                        if (form.IsFormPendingUserAction())
+                        if (form.IsFormEditable())
                         {
-                            btnApprove.Visible = true;
-                            btnReject.Visible = true;
-                            btnSendBack.Visible = true;
+                            btnEdit.Visible = true;
                         }
                         else
                         {
-                            btnApprove.Visible = false;
-                            btnReject.Visible = false;
-                            btnSendBack.Visible = false;
+                            btnEdit.Visible = false;
                         }
+
+                        lblTitle.Text = form.Ref;
 
                         lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
                         lblRefNo.Text = form.Ref;
@@ -365,7 +244,7 @@ namespace Prodata.WebForm.T1C.Approval
         }
         #endregion
 
-        #region Audit trails
+        #region Audit Trails
         protected void gvAuditTrails_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             ViewState["pageIndex"] = e.NewPageIndex.ToString();

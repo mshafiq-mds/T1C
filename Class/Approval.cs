@@ -21,7 +21,7 @@ namespace Prodata.WebForm.Class
 
                 // Materialize the data first, then format
                 return query
-                    .OrderByDescending(q => q.CreatedDate)
+                    .OrderBy(q => q.CreatedDate)
                     .ToList() // ← Fetch from DB first
                     .Select(a => new Models.ViewModels.ApprovalListViewModel
                     {

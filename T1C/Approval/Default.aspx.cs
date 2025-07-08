@@ -18,6 +18,11 @@ namespace Prodata.WebForm.T1C.Approval
             }
         }
 
+        protected void ddlStatus_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BindData(Auth.User().iPMSRoleCode, Auth.IPMSBizAreaCodes());
+        }
+
         protected void gvData_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             ViewState["pageIndex"] = e.NewPageIndex.ToString();
@@ -28,7 +33,29 @@ namespace Prodata.WebForm.T1C.Approval
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
-            gvData.DataSource = new Class.Form().GetFormsForApproval(ipmsRoleCode, ipmsBizAreaCodes);
+            // Get all forms
+            var data = new Class.Form().GetForms(bizAreaCodes: ipmsBizAreaCodes);
+
+            // Get selected status
+            var selectedStatus = ddlStatus.SelectedValue;
+
+            // If "Pending My Action" selected
+            if (selectedStatus == "pending-my-action")
+            {
+                data = data.Where(d => d.IsPendingUserAction).ToList();
+            }
+            // Else if any specific status selected (like "Pending", "Approved", etc.)
+            else if (!string.IsNullOrWhiteSpace(selectedStatus))
+            {
+                data = data.Where(d =>
+                    !d.IsPendingUserAction &&
+                    d.Status != null &&
+                    d.Status.Equals(selectedStatus, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+            // else (empty) = no filtering, show all
+
+            gvData.DataSource = data;
             gvData.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
             gvData.DataBind();
         }
