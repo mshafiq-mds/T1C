@@ -106,13 +106,14 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                     db.SaveChanges();
 
                     string action = hdnAction.Value?.ToLower();
-                    if (action == "approve")
-                    {
-                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
-                    }
-                    else
+
+                    if (action != "approve" || status == 3) //resubmit or complete
                     {
                         Emails.EmailsAdditionalBudgetForApprover(_transferId, model);
+                    }
+                    else if (action == "approve") //next approve 
+                    {
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
                     }
                 }
             }

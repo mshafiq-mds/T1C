@@ -12,7 +12,7 @@ namespace Prodata.WebForm.Class
         {
             return $@"
                 <p>Dear CCMS User,</p>
-                <p>Please review the details below:</p>
+                <p>Please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>
@@ -31,7 +31,7 @@ namespace Prodata.WebForm.Class
                     <tr><td style='border: 1px solid #ddd; padding: 8px; vertical-align: top;'>Reason</td><td style='border: 1px solid #ddd; padding: 12px; white-space: pre-wrap;'>{abr.Reason}</td></tr>
                 </table>
 
-                <p style='margin-top: 20px;'>Please review the <strong>{actionName}</strong> by clicking the link below:</p>
+                <p style='margin-top: 20px;'>Please view the <strong>{actionName}</strong> by clicking the link below:</p>
                 <p><a href='{fullUrl}' target='_blank'>{actionName} (CCMS)</a></p>
                 <p>Thank you.</p>";
         }
@@ -40,7 +40,7 @@ namespace Prodata.WebForm.Class
         {
             return $@"
                 <p>Dear CCMS User,</p>
-                <p>Please review the details below:</p>
+                <p>Please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>
@@ -58,7 +58,7 @@ namespace Prodata.WebForm.Class
                     <tr><td style='border: 1px solid #ddd; padding: 8px; vertical-align: top;'>Work Details</td><td style='border: 1px solid #ddd; padding: 12px; white-space: pre-wrap;'>{tt.WorkDetails}</td></tr>
                 </table>
 
-                <p style='margin-top: 20px;'>Please review the <strong>{actionName}</strong> by clicking the link below:</p>
+                <p style='margin-top: 20px;'>Please view the <strong>{actionName}</strong> by clicking the link below:</p>
                 <p><a href='{fullUrl}' target='_blank'>{actionName} (CCMS)</a></p>
                 <p>Thank you.</p>";
         }

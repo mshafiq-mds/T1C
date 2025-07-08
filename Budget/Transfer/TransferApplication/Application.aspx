@@ -109,6 +109,263 @@
 
     <script type="text/javascript">
         function validateBeforeSubmit() {
+            if (!calculateTotal()) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Allocation Issue',
+                    text: 'Some amounts exceed their balances or are invalid.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+
+            const totalText = $("#<%= totalAmount.ClientID %>").val().replace("RM", "").replace(",", "").trim();
+        const expectedText = $("#<%= lblAmount.ClientID %>").text().replace("RM", "").replace(",", "").trim();
+
+        const total = parseFloat(totalText);
+        const expected = parseFloat(expectedText);
+
+        const formattedTotal = $("#<%= totalAmount.ClientID %>").val().trim();
+        const formattedExpected = $("#<%= lblAmount.ClientID %>").text().trim();
+
+        if (isNaN(total) || isNaN(expected) || Math.abs(total - expected) > 0.009 || formattedTotal !== formattedExpected) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Allocation Issue',
+                text: 'Total allocation amount does not match the requested amount.',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        return true;
+    }
+
+    function validateAllocations() {
+        let isValid = true;
+
+        $(".ddl-budget").each(function () {
+            const $row = $(this).closest("tr");
+            const $select = $row.find(".ddl-budget");
+            const selected = $select.val();
+            const $hiddenBudgetRef = $row.find(".hidden-budget-ref");
+            const $budgetError = $row.find(".ddl-budget-error").first();
+
+            if (!selected) {
+                isValid = false;
+                $budgetError.removeClass("d-none");
+                $select.addClass("is-invalid");
+            } else {
+                $budgetError.addClass("d-none");
+                $select.removeClass("is-invalid");
+                $hiddenBudgetRef.val(selected);
+            }
+
+            const $amount = $row.find(".amount");
+            const amountVal = $amount.val().trim();
+            const $hiddenAmount = $row.find(".hidden-amount");
+            const $amountError = $row.find(".ddl-budget-error").last();
+
+            const parsedAmount = parseFloat(amountVal.replace(/,/g, ''));
+
+            if (!amountVal || isNaN(parsedAmount) || parsedAmount <= 0) {
+                isValid = false;
+                $amountError.removeClass("d-none");
+                $amount.addClass("is-invalid");
+            } else {
+                $amountError.addClass("d-none");
+                $amount.removeClass("is-invalid");
+                $hiddenAmount.val(parsedAmount.toFixed(2));
+            }
+        });
+
+        return isValid;
+    }
+
+    function syncHiddenInputs() {
+        $("#allocationTable tbody tr").each(function (index, row) {
+            const $row = $(row);
+            const budgetVal = $row.find(".ddl-budget").val();
+            const amountVal = $row.find(".amount").val();
+            const budgetidVal = $row.find(".hidden-budget-id").val();
+
+            $row.find(".hidden-budget-ref").attr("name", `allocationTable[${index}][budgetRef]`).val(budgetVal);
+            $row.find(".hidden-amount").attr("name", `allocationTable[${index}][amount]`).val(amountVal);
+            $row.find(".hidden-budget-id").attr("name", `allocationTable[${index}][budgetId]`).val(budgetidVal);
+        });
+    }
+
+    function populateBudgetDropdown($select) {
+        const selectedRefs = $(".ddl-budget").map(function () {
+            return $(this).val();
+        }).get().filter(val => val !== "");
+
+        const currentVal = $select.val();
+        $select.empty().append('<option value="">Select Ref</option>');
+
+        if (Array.isArray(budgetList)) {
+            budgetList.forEach(item => {
+                if (!selectedRefs.includes(item.Ref) || item.Ref === currentVal) {
+                    $select.append(`<option value="${item.Ref}" data-balance="${item.Balance}">${item.Display}</option>`);
+                }
+            });
+        }
+    }
+
+    function updateBalance(selectElement) {
+        const $select = $(selectElement);
+        const $row = $select.closest("tr");
+        const selectedOption = $select.find(":selected");
+        const balance = parseFloat(selectedOption.data("balance")) || 0;
+        $row.find(".balance").val("RM " + balance.toFixed(2));
+    }
+
+    function addRow(button) {
+        const $row = $(button).closest("tr");
+        const selectedValue = $row.find(".ddl-budget").val();
+        $row.find(".ddl-budget").select2("destroy");
+
+        const $newRow = $row.clone();
+        $row.find(".ddl-budget").val(selectedValue).select2();
+
+        $newRow.find("input").val("");
+        $newRow.find(".balance").val("RM 0.00");
+        $newRow.find(".ddl-budget-error").addClass("d-none");
+
+        $newRow.find("button")
+            .removeClass("btn-success").addClass("btn-danger")
+            .html('<i class="fas fa-minus"></i>')
+            .attr("onclick", "removeRow(this)");
+
+        $("#allocationTable tbody").append($newRow);
+
+        const $ddl = $newRow.find(".ddl-budget");
+        populateBudgetDropdown($ddl);
+        $ddl.select2();
+
+        syncHiddenInputs();
+    }
+
+    function removeRow(button) {
+        $(button).closest("tr").remove();
+        calculateTotal();
+        syncHiddenInputs();
+        refreshAllDropdowns();
+    }
+
+    function refreshAllDropdowns() {
+        $(".ddl-budget").each(function () {
+            const $ddl = $(this);
+            const currentVal = $ddl.val();
+            $ddl.select2("destroy");
+            populateBudgetDropdown($ddl);
+            $ddl.val(currentVal).select2();
+        });
+    }
+
+    function validateDecimalInput(input) {
+        let value = input.value.replace(/[^0-9.]/g, '');
+        const parts = value.split('.');
+        if (parts.length > 2) value = parts[0] + '.' + parts[1];
+        if (parts.length === 2) value = parts[0] + '.' + parts[1].substring(0, 2);
+        if (value.startsWith('.')) value = '0' + value;
+        input.value = value;
+    }
+
+    function formatDecimal(input) {
+        let val = input.value;
+        if (val !== "") {
+            const parsed = parseFloat(val);
+            if (!isNaN(parsed)) {
+                input.value = parsed.toFixed(2);
+            }
+        }
+    }
+
+    function calculateTotal() {
+        let total = 0;
+        let hasInvalidAmount = false;
+
+        $(".amount").each(function () {
+            const $amountInput = $(this);
+            const val = parseFloat($amountInput.val());
+            const $row = $amountInput.closest("tr");
+            const balanceText = $row.find(".balance").val().replace("RM", "").replace(/,/g, "").trim();
+            const balance = parseFloat(balanceText);
+
+            if (!isNaN(val)) {
+                total += val;
+                if (!isNaN(balance) && val > balance) {
+                    $amountInput.addClass("is-invalid");
+                    $amountInput.attr("title", "Amount exceeds balance (RM " + balance.toFixed(2) + ").");
+                    hasInvalidAmount = true;
+                } else {
+                    $amountInput.removeClass("is-invalid");
+                    $amountInput.removeAttr("title");
+                }
+            }
+        });
+
+        const formattedTotal = "RM " + total.toFixed(2);
+        $("#<%= totalAmount.ClientID %>").val(formattedTotal);
+
+        const serverAmountText = $("#<%= lblAmount.ClientID %>").text().replace("RM", "").replace(/,/g, "").trim();
+        const serverAmount = parseFloat(serverAmountText);
+        const $totalAmount = $("#<%= totalAmount.ClientID %>");
+
+            if (!isNaN(serverAmount) && Math.abs(total - serverAmount) > 0.009) {
+                $totalAmount.addClass("is-invalid");
+                $totalAmount.attr("title", "Total mismatch (Expected RM " + serverAmount.toFixed(2) + ").");
+            } else {
+                $totalAmount.removeClass("is-invalid");
+                $totalAmount.removeAttr("title");
+            }
+
+            return !hasInvalidAmount;
+        }
+
+        $(document).ready(function () {
+            $(".ddl-budget").each(function () {
+                populateBudgetDropdown($(this));
+                $(this).select2();
+            });
+
+            $(document).on("change", ".ddl-budget", function () {
+                const $row = $(this).closest("tr");
+                const selectedValue = $(this).val();
+                const budgetObj = budgetList.find(x => x.Ref === selectedValue);
+                if (budgetObj) {
+                    $row.find(".hidden-budget-id").val(budgetObj.Id);
+                }
+                updateBalance(this);
+                syncHiddenInputs();
+                refreshAllDropdowns();
+            });
+
+            $(document).on("input change", ".amount", function () {
+                validateDecimalInput(this);
+                calculateTotal();
+                syncHiddenInputs();
+            });
+
+            $(document).on("blur", ".amount", function () {
+                formatDecimal(this);
+                syncHiddenInputs();
+            });
+        });
+    </script>
+    
+    <style>
+        #totalAmount.is-invalid {
+            border: 2px solid #dc3545;
+            background-color: #fff5f5;
+        }
+    </style>
+
+</asp:Content>
+
+    <%--<script type="text/javascript">
+        function validateBeforeSubmit() {
             // First, recalculate total and check for invalid entries
             if (!calculateTotal()) {
                 Swal.fire({
@@ -378,13 +635,4 @@
             return !hasInvalidAmount; // Optional: return whether all values are valid
         }
 
-    </script>
-
-    <style>
-        #totalAmount.is-invalid {
-            border: 2px solid #dc3545;
-            background-color: #fff5f5;
-        }
-    </style>
-
-</asp:Content>
+    </script>--%>

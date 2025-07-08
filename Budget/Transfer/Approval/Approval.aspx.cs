@@ -150,13 +150,13 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                     string action = hdnAction.Value?.ToLower();
 
-                    if (action == "approve")
-                    {
-                        Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
-                    }
-                    else
+                    if (action != "approve" || status == 3) //resubmit or complete 
                     {
                         Emails.EmailsReqTransferBudgetForApprover(_transferId, model);
+                    }
+                    else if (action == "approve") //next approve  
+                    {
+                        Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
                     }
 
                 }

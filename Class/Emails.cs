@@ -1,4 +1,5 @@
-﻿using Prodata.WebForm.Models;
+﻿using NPOI.SS.Formula.Functions;
+using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.Auth;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Prodata.WebForm.Class
     {
         #region Public call email Function EmailsTransferBudgetForResubmit
         // Public methods to trigger email notifications for different scenarios
-
+         
         // For new requests
         public static void EmailsAdditionalBudgetForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         { EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode); }
@@ -46,12 +47,18 @@ namespace Prodata.WebForm.Class
 
             foreach (var user in userRole)
             {
-                if (roleCode == "") // resubmit approver to creator
+
+                if (TT.status == 3) // completed transfer budget
+                {
+                    fullUrl = $"{baseUrl}/Budget/Transfer/View?Id={id}";
+                    actionName = "Completed Transfer Budget";
+                }
+                else if (roleCode == "") // resubmit approver to creator
                 {
                     fullUrl = $"{baseUrl}/Budget/Transfer/Resubmit?Id={id}&userId={user.Id}";
                     actionName = "Transfer Budget Request Revision";
                 }
-                else
+                else // verify approver to next approver
                 {
                     fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
                     actionName = "Transfer Budget Request";
@@ -293,15 +300,20 @@ namespace Prodata.WebForm.Class
             foreach (var user in userRole)
             {
                 string fullUrl;
-                if (roleCode == "") // resubmit approver to creator
+                if (ABR.Status == 3) // completed additional budget
+                {
+                    fullUrl = $"{baseUrl}/Budget/Additional/View?Id={id}";
+                    actionName = "Completed Additional Budget";
+                }
+                else if (roleCode == "") // resubmit approver to creator
                 {
                     fullUrl = $"{baseUrl}/Budget/Additional/Resubmit?Id={id}&userId={user.Id}";
-                    actionName = "Transfer Budget Request Revision";
+                    actionName = "Additional Budget Request Revision";
                 }
-                else
+                else // verify approver to next approver
                 {
                     fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
-                    actionName = "Transfer Budget Request";
+                    actionName = "Additional Budget Request";
                 } 
                 string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
@@ -318,7 +330,7 @@ namespace Prodata.WebForm.Class
 
                 if (id.HasValue)
                 {
-                    eligibleID = db.TransfersTransaction
+                    eligibleID = db.AdditionalBudgetRequests
                         .Where(x => x.Id == id.Value)
                         .Select(x => x.CreatedBy)
                         .FirstOrDefault();
