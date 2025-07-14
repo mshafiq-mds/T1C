@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Prodata.WebForm.Models;
+using Prodata.WebForm.Models.MasterData;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
-using Prodata.WebForm.Models;
 
 namespace Prodata.WebForm.Class
 {
@@ -35,6 +36,15 @@ namespace Prodata.WebForm.Class
             }
         }
 
-
+        public static List<BudgetType> GetBudgetTypes()
+        {
+            using (var db = new AppDbContext())
+            {
+                return db.BudgetTypes
+                         .Where(x => x.DeletedDate == null)
+                         .OrderBy(x => x.Code)
+                         .ToList();
+            }
+        }
     }
 }

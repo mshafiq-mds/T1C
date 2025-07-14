@@ -31,9 +31,9 @@ namespace Prodata.WebForm.Models
         [StringLength(300)]
         public string CumulativeApproverName { get; set; }
 
-        public decimal AmountMax { get; set; }
+        public decimal? AmountMax { get; set; }
 
-        public decimal AmountCumulative { get; set; }
+        public decimal? AmountCumulative { get; set; }
         public decimal? AmountCumulativeBalance { get; set; }
 
         [StringLength(100)]

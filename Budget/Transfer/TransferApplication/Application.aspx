@@ -27,6 +27,7 @@
             <table class="table table-borderless">
                 <tbody>
                     <tr><td><strong>Status:</strong></td><td><asp:Label ID="lblStatus" runat="server" /></td></tr>
+                    <tr><td><strong>Date:</strong></td><td><asp:Label ID="lblDate" runat="server" /></td></tr>
                     <tr><td><strong>Ref No:</strong></td><td><asp:Label ID="lblRef" runat="server" /></td></tr>
                     <tr><td><strong>Applicant:</strong></td><td><asp:Label ID="lblApplicantName" runat="server" /></td></tr>
                     <tr><td><strong>Mill:</strong></td><td>(<asp:Label ID="lblBA" runat="server" />) <asp:Label ID="LblBAName" runat="server" /></td></tr>

@@ -27,6 +27,7 @@
                               AllowPaging="true"
                               AutoGenerateColumns="False"
                               DataKeyNames="Id"
+                              OnPageIndexChanging="gvList_PageIndexChanging"
                               EmptyDataText="No record.">
                     <Columns>
                         <asp:BoundField DataField="BA" HeaderText="BA" />
@@ -44,6 +45,7 @@
                                           Eval("Status").ToString() == "Under Review" ? "text-primary" :
                                           Eval("Status").ToString() == "Completed" ? "text-success" :
                                           Eval("Status").ToString() == "Finalized" ? "text-muted fst-italic" :
+                                          Eval("Status").ToString() == "User Action" ? "text-info fw-bold" :
                                           ""
                                     %>'>
                                 </asp:Label>

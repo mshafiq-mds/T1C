@@ -61,23 +61,27 @@ namespace Prodata.WebForm.Class
         // ===========================================
         // ✅ Additional Budget / Cumulative Logic
         // ===========================================
-        public static AdditionalCumulativeLimits GetEligibleCumulativeLimit(List<AdditionalCumulativeLimits> limits, decimal? requestedAmount)
+        public static AdditionalCumulativeLimits GetEligibleCumulativeLimit( List<AdditionalCumulativeLimits> limits, decimal? requestedAmount)
         {
             decimal amount = requestedAmount ?? 0m;
             return limits
-                .Where(l => (l.AmountCumulativeBalance ?? 0m) >= amount)
+                .Where(l =>
+                {
+                    var Used = l.AmountCumulativeBalance ?? 0m;
+                    var balance = l.AmountCumulative - Used;
+                    return balance >= amount && amount <= l.AmountMax;
+                })
                 .OrderBy(l => l.Order)
                 .FirstOrDefault();
         }
 
-        public static bool CanEditCumulativeRequest(AdditionalCumulativeLimits limit, string userRole, int currentLevel, DateTime? deletedDate)
+        public static bool CanEditCumulativeRequest(AdditionalCumulativeLimits limit, string userRole, DateTime? deletedDate)
         {
             return deletedDate == null &&
                    limit != null &&
-                   limit.CumulativeApproverCode == userRole &&
-                   limit.Order == currentLevel + 1;
+                   limit.CumulativeApproverCode == userRole;
         }
-
+        
         // ===========================================
         // ✅ Shared for Additional Budget Logs
         // ===========================================

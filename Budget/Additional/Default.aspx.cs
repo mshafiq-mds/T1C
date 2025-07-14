@@ -57,11 +57,18 @@ namespace Prodata.WebForm.Budget.AddBudget
                             "Submitted"
                     })
                     .Where(x => statusFilter == "All" || x.Status == statusFilter)
+                    .OrderByDescending(x => x.RefNo)
                     .ToList();
 
                 gvBudgetList.DataSource = transfers;
                 gvBudgetList.DataBind();
             }
+        }
+        protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvBudgetList.PageIndex = e.NewPageIndex;
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
         }
         protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
         {

@@ -29,6 +29,7 @@
          <div class="mb-3"></div>
 
         <asp:GridView ID="gvBudgetList" runat="server" CssClass="table table-bordered table-sm" AutoGenerateColumns="False"
+                              OnPageIndexChanging="gvList_PageIndexChanging"
             EmptyDataText="No budget applications found." DataKeyNames="Id" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true">
             <Columns>
                 <asp:BoundField DataField="RefNo" HeaderText="Reference No." />

@@ -60,7 +60,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                         int userLevel = matchingLimit?.Order ?? 0;
 
                         bool canEdit = Class.Budget.CanEditAdditionalBudget(matchingLimit, userLevel, currentLevel, x.DeletedDate);
-                        string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+                        //string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+                        string status = canEdit ? "User Action" : Class.Budget.GetStatusName(x.Status, x.DeletedDate);
 
                         return new
                         {
@@ -78,6 +79,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                         statusFilter == "All" ||
                         (statusFilter == "EditableOnly" && x.CanEdit) ||
                         x.Status == statusFilter)
+                    .OrderByDescending (x => x.RefNo)
                     .ToList();
 
                 gvAdditionalBudgetList.DataSource = transfers;
@@ -85,6 +87,11 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
             }
         }
 
-
+        protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvAdditionalBudgetList.PageIndex = e.NewPageIndex;
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
     }
 }

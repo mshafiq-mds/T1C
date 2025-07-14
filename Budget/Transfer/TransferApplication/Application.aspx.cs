@@ -47,34 +47,125 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
             {
                 var ba = Auth.User().iPMSBizAreaCode;
 
-                // Raw SQL to get budget balances
+                // Parse lblDate.Text (format: dd/MM/yyyy)
+                if (!DateTime.TryParseExact(lblDate.Text, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime selectedDate))
+                {
+                    // Handle parsing error (optional)
+                    return;
+                }
+
                 string sql = @"
                     SELECT 
                         b.Id,
                         b.Ref,
-                        (b.Ref + ' - ' + b.Details) AS Display,
-                        (b.Amount - ISNULL(SUM(ISNULL(t.Amount, 0)), 0)) AS Balance
+                        b.Amount 
+                        + ISNULL(SUM(
+                            CASE 
+                                WHEN b.Id = t.ToId THEN ISNULL(t.Amount, 0)
+                                WHEN b.Id = t.FromId THEN -ISNULL(t.Amount, 0)
+                                ELSE 0
+                            END
+                        ), 0) AS Balance,
+                        b.Ref + ' - ' + b.Details AS BaseDisplay
                     FROM Budgets b
-                    LEFT JOIN Transactions t ON b.Id = t.FromId
-                    WHERE b.BizAreaCode = @p0 AND b.DeletedDate IS NULL
-                    AND FromType = 'Budget'
+                    LEFT JOIN Transactions t 
+                        ON b.Id = t.FromId OR b.Id = t.ToId
+                    WHERE b.BizAreaCode = @p0 
+                      AND b.DeletedDate IS NULL 
+                      AND (t.Date IS NULL OR YEAR(t.Date) = @p1)
                     GROUP BY b.Id, b.Ref, b.Details, b.Amount
-                    ORDER BY Display
                 ";
 
-                var budgets = db.Database.SqlQuery<BudgetDTO>(sql, ba).ToList();
+                int selectedYear = selectedDate.Year;
+
+                var rawBudgets = db.Database.SqlQuery<RawBudgetDTO>(sql, ba, selectedYear).ToList();
+
+                var budgets = rawBudgets.Select(b => new BudgetDTO
+                {
+                    Id = b.Id,
+                    Ref = b.Ref,
+                    Balance = b.Balance,
+                    Display = $"{b.BaseDisplay} (RM {b.Balance:N2})"
+                }).OrderBy(b => b.Display).ToList();
 
                 string json = Newtonsoft.Json.JsonConvert.SerializeObject(budgets);
                 ClientScript.RegisterStartupScript(this.GetType(), "budgetData", $"var budgetList = {json};", true);
             }
         }
-        public class BudgetDTO
+
+
+        // DTO used to fetch raw SQL result
+        private class RawBudgetDTO
         {
             public Guid Id { get; set; }
             public string Ref { get; set; }
-            public string Display { get; set; }
             public decimal Balance { get; set; }
+            public string BaseDisplay { get; set; }
         }
+
+        // Final DTO for JS use
+        private class BudgetDTO
+        {
+            public Guid Id { get; set; }
+            public string Ref { get; set; }
+            public decimal Balance { get; set; }
+            public string Display { get; set; }
+        }
+
+        //private void BindControl()
+        //{
+        //    using (var db = new AppDbContext())
+        //    {
+        //        var ba = Auth.User().iPMSBizAreaCode;
+
+        //        // Raw SQL to get budget balances
+        //        string sql = @"
+        //            SELECT 
+        //                b.Id,
+        //                b.Ref,
+        //                (b.Ref + ' - ' + b.Details) AS Display,
+        //                b.Amount 
+        //                + ISNULL(SUM(
+        //                    CASE 
+        //                        WHEN b.Id = t.ToId THEN ISNULL(t.Amount, 0)
+        //                        WHEN b.Id = t.FromId THEN -ISNULL(t.Amount, 0)
+        //                        ELSE 0
+        //                    END
+        //                ), 0) AS Balance
+        //            FROM Budgets b
+        //            LEFT JOIN Transactions t 
+        //                ON b.Id = t.FromId OR b.Id = t.ToId
+        //            WHERE b.BizAreaCode = @p0 AND b.DeletedDate IS NULL 
+        //            GROUP BY b.Id, b.Ref, b.Details, b.Amount
+        //            ORDER BY Display
+        //        ";
+        //        //string sql = @"
+        //        //    SELECT 
+        //        //        b.Id,
+        //        //        b.Ref,
+        //        //        (b.Ref + ' - ' + b.Details) AS Display,
+        //        //        (b.Amount - ISNULL(SUM(ISNULL(t.Amount, 0)), 0)) AS Balance
+        //        //    FROM Budgets b
+        //        //    LEFT JOIN Transactions t ON b.Id = t.FromId
+        //        //    WHERE b.BizAreaCode = @p0 AND b.DeletedDate IS NULL
+        //        //    AND FromType = 'Budget'
+        //        //    GROUP BY b.Id, b.Ref, b.Details, b.Amount
+        //        //    ORDER BY Display
+        //        //";
+
+        //        var budgets = db.Database.SqlQuery<BudgetDTO>(sql, ba).ToList();
+
+        //        string json = Newtonsoft.Json.JsonConvert.SerializeObject(budgets);
+        //        ClientScript.RegisterStartupScript(this.GetType(), "budgetData", $"var budgetList = {json};", true);
+        //    }
+        //}
+        //public class BudgetDTO
+        //{
+        //    public Guid Id { get; set; }
+        //    public string Ref { get; set; }
+        //    public string Display { get; set; }
+        //    public decimal Balance { get; set; }
+        //}
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         { 
@@ -200,6 +291,7 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                 lblStatus.EnableViewState = false; // optional
 
                 lblRef.Text = transfer.RefNo;
+                lblDate.Text = transfer.Date.ToString("dd/MM/yyyy");
                 lblApplicantName.Text = db.Users.Where(u => u.Id == transfer.CreatedBy).Select(u => u.Name).FirstOrDefault();
                 lblBA.Text = transfer.FromBA.ToString();
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA ?? "") ?? "-";

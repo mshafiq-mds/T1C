@@ -24,15 +24,6 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
         protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnSave control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnSave;
-
-        /// <summary>
         /// btnSubmit1 control.
         /// </summary>
         /// <remarks>
@@ -220,15 +211,6 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvtxtRemarks;
-
-        /// <summary>
-        /// hdnAction control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnAction;
 
         /// <summary>
         /// btnRevisionConfirmed control.

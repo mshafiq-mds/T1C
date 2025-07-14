@@ -89,6 +89,7 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                                 (statusFilter == "EditableOnly" && x.CanEdit) ||
                                 x.Status == statusFilter
                             )
+                    .OrderByDescending(x => x.RefNo)
                     .ToList();
 
                 gvTransfers.DataSource = transfers;
@@ -96,6 +97,11 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
             }
         }
 
-
+        protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvTransfers.PageIndex = e.NewPageIndex;
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
     }
 }

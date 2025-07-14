@@ -1,20 +1,25 @@
-﻿<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
+<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <script type="text/javascript">  
+    <script type="text/javascript">
         function parseFloatSafe(val) {
-            if (!val) return 0;
             const num = parseFloat(val.replace(/[^0-9.]/g, ''));
             return isNaN(num) ? 0 : num;
         }
 
         function formatCurrencyInput(input, formatOnBlur = false) {
-            let value = input.value.replace(/[^0-9.]/g, ''); // Remove invalid chars
+            let value = input.value.replace(/[^0-9.]/g, ''); // Remove invalid characters
             const parts = value.split('.');
-            if (parts.length > 2) value = parts[0] + '.' + parts[1]; // Only first decimal
-            if (parts[1]) value = parts[0] + '.' + parts[1].substring(0, 2); // Max 2 decimals
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts[1]; // Keep only first decimal
+            }
+            if (parts[1]) {
+                value = parts[0] + '.' + parts[1].substring(0, 2); // Max two decimals
+            }
             if (formatOnBlur && value) {
                 const number = parseFloat(value);
-                if (!isNaN(number)) value = number.toFixed(2);
+                if (!isNaN(number)) {
+                    value = number.toFixed(2); // Format to 2 decimals
+                }
             }
             input.value = value;
         }
@@ -25,54 +30,24 @@
             const toBalance = parseFloatSafe(document.getElementById("txtToBalance").value);
 
             const fromAfter = fromBalance - fromTransfer;
+            const toTransfer = fromTransfer;
             const toAfter = toBalance + fromTransfer;
 
-            // Update calculated fields
-            document.getElementById("txtFromAfter").value = fromAfter.toFixed(2);
-            document.getElementById("txtToTransfer").value = fromTransfer.toFixed(2);
-            document.getElementById("txtToAfter").value = toAfter.toFixed(2);
-
-            // Live validation: show/hide message immediately
-            const messageFromAfter = document.getElementById("validationMessagetxtFromAfter");
-            if (fromAfter < 0) {
-                messageFromAfter.style.display = "block";
-            } else {
-                messageFromAfter.style.display = "none";
+            if (!isNaN(fromAfter)) {
+                document.getElementById("txtFromAfter").value = fromAfter.toFixed(2);
             }
 
-            const messageToAfter = document.getElementById("validationMessagetxtToAfter");
-            if (toAfter < 0) {
-                messageToAfter.style.display = "block";
-            } else {
-                messageToAfter.style.display = "none";
-            }
-        }
-
-        function validateBeforeSubmit() {
-            updateCalculatedFields();
-            const fromAfter = document.getElementById("txtFromAfter").value;
-            const toAfter = document.getElementById("txtToAfter").value;
-            const messageFromAfter = document.getElementById("validationMessagetxtFromAfter");
-            const messageToAfter = document.getElementById("validationMessagetxtToAfter");
-            //alert("validateBeforeSubmit: txtFromAfter = " + fromAfter + ", txtToAfter = " + toAfter);
-
-            let isValid = true;
-
-            if (fromAfter < 0) {
-                messageFromAfter.style.display = "block";
-                isValid = false;
+            if (!isNaN(toTransfer)) {
+                document.getElementById("txtToTransfer").value = toTransfer.toFixed(2);
             }
 
-            if (toAfter < 0) {
-                messageToAfter.style.display = "block";
-                isValid = false;
+            if (!isNaN(toAfter)) {
+                document.getElementById("txtToAfter").value = toAfter.toFixed(2);
             }
-
-            return isValid;
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            const fields = ["txtFromTransfer"];
+            const fields = ["txtFromBalance", "txtFromTransfer", "txtToBalance"];
             fields.forEach(fieldId => {
                 const input = document.getElementById(fieldId);
                 if (input) {
@@ -89,7 +64,6 @@
         });
     </script>
 
-
     <style>
         .fixed-dropdown {
             width: 300px !important;
@@ -102,7 +76,10 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Transfer/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="return validateBeforeSubmit();">
+<%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
+                    <i class="fas fa-save"></i> Save
+                </asp:LinkButton>--%>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="collectData();"> <%----%>
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>
@@ -131,6 +108,7 @@
                 This ID Not Allow to Create Transfer Budget
             </asp:PlaceHolder>
         </div>
+
 
         <div class="form-group">
             <label class="d-block mb-2 font-weight-bold">BUDGET TYPE</label>
@@ -167,12 +145,7 @@
 
         <div class="form-group">
             <label>Estimated Cost (RM)</label>
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">RM</span>
-                </div>
-                <asp:TextBox runat="server" ID="txtEstimatedCost" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)"/>
-            </div>
+            <asp:TextBox runat="server" ID="txtEstimatedCost" CssClass="form-control" placeholder="0.00" />
             <asp:RequiredFieldValidator ID="rfvEstimatedCost" runat="server" ControlToValidate="txtEstimatedCost" CssClass="text-danger" ErrorMessage="Estimated Cost is required." Display="Dynamic" />
         </div>
 
@@ -194,7 +167,7 @@
             <thead>
                 <tr>
                     <th>Item</th>
-                    <th>Budget Type </th>
+                    <th>GL/Asset Class</th>
                     <th style="min-width: 120px;">BA</th>
                     <th>Original Budget (RM)</th>
                     <th>Current Balance (RM)</th>
@@ -206,98 +179,68 @@
                 <tr>
                     <td>From Budget</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="txtFromGL" CssClass="form-control fixed-dropdown select2"
-                            AutoPostBack="true" OnSelectedIndexChanged="From_SelectedIndexChanged" data-placeholder="Type"
-                            DataValueField="Code" DataTextField="DisplayName" />
+                        <asp:TextBox runat="server" ID="txtFromGL" CssClass="form-control" placeholder="Example: 53000060" />
                         <asp:RequiredFieldValidator ID="rfvFromGL" runat="server" ControlToValidate="txtFromGL" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2"
-                            AutoPostBack="true" OnSelectedIndexChanged="From_SelectedIndexChanged" data-placeholder="BA"
-                            DataValueField="Code" DataTextField="DisplayName" />
+                        <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA"></asp:DropDownList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="ddFromBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required BA" InitialValue=""></asp:RequiredFieldValidator>
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true" Text="0.00"/>
-                        </div>
+                        <asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
+                        <asp:RequiredFieldValidator ID="rfvFromBudget" runat="server" ControlToValidate="txtFromBudget" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtFromBalance" runat="server" ClientIDMode="Static" CssClass="form-control" text="0.00" ReadOnly="true"/>
-                        </div>
+                        <asp:TextBox ID="txtFromBalance" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)"  ClientIDMode="Static" />--%>
+                        <asp:RequiredFieldValidator ID="rfvFromBalance" runat="server" ControlToValidate="txtFromBalance" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtFromTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" placeholder="0.00" />
-                        </div>
+                        <asp:TextBox ID="txtFromTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)"  ClientIDMode="Static" />--%>
                         <asp:RequiredFieldValidator ID="rfvFromTransfer" runat="server" ControlToValidate="txtFromTransfer" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtFromAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/>
-                        </div>
-                        <span id="validationMessagetxtFromAfter" class="text-danger mt-2" style="display:none;">
-                            Balance after transfer cannot be zero or negative. Please adjust the transfer amount.
-                        </span>
+                        <asp:TextBox ID="txtFromAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvFromAfter" runat="server" ControlToValidate="txtFromAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
                     </td>
                 </tr>
                 <tr>
                     <td>To Budget</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="txtToGL" CssClass="form-control fixed-dropdown select2" AutoPostBack="true" OnSelectedIndexChanged="To_SelectedIndexChanged" 
-                                                DataValueField="Code" DataTextField="DisplayName" data-placeholder="Type" />
+                        <asp:TextBox runat="server" ID="txtToGL" CssClass="form-control" placeholder="Example: 55200060" />
                         <asp:RequiredFieldValidator ID="rfvToGL" runat="server" ControlToValidate="txtToGL" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
                         <asp:Label runat="server" ID="lblToBA"></asp:Label>
-                    </td>
-                    <td> 
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  Text="0.00"/>
-                        </div>
+<%--                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA"></asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Required BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtToBalance" runat="server" ClientIDMode="Static" CssClass="form-control" text="0.00"  ReadOnly="true"/>
-                        </div>
+                        <asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />
+                        <asp:RequiredFieldValidator ID="rfvToBudget" runat="server" ControlToValidate="txtToBudget" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtToTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/>
-                        </div>
+                        <asp:TextBox ID="txtToBalance" runat="server" ClientIDMode="Static" CssClass="form-control" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ClientIDMode="Static"  />--%>
+                        <asp:RequiredFieldValidator ID="rfvToBalance" runat="server" ControlToValidate="txtToBalance" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text">RM</span>
-                            </div>
-                            <asp:TextBox ID="txtToAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/> 
-                        </div>
-                        <span id="validationMessagetxtToAfter" class="text-danger mt-2" style="display:none;">
-                            Balance after transfer cannot be zero or negative. Please adjust the transfer amount.
-                        </span>
+                        <asp:TextBox ID="txtToTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvToTransfer" runat="server" ControlToValidate="txtToTransfer" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="txtToAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true" />
+
+                        <%--<asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true" ClientIDMode="Static" />--%>
+                        <%--<asp:RequiredFieldValidator ID="rfvToAfter" runat="server" ControlToValidate="txtToAfter" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />--%>
                     </td>
                 </tr>
             </tbody>
@@ -307,14 +250,13 @@
         <asp:TextBox runat="server" ID="txtJustification" CssClass="form-control" TextMode="MultiLine" Rows="10" />
         <asp:RequiredFieldValidator ID="rfvtxtJustification" runat="server" ControlToValidate="txtJustification" CssClass="text-danger" ErrorMessage="Required Justification" Display="Dynamic" />
 
+
         <h4 class="mt-4">Upload Supporting Document</h4>
         <asp:FileUpload ID="fuDocument" runat="server" CssClass="form-control" />
         <asp:RequiredFieldValidator ID="rfvFile" runat="server" ControlToValidate="fuDocument"
             ErrorMessage="Please upload a document" CssClass="text-danger" Display="Dynamic" />
         <asp:Label ID="lblUploadResult" runat="server" CssClass="text-success mt-2" />
 
+
     </asp:Panel>
 </asp:Content>
-
-
-

@@ -201,7 +201,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromGL;
+        protected global::System.Web.UI.WebControls.DropDownList txtFromGL;
 
         /// <summary>
         /// rfvFromGL control.
@@ -240,15 +240,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtFromBudget;
 
         /// <summary>
-        /// rfvFromBudget control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromBudget;
-
-        /// <summary>
         /// txtFromBalance control.
         /// </summary>
         /// <remarks>
@@ -256,15 +247,6 @@ namespace Prodata.WebForm.Budget.Transfer
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtFromBalance;
-
-        /// <summary>
-        /// rfvFromBalance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromBalance;
 
         /// <summary>
         /// txtFromTransfer control.
@@ -300,7 +282,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToGL;
+        protected global::System.Web.UI.WebControls.DropDownList txtToGL;
 
         /// <summary>
         /// rfvToGL control.
@@ -330,15 +312,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtToBudget;
 
         /// <summary>
-        /// rfvToBudget control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToBudget;
-
-        /// <summary>
         /// txtToBalance control.
         /// </summary>
         /// <remarks>
@@ -346,15 +319,6 @@ namespace Prodata.WebForm.Budget.Transfer
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtToBalance;
-
-        /// <summary>
-        /// rfvToBalance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToBalance;
 
         /// <summary>
         /// txtToTransfer control.

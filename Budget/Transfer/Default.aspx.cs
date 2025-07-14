@@ -1,10 +1,11 @@
-﻿using System;
-using System.Linq;
-using System.Web.UI;
-using Prodata.WebForm.Models; // Your model namespace
-using FGV.Prodata.App;
+﻿using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
+using Prodata.WebForm.Models; // Your model namespace
+using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace Prodata.WebForm.Budget.Transfer
 {
@@ -56,7 +57,12 @@ namespace Prodata.WebForm.Budget.Transfer
                 gvTransfers.DataBind();
             }
         }
-
+        protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvTransfers.PageIndex = e.NewPageIndex;
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
         protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
         {
             try

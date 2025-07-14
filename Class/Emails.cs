@@ -14,20 +14,26 @@ namespace Prodata.WebForm.Class
     {
         #region Public call email Function EmailsTransferBudgetForResubmit
         // Public methods to trigger email notifications for different scenarios
-         
-        // For new requests
+
+        // ===========================================
+        // ✅ For new requests
+        // ===========================================
         public static void EmailsAdditionalBudgetForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         { EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode); }
         public static void EmailsReqTransferBudgetForNewRequest(Guid id, TransfersTransaction TT, string roleCode)
         { EmailsTransferBudgetForNewRequestModified(id, TT, roleCode); }
 
-        // For submissions next approver
+        // ===========================================
+        // ✅ For submissions next approver
+        // ===========================================
         public static void EmailsAdditionalBudgetForApprover(Guid id, AdditionalBudgetRequests ABR, string roleCode = "")
         { EmailsReqAdditionalBudgetForApproverModified(id, ABR, roleCode); }
         public static void EmailsReqTransferBudgetForApprover(Guid id, TransfersTransaction TT, string roleCode = "")
         { EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode); }
 
-        // For resubmissions to creator
+        // ===========================================
+        // ✅ For resubmissions to creator
+        // ===========================================
         public static void EmailsAdditionalBudgetForResubmit(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         { EmailsReqAdditionalBudgetForResubmitModified(id, ABR, roleCode); }
         public static void EmailsTransferBudgetForResubmit(Guid id, TransfersTransaction ABR, string roleCode)

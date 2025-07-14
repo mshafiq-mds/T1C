@@ -36,6 +36,7 @@
                               AllowPaging="true"
                               AutoGenerateColumns="False"
                               DataKeyNames="Id"
+                              OnPageIndexChanging="gvList_PageIndexChanging"
                               EmptyDataText="No record.">
                     <Columns>
                         <asp:BoundField DataField="BA" HeaderText="BA" />

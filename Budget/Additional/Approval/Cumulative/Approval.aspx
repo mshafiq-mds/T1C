@@ -8,10 +8,7 @@
             <div class="card-tools">
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/Cumulative/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
-                </asp:LinkButton>
-                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2 btn-revision" OnClick="btnSave_Click">
-                    <i class="fas fa-edit"></i> Request Revision
-                </asp:LinkButton>
+                </asp:LinkButton> 
                 <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve" OnClick="btnSubmit_Click">
                     <i class="fas fa-circle"></i> Approve Transfer
                 </asp:LinkButton>
@@ -129,7 +126,6 @@
 
 
         <!-- Hidden fields and buttons for sweet alert postback -->
-        <asp:HiddenField ID="hdnAction" runat="server" />
         <asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />
         <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click" Style="display:none;" />
         <asp:HiddenField ID="hdnTransferId" runat="server" />
@@ -163,25 +159,6 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
-            // Request Revision
-            $(".btn-revision").click(function (e) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Request Resubmit?',
-                    text: "Do you want to ask the requester to revise or reupload the document?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#007bff',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, request it'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $('#<%= hdnAction.ClientID %>').val('resubmit');
-                        $('#<%= btnRevisionConfirmed.ClientID %>').click();
-                    }
-                });
-            });
-
             // Approve Transfer
             $(".btn-approve").click(function (e) {
                 e.preventDefault();
@@ -195,7 +172,6 @@
                     confirmButtonText: 'Yes, approve it'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        $('#<%= hdnAction.ClientID %>').val('approve');
                         $('#<%= btnApproveConfirmed.ClientID %>').click();
                     }
                 });

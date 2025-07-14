@@ -54,15 +54,11 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .ToList()
                     .Select(x =>
                     {
-                        int currentLevel = db.AdditionalBudgetLog
-                            .Where(w => w.BudgetTransferId == x.Id)
-                            .OrderByDescending(w => w.CreatedDate)
-                            .Select(w => w.StepNumber)
-                            .FirstOrDefault();
-
                         var eligibleLimit = Class.Budget.GetEligibleCumulativeLimit(limits, x.AdditionalBudget);
-                        bool canEdit = Class.Budget.CanEditCumulativeRequest(eligibleLimit, userRole, currentLevel, x.DeletedDate);
-                        string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+                        bool canEdit = Class.Budget.CanEditCumulativeRequest(eligibleLimit, userRole, x.DeletedDate);
+                        //string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+                        string status = canEdit ? "User Action" : Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+
 
                         return new
                         {
@@ -80,12 +76,18 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                         statusFilter == "All" ||
                         (statusFilter == "EditableOnly" && x.CanEdit) ||
                         x.Status == statusFilter)
+                    .OrderByDescending(x => x.RefNo)
                     .ToList();
 
                 gvAdditionalBudgetList.DataSource = transfers;
                 gvAdditionalBudgetList.DataBind();
             }
         }
-
+        protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            gvAdditionalBudgetList.PageIndex = e.NewPageIndex;
+            string selectedStatus = ddlStatusFilter.SelectedValue;
+            BindTransfers(selectedStatus);
+        }
     }
 }
