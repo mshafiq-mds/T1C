@@ -42,6 +42,15 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
         protected global::System.Web.UI.WebControls.Button btnDeleteRecordCogs;
 
         /// <summary>
+        /// btnDeleteRecordCum control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDeleteRecordCum;
+
+        /// <summary>
         /// updLoaFinance control.
         /// </summary>
         /// <remarks>
@@ -94,5 +103,32 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvLoaCogs;
+
+        /// <summary>
+        /// updLoaCum control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel updLoaCum;
+
+        /// <summary>
+        /// LinkButton2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton LinkButton2;
+
+        /// <summary>
+        /// gvLoaCum control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvLoaCum;
     }
 }

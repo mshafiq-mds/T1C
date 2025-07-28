@@ -51,7 +51,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
             if (HandleApprovalAction(transferId, esCost))
             {
-                UpdateStatusTransferTransaction(transferId, 4);
+                ProcessTransfer(transferId); 
                 RedirectToDefault();
             }
         }
@@ -102,17 +102,34 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
             }
         }
 
-        private void UpdateStatusTransferTransaction(Guid transferId, int status)
+        private void ProcessTransfer(Guid transferId)
         {
             using (var db = new AppDbContext())
             {
-                var model = db.AdditionalBudgetRequests.FirstOrDefault(x => x.Id == transferId);
-                if (model == null) return;
+                var request = db.AdditionalBudgetRequests.Find(transferId);
+                if (request == null) return;
 
-                model.Status = status;
+                db.Budgets.Add(new Prodata.WebForm.Models.Budget
+                {
+                    TypeId = Guid.Parse(lblTBT.Text),
+                    BizAreaCode = request.BA,
+                    BizAreaName = new Class.IPMSBizArea().GetNameByCode(request.BA ?? "") ?? "-",
+                    Date = DateTime.Now,
+                    Month = DateTime.Now.Month,
+                    Num = (db.Budgets.OrderByDescending(x => x.Num).Select(x => x.Num).FirstOrDefault()) + 1,
+                    Ref = request.RefNo,
+                    Details = "ADDITIONAL BUDGET FROM HQ",
+                    Wages = 0.0m,
+                    Purchase = 0.0m,
+                    Amount = request.AdditionalBudget ?? 0,
+                    Vendor = "LUAR",
+                }); 
+
+                request.Status = 4;
+
                 db.SaveChanges();
 
-                Emails.EmailsAdditionalBudgetForApprover(transferId, model);
+                Emails.EmailsAdditionalBudgetForApprover(transferId, request);
             }
         }
 
@@ -138,7 +155,12 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                 lblRequestDetails.Text = string.IsNullOrWhiteSpace(model.RequestDetails) ? "-" : model.RequestDetails;
                 lblReason.Text = string.IsNullOrWhiteSpace(model.Reason) ? "-" : model.Reason;
                 lblCostCentre.Text = string.IsNullOrWhiteSpace(model.CostCentre) ? "-" : model.CostCentre;
-                lblGL.Text = string.IsNullOrWhiteSpace(model.GLCode) ? "-" : model.GLCode;
+                Guid? TOGuid = model.ToBudgetType;
+                var ToBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == TOGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                lblTBT.Text = ToBudgetType;
                 lblApprovedBudget.Text = model.ApprovedBudget?.ToString("N2") ?? "-";
                 lblNewTotalBudget.Text = model.NewTotalBudget?.ToString("N2") ?? "-";
                 lblAdditionalBudget.Text = model.AdditionalBudget?.ToString("N2") ?? "-";

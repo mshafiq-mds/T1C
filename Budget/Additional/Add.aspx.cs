@@ -17,6 +17,8 @@ namespace Prodata.WebForm.Budget.AddBudget
             if (!IsPostBack)
             {
                 BindBALabel();
+                BindDropdown(txtBT, Functions.GetBudgetTypes(), "ID", "DisplayName");
+
 
                 txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("TB", true);
                 txtEVisa.Enabled = txtRefNo.Enabled = false;
@@ -24,6 +26,15 @@ namespace Prodata.WebForm.Budget.AddBudget
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
         }
+        private void BindDropdown(ListControl ddl, object dataSource, string dataValueField, string dataTextField)
+        {
+            ddl.DataSource = dataSource;
+            ddl.DataValueField = dataValueField;
+            ddl.DataTextField = dataTextField;
+            ddl.DataBind();
+            ddl.Items.Insert(0, new ListItem("", ""));
+        }
+
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             Guid newId;
@@ -59,7 +70,7 @@ namespace Prodata.WebForm.Budget.AddBudget
 
                     // Additional Budget Breakdown
                     CostCentre = txtCostCentre.Text.Trim(),
-                    GLCode = txtGL.Text.Trim(),
+                    ToBudgetType = Guid.TryParse(txtBT.Text.Trim(), out var toBudgetGuid) ? toBudgetGuid : Guid.Empty,
                     ApprovedBudget = decimal.TryParse(txtApprovedBudget.Text, out var approved) ? approved : 0,
                     NewTotalBudget = decimal.TryParse(txtNewTotalBudget.Text, out var newTotal) ? newTotal : 0,
                     AdditionalBudget = decimal.TryParse(txtAdditionalBudget.Text, out var additional) ? additional : 0,

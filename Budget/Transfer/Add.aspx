@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">  
+
         function parseFloatSafe(val) {
             if (!val) return 0;
             const num = parseFloat(val.replace(/[^0-9.]/g, ''));
@@ -155,13 +156,13 @@
 
         <div class="form-group">
             <label>Reference No.</label>
-            <asp:TextBox runat="server" ID="txtRefNo" CssClass="form-control" placeholder="Example: (03)PB/4067/TGHT/820/2" />
+            <asp:TextBox runat="server" ID="txtRefNo" CssClass="form-control txtreadonly" placeholder="Example: (03)PB/4067/TGHT/820/2" />
             <asp:RequiredFieldValidator ID="rfvRefNo" runat="server" ControlToValidate="txtRefNo" CssClass="text-danger" ErrorMessage="Reference No. is required." Display="Dynamic" />
         </div>
 
         <div class="form-group">
             <label>Application Date</label>
-            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date"  Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control txtreadonly" TextMode="Date" />
             <asp:RequiredFieldValidator ID="rfvDate" runat="server" ControlToValidate="txtDate" CssClass="text-danger" ErrorMessage="Date is required." Display="Dynamic" />
         </div>
 
@@ -178,7 +179,7 @@
 
         <div class="form-group">
             <label>E-VISA No.</label>
-            <asp:TextBox runat="server" ID="txtEVisa" CssClass="form-control" placeholder="Example: 2025-00025" />
+            <asp:TextBox runat="server" ID="txtEVisa" CssClass="form-control txtreadonly" placeholder="Example: 2025-00025" />
             <asp:RequiredFieldValidator ID="rfvEVisa" runat="server" ControlToValidate="txtEVisa" CssClass="text-danger" ErrorMessage="E-VISA No. is required." Display="Dynamic" />
         </div>
 
@@ -222,7 +223,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true" Text="0.00"/>
+                            <asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)"  />
                         </div>
                     </td>
                     <td>
@@ -230,7 +231,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox ID="txtFromBalance" runat="server" ClientIDMode="Static" CssClass="form-control" text="0.00" ReadOnly="true"/>
+                            <asp:TextBox ID="txtFromBalance" runat="server" ClientIDMode="Static" CssClass="form-control txtreadonly" text="0.00" />
                         </div>
                     </td>
                     <td>
@@ -247,7 +248,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox ID="txtFromAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/>
+                            <asp:TextBox ID="txtFromAfter" runat="server" ClientIDMode="Static" CssClass="form-control txtreadonly"   Text="0.00"/>
                         </div>
                         <span id="validationMessagetxtFromAfter" class="text-danger mt-2" style="display:none;">
                             Balance after transfer cannot be zero or negative. Please adjust the transfer amount.
@@ -269,7 +270,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" ReadOnly="true"  Text="0.00"/>
+                            <asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" Text="0.00"/>
                         </div>
                     </td>
                     <td>
@@ -277,7 +278,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox ID="txtToBalance" runat="server" ClientIDMode="Static" CssClass="form-control" text="0.00"  ReadOnly="true"/>
+                            <asp:TextBox ID="txtToBalance" runat="server" ClientIDMode="Static" CssClass="form-control txtreadonly" text="0.00" />
                         </div>
                     </td>
                     <td>
@@ -285,7 +286,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox ID="txtToTransfer" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/>
+                            <asp:TextBox ID="txtToTransfer" runat="server" ClientIDMode="Static" CssClass="form-control txtreadonly" Text="0.00"/>
                         </div>
                     </td>
                     <td>
@@ -293,7 +294,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">RM</span>
                             </div>
-                            <asp:TextBox ID="txtToAfter" runat="server" ClientIDMode="Static" CssClass="form-control" ReadOnly="true"  Text="0.00"/> 
+                            <asp:TextBox ID="txtToAfter" runat="server" ClientIDMode="Static" CssClass="form-control txtreadonly"  Text="0.00"/> 
                         </div>
                         <span id="validationMessagetxtToAfter" class="text-danger mt-2" style="display:none;">
                             Balance after transfer cannot be zero or negative. Please adjust the transfer amount.

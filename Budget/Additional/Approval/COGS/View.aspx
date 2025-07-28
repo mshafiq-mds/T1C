@@ -96,16 +96,16 @@
             <thead class="table-light">
                 <tr>
                     <th>Cost Centre</th>
-                    <th>GL Code</th>
-                    <th>Approved Budget 2022 (RM)</th>
-                    <th>New Budget 2022 (RM)</th>
+                    <th>Budget Type</th>
+                    <th>Approved Budget (RM)</th>
+                    <th>New Budget (RM)</th>
                     <th>Additional Budget (RM)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><asp:Label ID="lblCostCentre" runat="server" /></td>
-                    <td><asp:Label ID="lblGL" runat="server" /></td>
+                    <td><asp:Label ID="lblTBT" runat="server" /></td>
                     <td class="text-primary"><asp:Label ID="lblApprovedBudget" runat="server" /></td>
                     <td class="text-primary"><asp:Label ID="lblNewTotalBudget" runat="server" /></td>
                     <td class="text-primary fw-bold"><asp:Label ID="lblAdditionalBudget" runat="server" /></td>

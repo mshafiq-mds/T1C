@@ -5,17 +5,18 @@
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="card-tools mb-3">
             <div class="form-inline">
-                <label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>
-                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control"
-                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged">
-                    <asp:ListItem Text="All" Value="All" />
+                <%--<label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>--%>
+                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control select2" Style="width: 300px;"
+                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged" data-placeholder="All">
+                    <asp:ListItem Text="" Value=""/>
+                    <%--<asp:ListItem Text="All" Value="All" Selected="True"/>--%>
                     <asp:ListItem Text="Submitted" Value="Submitted" />
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
                     <asp:ListItem Text="Under Review" Value="Under Review" />
                     <asp:ListItem Text="Completed" Value="Completed" />
                     <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
-                    <asp:ListItem Text="User Action" Value="EditableOnly" />
+                    <asp:ListItem Text="User Action" Value="EditableOnly" Selected="True"/>
                 </asp:DropDownList>
             </div>
         </div>

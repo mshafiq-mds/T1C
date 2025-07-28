@@ -64,14 +64,24 @@ namespace Prodata.WebForm.Budget.Transfer
                 rdoOpex.Checked = transfer.BudgetType == "OPEX";
                 rdoCapex.Checked = transfer.BudgetType == "CAPEX";
 
-                txtFromGL.Text = transfer.FromGL;
+                Guid fromGLGuid = transfer.FromGL;
+                var fromGLBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == fromGLGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                txtFromGL.Text = fromGLBudgetType ?? "Unknown";
                 ddFromBA.SelectedValue = transfer.FromBA;
                 txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
                 txtFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
                 txtFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
 
-                txtToGL.Text = transfer.ToGL;
+                Guid toGLGuid = transfer.ToGL;
+                var toGLBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == toGLGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                txtToGL.Text = toGLBudgetType ?? "Unknown";
                 ddToBA.SelectedValue = transfer.ToBA;
                 txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");

@@ -86,32 +86,32 @@
 
         <div class="form-group">
             <label>Project</label>
-            <asp:TextBox runat="server" ID="txtProject" CssClass="form-control" placeholder="Example: KS Tenggaroh Timur" Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtProject" CssClass="form-control txtreadonly" placeholder="Example: KS Tenggaroh Timur" />
         </div>
 
         <div class="form-group">
             <label>Reference No.</label>
-            <asp:TextBox runat="server" ID="txtRefNo" CssClass="form-control" placeholder="Example: (03)PB/4067/TGHT/820/2" Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtRefNo" CssClass="form-control txtreadonly" placeholder="Example: (03)PB/4067/TGHT/820/2" />
         </div>
 
         <div class="form-group">
             <label>Application Date</label>
-            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date" Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control txtreadonly" TextMode="Date" />
         </div>
 
         <div class="form-group">
             <label>Estimated Cost (RM)</label>
-            <asp:TextBox runat="server" ID="txtEstimatedCost" CssClass="form-control" placeholder="0.00" Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtEstimatedCost" CssClass="form-control txtreadonly" placeholder="0.00" />
         </div>
 
         <div class="form-group">
             <label>E-VISA No.</label>
-            <asp:TextBox runat="server" ID="txtEVisa" CssClass="form-control" placeholder="Example: 2025-00025" Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtEVisa" CssClass="form-control txtreadonly" placeholder="Example: 2025-00025" />
         </div>
 
         <div class="form-group">
             <label>Work Details</label>
-            <asp:TextBox runat="server" ID="txtWorkDetails" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="Example: Budget transfer request..." Enabled="false"/>
+            <asp:TextBox runat="server" ID="txtWorkDetails" CssClass="form-control txtreadonly" TextMode="MultiLine" Rows="3" placeholder="Example: Budget transfer request..." />
         </div>
 
         <h4 class="mt-4">Budget Details</h4>
@@ -131,33 +131,33 @@
             <tbody>
                 <tr>
                     <td>From Budget</td>
-                    <td><asp:TextBox runat="server" ID="txtFromGL" CssClass="form-control" placeholder="Example: 53000060" Enabled="false"/></td>
+                    <td><asp:TextBox runat="server" ID="txtFromGL" CssClass="form-control txtreadonly" placeholder="Example: 53000060" /></td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA" Enabled="false"></asp:DropDownList>
+                        <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="ddFromBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>
                     </td>
-                    <td><asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
+                    <td><asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
                 </tr>
                 <tr>
                     <td>To Budget</td>
-                    <td><asp:TextBox runat="server" ID="txtToGL" CssClass="form-control" placeholder="Example: 55200060" Enabled="false"/></td> 
+                    <td><asp:TextBox runat="server" ID="txtToGL" CssClass="form-control txtreadonly" placeholder="Example: 55200060" /></td> 
                     <td>
-                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2" data-placeholder="BA" Enabled="false"></asp:DropDownList>
+                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>
                     </td>
-                    <td><asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
-                    <td><asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" Enabled="false"/></td>
+                    <td><asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
                 </tr>
             </tbody>
         </table>
         
         <h4 class="mt-4">Justification</h4>
-        <asp:TextBox runat="server" ID="txtJustification" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="false"/>
+        <asp:TextBox runat="server" ID="txtJustification" CssClass="form-control txtreadonly" TextMode="MultiLine" Rows="10" />
 
         <h4 class="mt-4">Remark Resubmit</h4>
         <asp:TextBox runat="server" ID="txtResubmit" CssClass="form-control" TextMode="MultiLine" Rows="10" Enabled="true"/>

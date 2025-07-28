@@ -9,6 +9,9 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/Cumulative/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton> 
+                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2 btn-revision" OnClick="btnSave_Click">
+                    <i class="fas fa-edit"></i> Request Revision
+                </asp:LinkButton>
                 <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve" OnClick="btnSubmit_Click">
                     <i class="fas fa-circle"></i> Approve Transfer
                 </asp:LinkButton>
@@ -97,16 +100,16 @@
             <thead class="table-light">
                 <tr>
                     <th>Cost Centre</th>
-                    <th>GL Code</th>
-                    <th>Approved Budget 2022 (RM)</th>
-                    <th>New Budget 2022 (RM)</th>
+                    <th>Budget Type</th>
+                    <th>Approved Budget (RM)</th>
+                    <th>New Budget (RM)</th>
                     <th>Additional Budget (RM)</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td><asp:Label ID="lblCostCentre" runat="server" /></td>
-                    <td><asp:Label ID="lblGL" runat="server" /></td>
+                    <td><asp:Label ID="lblTBT" runat="server" /></td>
                     <td class="text-primary"><asp:Label ID="lblApprovedBudget" runat="server" /></td>
                     <td class="text-primary"><asp:Label ID="lblNewTotalBudget" runat="server" /></td>
                     <td class="text-primary fw-bold"><asp:Label ID="lblAdditionalBudget" runat="server" /></td>
@@ -159,6 +162,23 @@
     <script type="text/javascript">
         $(document).ready(function () {
 
+            // Request Revision
+            $(".btn-revision").click(function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Request Resubmit?',
+                    text: "Do you want to ask the requester to revise or reupload the document?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007bff',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, request it'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#<%= btnRevisionConfirmed.ClientID %>').click();
+                    }
+                });
+            });
             // Approve Transfer
             $(".btn-approve").click(function (e) {
                 e.preventDefault();

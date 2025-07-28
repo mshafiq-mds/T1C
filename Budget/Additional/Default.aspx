@@ -7,10 +7,11 @@
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
             <div class="form-inline">
-                <label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>
-                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control"
-                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged">
-                    <asp:ListItem Text="All" Value="All" />
+                <%--<label for="ddlStatusFilter" class="mr-2 mb-0">Filter by Status:</label>--%>
+                <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control select2" Style="width: 300px;"
+                    OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged" data-placeholder="All">
+                    <asp:ListItem Text="" Value=""/>
+                    <%--<asp:ListItem Text="All" Value="All" Selected="True"/>--%>
                     <asp:ListItem Text="Submitted" Value="Submitted" />
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
                     <asp:ListItem Text="Under Review" Value="Under Review" />

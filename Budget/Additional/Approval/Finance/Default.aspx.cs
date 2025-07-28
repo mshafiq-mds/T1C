@@ -25,7 +25,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
             BindTransfers(selectedStatus);
         }
 
-        private void BindTransfers(string statusFilter = "All")
+        private void BindTransfers(string statusFilter = "EditableOnly")
         {
             string ba = Auth.User().iPMSBizAreaCode;
             string userRole = Auth.User().iPMSRoleCode;
@@ -78,10 +78,11 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                         };
                     })
                     .Where(x =>
-                        statusFilter == "All" ||
+                        statusFilter == "" ||
                         (statusFilter == "EditableOnly" && x.CanEdit) ||
                         x.Status == statusFilter)
-                    .OrderByDescending(x => x.RefNo)
+                    .OrderByDescending(x => x.ApplicationDate)
+                    .ThenByDescending(x => x.RefNo)
                     .ToList();
 
                 gvAdditionalBudgetList.DataSource = transfers;

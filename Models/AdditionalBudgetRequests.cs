@@ -74,5 +74,7 @@ namespace Prodata.WebForm.Models
         public Guid? DeletedBy { get; set; }
 
         public DateTime? DeletedDate { get; set; }
+
+        public Guid? ToBudgetType { get; set; }
     }
 }

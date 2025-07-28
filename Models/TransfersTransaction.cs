@@ -22,14 +22,14 @@ namespace Prodata.WebForm.Models
         public string EVisaNo { get; set; }
         public string WorkDetails { get; set; }
 
-        public string FromGL { get; set; }
+        public Guid FromGL { get; set; }
         public string FromBA { get; set; }
         public decimal? FromBudget { get; set; }
         public decimal? FromBalance { get; set; }
         public decimal? FromTransfer { get; set; }
         public decimal? FromAfter { get; set; }
 
-        public string ToGL { get; set; }
+        public Guid ToGL { get; set; }
         public string ToBA { get; set; }
         public decimal? ToBudget { get; set; }
         public decimal? ToBalance { get; set; }

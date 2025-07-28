@@ -68,7 +68,12 @@ namespace Prodata.WebForm.Budget.Additional
                 lblReason.Text = string.IsNullOrWhiteSpace(Additions.Reason) ? "-" : Additions.Reason;
 
                 lblCostCentre.Text = string.IsNullOrWhiteSpace(Additions.CostCentre) ? "-" : Additions.CostCentre;
-                lblGL.Text = string.IsNullOrWhiteSpace(Additions.GLCode) ? "-" : Additions.GLCode;
+                Guid? TOGuid = Additions.ToBudgetType;
+                var ToBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == TOGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                lblTBT.Text = ToBudgetType;
 
                 lblApprovedBudget.Text = Additions.ApprovedBudget.HasValue ? Additions.ApprovedBudget.Value.ToString("N2") : "-";
                 lblNewTotalBudget.Text = Additions.NewTotalBudget.HasValue ? Additions.NewTotalBudget.Value.ToString("N2") : "-";

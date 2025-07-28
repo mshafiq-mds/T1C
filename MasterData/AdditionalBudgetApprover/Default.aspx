@@ -3,6 +3,7 @@
     <asp:HiddenField ID="hdnRecordId" runat="server" />
     <asp:Button ID="btnDeleteRecordFinance" runat="server" OnClick="btnDeleteRecordFinance_Click" CssClass="d-none" />
     <asp:Button ID="btnDeleteRecordCogs" runat="server" OnClick="btnDeleteRecordCogs_Click" CssClass="d-none" />
+    <asp:Button ID="btnDeleteRecordCum" runat="server" OnClick="btnDeleteRecordCum_Click" CssClass="d-none" />
 
     <div class="row">
         <div class="col-md-12">
@@ -24,6 +25,9 @@
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="tab-loa-cogs-tab" data-toggle="pill" href="#tab-loa-cogs" role="tab" aria-controls="tab-loa-cogs" aria-selected="false">LOA (COGS)</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="tab-loa-cum-tab" data-toggle="pill" href="#tab-loa-cum" role="tab" aria-controls="tab-loa-cum" aria-selected="false">Final Approver</a>
                                 </li>
                             </ul>
                         </div>
@@ -124,6 +128,56 @@
                                         </ContentTemplate>
                                     </asp:UpdatePanel>
                                 </div>
+
+                                <!-- Cumm Group Tab -->
+                                <div class="tab-pane fade show active" id="tab-loa-cum" role="tabpanel" aria-labelledby="tab-loa-cum-tab">
+                                    <asp:UpdatePanel ID="updLoaCum" runat="server">
+                                        <ContentTemplate>
+                                            <div class="table-responsive">
+                                                <div class="card-tools">
+                                                    <asp:LinkButton ID="LinkButton2" runat="server" CssClass="btn btn-primary" PostBackUrl="~/MasterData/AdditionalBudgetApprover/CumAdd" CausesValidation="false">
+                                                        <i class="fas fa-plus"></i> Add Final Group Approver
+                                                    </asp:LinkButton>
+                                                </div>
+                                                <asp:GridView ID="gvLoaCum" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm"
+                                                    PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true"
+                                                    OnPageIndexChanging="gvLoaCum_PageIndexChanging" EmptyDataText="No record.">
+                                                    <Columns>
+                                                        <asp:TemplateField HeaderText="#">
+                                                            <HeaderStyle CssClass="width-30 text-center" />
+                                                            <ItemStyle CssClass="width-30 text-center" />
+                                                            <ItemTemplate>
+                                                                <%# Container.DataItemIndex + 1 %>
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+                                                        <asp:BoundField DataField="AmountMax" HeaderText="Max (RM)" HeaderStyle-CssClass="text-center" ItemStyle-CssClass="text-right" />
+                                                        <asp:BoundField DataField="AmmountCummulative" HeaderText="Cummulative" HeaderStyle-CssClass="text-center" ItemStyle-CssClass="text-right" />
+                                                        <asp:BoundField DataField="AmountMin" HeaderText="Balance" HeaderStyle-CssClass="text-center" ItemStyle-CssClass="text-right" />
+                                                        <asp:BoundField DataField="Section" HeaderText="Section" />
+                                                        <asp:BoundField DataField="ApproverName" HeaderText="Role" />
+                                                        <asp:BoundField DataField="Order" HeaderText="Order" HeaderStyle-CssClass="text-center" ItemStyle-CssClass="text-center" />
+                                                        <asp:TemplateField HeaderText="Action">
+                                                            <HeaderStyle CssClass="width-80 text-center" />
+                                                            <ItemStyle CssClass="width-80 text-center" />
+                                                            <ItemTemplate>
+                                                                <asp:LinkButton ID="btnEdit3" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit3_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-edit") %>'>
+                                                                    <i class="fas fa-edit"></i>
+                                                                </asp:LinkButton>
+                                                                <asp:LinkButton ID="btnDelete3" runat="server" CssClass="btn btn-danger btn-xs button-delete-cum" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-approver-delete") %>'>
+                                                                    <i class="fas fa-trash-alt"></i>
+                                                                </asp:LinkButton>
+                                                                <asp:HiddenField ID="hdnId3" runat="server" Value='<%# Eval("Id") %>' />
+                                                            </ItemTemplate>
+                                                        </asp:TemplateField>
+                                                    </Columns>
+                                                    <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
+                                                    <PagerStyle CssClass="pagination-ys" />
+                                                </asp:GridView>
+                                            </div>
+                                        </ContentTemplate>
+                                    </asp:UpdatePanel>
+                                </div>
+
                             </div>
                         </div>
                     </div> <!-- End Tabs -->
@@ -167,6 +221,24 @@
                     if (result.isConfirmed) {
                         $('#<%= hdnRecordId.ClientID %>').val(recordId);
                         __doPostBack("<%= btnDeleteRecordCogs.UniqueID %>", "");
+                    }
+                });
+            });
+            $(document).on("click", ".button-delete-cum", function (event) {
+                event.preventDefault();
+                var recordId = $(this).data("id");
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "This record will be deleted permanently!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Yes, delete it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#<%= hdnRecordId.ClientID %>').val(recordId);
+                        __doPostBack("<%= btnDeleteRecordCum.UniqueID %>", "");
                     }
                 });
             });

@@ -55,14 +55,25 @@ namespace Prodata.WebForm.Budget.Transfer
                 rdoOpex.Checked = transfer.BudgetType == "OPEX";
                 rdoCapex.Checked = transfer.BudgetType == "CAPEX";
 
-                txtFromGL.Text = transfer.FromGL;
+
+                Guid fromGLGuid = transfer.FromGL;
+                var fromGLBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == fromGLGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                txtFromGL.Text = fromGLBudgetType ?? "Unknown";
                 ddFromBA.SelectedValue = transfer.FromBA;
                 txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
                 txtFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
                 txtFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
 
-                txtToGL.Text = transfer.ToGL;
+                Guid toGLGuid = transfer.ToGL;
+                var toGLBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == toGLGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                txtToGL.Text = toGLBudgetType ?? "Unknown";
                 ddToBA.SelectedValue = transfer.ToBA;
                 txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
@@ -85,28 +96,28 @@ namespace Prodata.WebForm.Budget.Transfer
                         return;
                     }
 
-                    model.RefNo = txtRefNo.Text.Trim();
-                    model.Project = txtProject.Text.Trim();
-                    model.Date = DateTime.Parse(txtDate.Text);
-                    model.BudgetType = rdoOpex.Checked ? "OPEX" : "CAPEX";
-                    model.EstimatedCost = string.IsNullOrWhiteSpace(txtEstimatedCost.Text) ? 0 : Convert.ToDecimal(txtEstimatedCost.Text);
-                    model.EVisaNo = txtEVisa.Text.Trim();
-                    model.WorkDetails = txtWorkDetails.Text.Trim();
-                    model.Justification = txtJustification.Text.Trim();
+                    //model.RefNo = txtRefNo.Text.Trim();
+                    //model.Project = txtProject.Text.Trim();
+                    //model.Date = DateTime.Parse(txtDate.Text);
+                    //model.BudgetType = rdoOpex.Checked ? "OPEX" : "CAPEX";
+                    //model.EstimatedCost = string.IsNullOrWhiteSpace(txtEstimatedCost.Text) ? 0 : Convert.ToDecimal(txtEstimatedCost.Text);
+                    //model.EVisaNo = txtEVisa.Text.Trim();
+                    //model.WorkDetails = txtWorkDetails.Text.Trim();
+                    //model.Justification = txtJustification.Text.Trim();
 
-                    model.FromGL = txtFromGL.Text.Trim();
-                    model.FromBA = ddFromBA.SelectedValue;
-                    model.FromBudget = Convert.ToDecimal(txtFromBudget.Text);
-                    model.FromBalance = Convert.ToDecimal(txtFromBalance.Text);
-                    model.FromTransfer = Convert.ToDecimal(txtFromTransfer.Text);
-                    model.FromAfter = Convert.ToDecimal(txtFromAfter.Text);
+                    //model.FromGL = Guid.Parse(txtFromGL.Text.Trim());
+                    //model.FromBA = ddFromBA.SelectedValue;
+                    //model.FromBudget = Convert.ToDecimal(txtFromBudget.Text);
+                    //model.FromBalance = Convert.ToDecimal(txtFromBalance.Text);
+                    //model.FromTransfer = Convert.ToDecimal(txtFromTransfer.Text);
+                    //model.FromAfter = Convert.ToDecimal(txtFromAfter.Text);
 
-                    model.ToGL = txtToGL.Text.Trim();
-                    model.ToBA = ddToBA.SelectedValue;
-                    model.ToBudget = Convert.ToDecimal(txtToBudget.Text);
-                    model.ToBalance = Convert.ToDecimal(txtToBalance.Text);
-                    model.ToTransfer = Convert.ToDecimal(txtToTransfer.Text);
-                    model.ToAfter = Convert.ToDecimal(txtToAfter.Text);
+                    //model.ToGL = Guid.Parse(txtToGL.Text.Trim());
+                    //model.ToBA = ddToBA.SelectedValue;
+                    //model.ToBudget = Convert.ToDecimal(txtToBudget.Text);
+                    //model.ToBalance = Convert.ToDecimal(txtToBalance.Text);
+                    //model.ToTransfer = Convert.ToDecimal(txtToTransfer.Text);
+                    //model.ToAfter = Convert.ToDecimal(txtToAfter.Text);
 
                     model.UpdatedBy = Auth.User().Id; // Or your method to get current user
                     model.UpdatedDate = DateTime.Now;

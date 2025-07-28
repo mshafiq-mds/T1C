@@ -259,6 +259,7 @@
     <script>
         //$.widget.bridge('uibutton', $.ui.button);
         $(document).ready(function () {
+            $(this).find('.txtreadonly').prop("readonly", true);
             $(this).find('.content-wrapper').addClass('text-sm');
             $(this).find('.col-form-label:not(.col-form-label-lg)').addClass('col-form-label-sm');
             $(this).find('.form-control:not(.form-control-lg)').addClass('form-control-sm');

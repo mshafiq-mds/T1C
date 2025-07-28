@@ -24,7 +24,7 @@ namespace Prodata.WebForm.Budget.Transfer
             string selectedStatus = ddlStatusFilter.SelectedValue;
             BindTransfers(selectedStatus);
         }
-        private void BindTransfers(string statusFilter = "All")
+        private void BindTransfers(string statusFilter = "")
         {
             string ba = Auth.User().iPMSBizAreaCode;
 
@@ -50,7 +50,9 @@ namespace Prodata.WebForm.Budget.Transfer
                         x.EstimatedCost,
                         Status = Class.Budget.GetStatusName(x.status, x.DeletedDate)
                     })
-                    .Where(x => statusFilter == "All" || x.Status == statusFilter)
+                    .Where(x => statusFilter == "" || x.Status == statusFilter)
+                    .OrderByDescending(x => x.Date)
+                    .ThenByDescending(x => x.RefNo)
                     .ToList();
 
                 gvTransfers.DataSource = transfers;

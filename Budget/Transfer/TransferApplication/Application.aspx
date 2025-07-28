@@ -33,6 +33,7 @@
                     <tr><td><strong>Mill:</strong></td><td>(<asp:Label ID="lblBA" runat="server" />) <asp:Label ID="LblBAName" runat="server" /></td></tr>
                     <tr><td><strong>Amount Request (RM):</strong></td><td><asp:Label ID="lblAmount" runat="server" /></td></tr>
                     <tr><td><strong>Reason:</strong></td><td><asp:Label ID="lblReason" runat="server" /></td></tr>
+                    <tr><td><strong>Transfer:</strong></td><td><asp:Label ID="lblTransferFrom" runat="server" /><strong> To </strong><asp:Label ID="lblTransferTo" runat="server" /></td></tr>
                 </tbody>
             </table>
         </div>
@@ -60,7 +61,7 @@
                             <small class="text-danger d-none ddl-budget-error">Required Ref</small>
                         </td>
                         <td>
-                            <input type="text" class="form-control balance" readonly value="RM 0.00" />
+                            <input type="text" class="form-control balance txtreadonly" value="RM 0.00" />
                         </td>
                         <td>
                             <input type="text" class="form-control amount" placeholder="0.00" required
@@ -82,7 +83,7 @@
                     <tr>
                         <td colspan="2" class="text-end fw-bold">Total Amount (RM):</td>
                         <td>
-                            <asp:TextBox ID="totalAmount" runat="server" CssClass="form-control bg-light" ReadOnly="true" Text="RM 0.00" />
+                            <asp:TextBox ID="totalAmount" runat="server" CssClass="form-control bg-light txtreadonly"  Text="RM 0.00" />
     
                             <small id="amountMismatchNote" runat="server" visible="false" class="text-danger">
                                 Total amount must match the requested amount.

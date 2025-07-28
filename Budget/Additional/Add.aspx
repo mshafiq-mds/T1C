@@ -126,7 +126,7 @@
 
         <div class="form-group">
             <label>Application Date</label>
-            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control" TextMode="Date" Enabled="false" />
+            <asp:TextBox runat="server" ID="txtDate" CssClass="form-control txtreadonly" TextMode="Date"  />
             <asp:RequiredFieldValidator runat="server" ControlToValidate="txtDate" ErrorMessage="Application Date is required." CssClass="text-danger" Display="Dynamic" />
         </div>
 
@@ -159,7 +159,7 @@
             <thead>
                 <tr>
                     <th>Cost Centre</th>
-                    <th>GL</th>
+                    <th class="width-80" style="width: 195px">BudgetType</th>
                     <th>Approved Budget</th>
                     <th>New Budget</th>
                     <th>Additional Budget Value</th>
@@ -171,9 +171,10 @@
                         <asp:TextBox runat="server" ID="txtCostCentre" CssClass="form-control" placeholder="Example: 40FPS8990 UNIFORM" />
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCostCentre" ErrorMessage="Cost Centre is required." CssClass="text-danger" Display="Dynamic" />
                     </td>
-                    <td>
-                        <asp:TextBox runat="server" ID="txtGL" CssClass="form-control" placeholder="Example: 70200040" />
-                        <asp:RequiredFieldValidator runat="server" ControlToValidate="txtGL" ErrorMessage="GL Code is required." CssClass="text-danger" Display="Dynamic" />
+                    <td class="width-80" style="width: 195px"> 
+                        <asp:DropDownList runat="server" ID="txtBT" CssClass="form-control fixed-dropdown select2" data-placeholder="Type"
+                            DataValueField="Code" DataTextField="DisplayName" />
+                        <asp:RequiredFieldValidator ID="rfvFromGL" runat="server" ControlToValidate="txtBT" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
                         <asp:TextBox runat="server" ID="txtApprovedBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />

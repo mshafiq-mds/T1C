@@ -12,6 +12,7 @@ using System.Reflection.Emit;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Globalization;
 
 namespace Prodata.WebForm.Budget.Transfer
 {
@@ -24,8 +25,7 @@ namespace Prodata.WebForm.Budget.Transfer
                 BindControl();
                 BindBALabel();
 
-                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true);
-                txtEVisa.ReadOnly = txtRefNo.ReadOnly = true;
+                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true); 
 
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
@@ -59,19 +59,19 @@ namespace Prodata.WebForm.Budget.Transfer
                     EVisaNo = refNo,
                     WorkDetails = txtWorkDetails.Text.Trim(),
 
-                    FromGL = txtFromGL.Text.Trim(),
+                    FromGL = Guid.TryParse(txtFromGL.Text.Trim(), out var fromGLGuid) ? fromGLGuid : Guid.Empty,
                     FromBA = ddFromBA.SelectedValue,
                     FromBudget = string.IsNullOrWhiteSpace(txtFromBudget.Text) ? 0 : Convert.ToDecimal(txtFromBudget.Text),
                     FromBalance = string.IsNullOrWhiteSpace(txtFromBalance.Text) ? 0 : Convert.ToDecimal(txtFromBalance.Text),
                     FromTransfer = string.IsNullOrWhiteSpace(txtFromTransfer.Text) ? 0 : Convert.ToDecimal(txtFromTransfer.Text),
-                    FromAfter = string.IsNullOrWhiteSpace(txtFromAfter.Text) ? 0 : Convert.ToDecimal(txtFromAfter.Text),
+                    FromAfter = string.IsNullOrWhiteSpace(txtFromAfter.Text) ? 0 : Convert.ToDecimal(txtFromAfter.Text),  
 
-                    ToGL = txtToGL.Text.Trim(),
+                    ToGL = Guid.TryParse(txtToGL.Text.Trim(), out var toGLGuid) ? toGLGuid : Guid.Empty,
                     ToBA = lblToBA.Text.Trim(),
                     ToBudget = string.IsNullOrWhiteSpace(txtToBudget.Text) ? 0 : Convert.ToDecimal(txtToBudget.Text),
                     ToBalance = string.IsNullOrWhiteSpace(txtToBalance.Text) ? 0 : Convert.ToDecimal(txtToBalance.Text),
-                    ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),
-                    ToAfter = string.IsNullOrWhiteSpace(txtToAfter.Text) ? 0 : Convert.ToDecimal(txtToAfter.Text),
+                    ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),  
+                    ToAfter = string.IsNullOrWhiteSpace(txtToAfter.Text) ? 0 : Convert.ToDecimal(txtToAfter.Text), 
                     status = 1,
                     //Nota
                     //status == 0 ? "Resubmit" :

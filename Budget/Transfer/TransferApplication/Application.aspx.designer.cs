@@ -105,6 +105,24 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
         protected global::System.Web.UI.WebControls.Label lblReason;
 
         /// <summary>
+        /// lblTransferFrom control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTransferFrom;
+
+        /// <summary>
+        /// lblTransferTo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblTransferTo;
+
+        /// <summary>
         /// totalAmount control.
         /// </summary>
         /// <remarks>

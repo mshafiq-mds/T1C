@@ -19,6 +19,7 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             {
                 BindLoaFinance();
                 BindLoaCogs();
+                BindLoaCum();
             }
         }
 
@@ -73,6 +74,31 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
 
             Response.Redirect(Request.Url.GetCurrentUrl());
         }
+        protected void btnDeleteRecordCum_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (var db = new AppDbContext())
+                {
+                    var budgetApprover = db.AdditionalCumulativeLimits.Find(Guid.Parse(hdnRecordId.Value));
+                    bool isSuccess = db.SoftDelete(budgetApprover);
+                    if (isSuccess)
+                    {
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Info, "Budget approver deleted.");
+                    }
+                    else
+                    {
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to delete budget approver.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
+            }
+
+            Response.Redirect(Request.Url.GetCurrentUrl());
+        }
 
         protected void btnEdit1_Click(object sender, EventArgs e)
         {
@@ -87,6 +113,14 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             GridViewRow row = (GridViewRow)((LinkButton)sender).NamingContainer;
             string budgetApproverId = ((HiddenField)row.FindControl("hdnId2")).Value;
             string test = (Request.Url.GetCurrentUrl() + "/CogsEdit?Id=" + budgetApproverId).ToString();
+
+            Response.Redirect(Request.Url.GetCurrentUrl() + "/CogsEdit?Id=" + budgetApproverId);
+        }
+        protected void btnEdit3_Click(object sender, EventArgs e)
+        {
+            GridViewRow row = (GridViewRow)((LinkButton)sender).NamingContainer;
+            string budgetApproverId = ((HiddenField)row.FindControl("hdnId3")).Value;
+            string test = (Request.Url.GetCurrentUrl() + "/CumEdit?Id=" + budgetApproverId).ToString();
 
             Response.Redirect(Request.Url.GetCurrentUrl() + "/CogsEdit?Id=" + budgetApproverId);
         }
@@ -110,6 +144,16 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             gvLoaCogs.DataSource = list;
             gvLoaCogs.PageIndex = Convert.ToInt32(ViewState["pageIndex"]);
             gvLoaCogs.DataBind();
+        }
+        private void BindLoaCum()
+        {
+            ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
+
+            var list = GetApprovalLoaCumLimits();
+
+            gvLoaCum.DataSource = list;
+            gvLoaCum.PageIndex = Convert.ToInt32(ViewState["pageIndex"]);
+            gvLoaCum.DataBind();
         }
         private List<Models.ViewModels.ApprovalLimitListViewModel> GetApprovalLoaFinanceLimits()
         {
@@ -163,6 +207,32 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             }
         }
 
+        private List<Models.ViewModels.ApprovalLimitListViewModel> GetApprovalLoaCumLimits()
+        {
+            using (var db = new AppDbContext())
+            {
+                var query = db.AdditionalCumulativeLimits
+                    .ExcludeSoftDeleted()
+                    .OrderBy(x => x.AmountMax)
+                    .ThenBy(x => x.Order)
+                    .ToList();
+
+                return query.Select(x => new Models.ViewModels.ApprovalLimitListViewModel
+                {
+                    Id = x.Id,
+                    ApproverType = x.CumulativeApproverType,
+                    ApproverCode = x.CumulativeApproverCode,
+                    ApproverName = x.CumulativeApproverName,
+                    AmountMin = x.AmountCumulativeBalance.HasValue ? x.AmountCumulativeBalance.Value.ToString("#,##0.00") : "0.00",
+                    AmmountCummulative = x.AmountCumulative.HasValue ? x.AmountCumulative.Value.ToString("#,##0.00") : "0.00",
+                    AmountMax = x.AmountMax.HasValue ? x.AmountMax.Value.ToString("#,##0.00") : "Unlimited",
+                    Section = x.Section,
+                    Status = x.Status,
+                    Order = x.Order.ToString()
+                }).ToList();
+            }
+        }
+
 
         protected void gvLoaFinance_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
@@ -171,6 +241,12 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
         }
 
         protected void gvLoaCogs_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            ViewState["pageIndex"] = e.NewPageIndex.ToString();
+            BindLoaCogs();
+        }
+
+        protected void gvLoaCum_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             ViewState["pageIndex"] = e.NewPageIndex.ToString();
             BindLoaCogs();

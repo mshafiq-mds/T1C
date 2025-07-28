@@ -16,5 +16,7 @@ namespace Prodata.WebForm.Models.ViewModels
         public string Section {  get; set; }
         public string Status { get; set; }
         public string Order { get; set; }
+        public string AmmountCummulative { get; set; }
+
     }
 }

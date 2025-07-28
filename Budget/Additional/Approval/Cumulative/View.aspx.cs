@@ -57,7 +57,12 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                 lblReason.Text = string.IsNullOrWhiteSpace(model.Reason) ? "-" : model.Reason;
 
                 lblCostCentre.Text = string.IsNullOrWhiteSpace(model.CostCentre) ? "-" : model.CostCentre;
-                lblGL.Text = string.IsNullOrWhiteSpace(model.GLCode) ? "-" : model.GLCode;
+                Guid? TOGuid = model.ToBudgetType;
+                var ToBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == TOGuid)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+                lblTBT.Text = ToBudgetType;
 
                 lblApprovedBudget.Text = model.ApprovedBudget.HasValue ? model.ApprovedBudget.Value.ToString("N2") : "-";
                 lblNewTotalBudget.Text = model.NewTotalBudget.HasValue ? model.NewTotalBudget.Value.ToString("N2") : "-";

@@ -2346,6 +2346,8 @@
     <Content Include="Images\user-circle-solid-darkgray.svg" />
     <Content Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\CogsEdit.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\CumAdd.aspx" />
+    <Content Include="MasterData\AdditionalBudgetApprover\CumEdit.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\Default.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\FinanceAdd.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx" />
@@ -3126,6 +3128,20 @@
     </Compile>
     <Compile Include="MasterData\AdditionalBudgetApprover\CogsEdit.aspx.designer.cs">
       <DependentUpon>CogsEdit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CumAdd.aspx.cs">
+      <DependentUpon>CumAdd.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CumAdd.aspx.designer.cs">
+      <DependentUpon>CumAdd.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CumEdit.aspx.cs">
+      <DependentUpon>CumEdit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AdditionalBudgetApprover\CumEdit.aspx.designer.cs">
+      <DependentUpon>CumEdit.aspx</DependentUpon>
     </Compile>
     <Compile Include="MasterData\AdditionalBudgetApprover\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

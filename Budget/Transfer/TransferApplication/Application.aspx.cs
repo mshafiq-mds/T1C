@@ -1,6 +1,7 @@
 ﻿using FGV.Prodata.Web.UI;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using NPOI.SS.Formula;
 using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Asn1.X509;
 using Prodata.WebForm.Models;
@@ -80,7 +81,9 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 
                 var rawBudgets = db.Database.SqlQuery<RawBudgetDTO>(sql, ba, selectedYear).ToList();
 
-                var budgets = rawBudgets.Select(b => new BudgetDTO
+                var budgets = rawBudgets
+                .Where(b => b.Balance != 0)
+                .Select(b => new BudgetDTO
                 {
                     Id = b.Id,
                     Ref = b.Ref,
@@ -173,30 +176,56 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
             //Proceed to save allocations
             using (var db = new AppDbContext())
             {
-                int index = 0;
-                while (true)
+                //////////Create Guid For Budget
+                Guid newIdBudget; 
+                string idStr = Request.QueryString["id"];
+                if (Guid.TryParse(idStr, out _transferId))
                 {
-                    string budgetKey = $"allocationTable[{index}][budgetRef]";
-                    string amountKey = $"allocationTable[{index}][amount]";
-                    string IdRefKey = $"allocationTable[{index}][budgetId]";
 
-                    if (!Request.Form.AllKeys.Contains(budgetKey))
-                        break;
+                    //////////Create Budget
+                    var TT = db.TransfersTransaction.Where(x => x.Id == _transferId).FirstOrDefault();
+                    var newBudget = new Prodata.WebForm.Models.Budget
+                    { 
+                        TypeId = TT.ToGL,
+                        BizAreaCode = TT.ToBA,
+                        BizAreaName = new Class.IPMSBizArea().GetNameByCode(TT.ToBA ?? "") ?? "-",
+                        Date = DateTime.Now,
+                        Month = DateTime.Now.Month,
+                        Num = (db.Budgets.OrderByDescending(x => x.Num).Select(x => x.Num).FirstOrDefault()) + 1,
+                        Ref = TT.RefNo,
+                        Details = "TRANSFER BUDGET FROM : " + TT.FromBA,
+                        Wages = 0.0m,
+                        Purchase = 0.0m,
+                        Amount = 0.0m,
+                        Vendor = "LUAR",
+                    };
+                    db.Budgets.Add(newBudget);
+                    db.SaveChanges();
+                    newIdBudget = newBudget.Id;
 
-                    string budgetRef = Request.Form[budgetKey];
-                    string amountStr = Request.Form[amountKey];
-                    string IdRefKeyStr = Request.Form[IdRefKey];
-
-                    if (!string.IsNullOrWhiteSpace(budgetRef) && decimal.TryParse(amountStr, out decimal amount))
+                    int index = 0;
+                    while (true)
                     {
-                        string idStr = Request.QueryString["id"];
-                        if (Guid.TryParse(idStr, out _transferId))
+                        //////////Create Transaction
+                        string budgetKey = $"allocationTable[{index}][budgetRef]";
+                        string amountKey = $"allocationTable[{index}][amount]";
+                        string IdRefKey = $"allocationTable[{index}][budgetId]";
+
+                        if (!Request.Form.AllKeys.Contains(budgetKey))
+                            break;
+
+                        string budgetRef = Request.Form[budgetKey];
+                        string amountStr = Request.Form[amountKey];
+                        string IdRefKeyStr = Request.Form[IdRefKey];
+
+                        if (!string.IsNullOrWhiteSpace(budgetRef) && decimal.TryParse(amountStr, out decimal amount))
                         {
+                        
                             var alloc = new Transaction
                             {
                                 FromId = Guid.Parse(IdRefKeyStr),
                                 FromType = "Budget",
-                                ToId = _transferId,
+                                ToId = newIdBudget,
                                 ToType = "TransfersTransaction",
                                 Amount = amount,
                                 Date = DateTime.Now,
@@ -206,11 +235,13 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
 
                             db.Transactions.Add(alloc);
                         }
+
+                        index++;
                     }
 
-                    index++;
                 }
 
+                //////////Update Logs
                 string roleCode = Auth.User().iPMSRoleCode;
                 Guid userId = Auth.User().Id;
                 var logEntry = new TransferApprovalLog
@@ -296,7 +327,14 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                 lblBA.Text = transfer.FromBA.ToString();
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA ?? "") ?? "-";
                 lblAmount.Text = "RM " + transfer.FromTransfer.ToString();
-                lblReason.Text = transfer.Justification.ToString(); 
+                lblReason.Text = transfer.Justification.ToString();
+                 
+                string From = db.BudgetTypes.Where(u => u.Id == transfer.FromGL).Select(u => u.Name).FirstOrDefault();
+                string To = db.BudgetTypes.Where(u =>u.Id == transfer.ToGL).Select(u => u.Name).FirstOrDefault();
+                string FromBA = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA) ?? "unknown";
+                string ToBA = new Class.IPMSBizArea().GetNameByCode(transfer.ToBA) ?? "unknown";
+                lblTransferFrom.Text = FromBA + "(" + transfer.FromBA + ") - " + From;
+                lblTransferTo.Text = ToBA + "(" + transfer.ToBA + ") - " + To;
             }
         }
          
