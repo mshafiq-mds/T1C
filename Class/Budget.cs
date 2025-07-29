@@ -1,4 +1,5 @@
 ﻿using CustomGuid.AspNet.Identity;
+using NPOI.SS.Formula.Atp;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
@@ -61,19 +62,65 @@ namespace Prodata.WebForm.Class
         // ===========================================
         // ✅ Additional Budget / Cumulative Logic
         // ===========================================
-        public static AdditionalCumulativeLimits GetEligibleCumulativeLimit( List<AdditionalCumulativeLimits> limits, decimal? requestedAmount)
+
+        public static decimal GetEligibleCumulativeBalance(AppDbContext db, string role, int year)
+        {
+            var total = (from abl in db.AdditionalBudgetLog
+                         join abr in db.AdditionalBudgetRequests
+                             on abl.BudgetTransferId equals abr.Id
+                         where abl.DeletedDate == null
+                               && abr.DeletedDate == null
+                               && abl.StepNumber != 0
+                               && abl.StepNumber != -1
+                               && abl.RoleName == role
+                               && abr.ApplicationDate.Year == year
+                         select new
+                         {
+                             abl.BudgetTransferId,
+                             abr.AdditionalBudget
+                         })
+                         .Distinct()
+                         .Sum(x => x.AdditionalBudget); // keep as nullable
+
+            return total ?? 0m; // null-safe fallback
+        }
+
+
+
+        public static AdditionalCumulativeLimits GetEligibleCumulativeLimit(AppDbContext db, List<AdditionalCumulativeLimits> limits, decimal? requestedAmount, int year)
         {
             decimal amount = requestedAmount ?? 0m;
+            decimal used = GetEligibleCumulativeBalance(db, Auth.User().iPMSRoleCode, year);
+
             return limits
                 .Where(l =>
                 {
-                    var Used = l.AmountCumulativeBalance ?? 0m;
-                    var balance = l.AmountCumulative - Used;
-                    return balance >= amount && amount <= l.AmountMax;
+                    // If AmountCumulative is null => treat as unlimited
+                    bool hasEnoughBalance = l.AmountCumulative == null ||
+                                            (l.AmountCumulative.Value - used) >= amount;
+
+                    bool withinMax = amount <= (l.AmountMax ?? decimal.MaxValue);
+
+                    return hasEnoughBalance && withinMax;
                 })
                 .OrderBy(l => l.Order)
                 .FirstOrDefault();
         }
+
+
+        //public static AdditionalCumulativeLimits GetEligibleCumulativeLimit( List<AdditionalCumulativeLimits> limits, decimal? requestedAmount)
+        //{
+        //    decimal amount = requestedAmount ?? 0m;
+        //    return limits
+        //        .Where(l =>
+        //        {
+        //            var Used = l.AmountCumulativeBalance ?? 0m;
+        //            var balance = l.AmountCumulative - Used;
+        //            return balance >= amount && amount <= l.AmountMax;
+        //        })
+        //        .OrderBy(l => l.Order)
+        //        .FirstOrDefault();
+        //}
 
         public static bool CanEditCumulativeRequest(AdditionalCumulativeLimits limit, string userRole, DateTime? deletedDate)
         {

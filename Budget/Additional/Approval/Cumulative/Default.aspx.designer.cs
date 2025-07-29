@@ -24,6 +24,24 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
         protected global::System.Web.UI.WebControls.DropDownList ddlStatusFilter;
 
         /// <summary>
+        /// lblUsed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblUsed;
+
+        /// <summary>
+        /// lblcumulative control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblcumulative;
+
+        /// <summary>
         /// UpdatePanel1 control.
         /// </summary>
         /// <remarks>

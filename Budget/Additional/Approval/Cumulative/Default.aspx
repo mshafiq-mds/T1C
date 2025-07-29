@@ -17,9 +17,16 @@
                     <asp:ListItem Text="Deleted" Value="Deleted" />
                     <asp:ListItem Text="User Action" Value="EditableOnly" Selected="True"/>
                 </asp:DropDownList>
+
+                <div class="d-inline-block ms-3">
+                    <span class="fw-bold text-dark">Cumulative Balance:</span>
+                    <asp:Label runat="server" ID="lblUsed" CssClass="badge bg-success text-white me-1">0</asp:Label>
+                    <span class="text-muted">/</span>
+                    <asp:Label runat="server" ID="lblcumulative" CssClass="badge bg-secondary text-white ms-1">0</asp:Label>
+                </div>
+
             </div>
         </div>
-
         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
                 <asp:GridView ID="gvAdditionalBudgetList" runat="server"

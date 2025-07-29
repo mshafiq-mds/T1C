@@ -16,6 +16,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
             if (!IsPostBack)
             {
                 BindTransfers();
+
             }
         }
         protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
@@ -23,6 +24,28 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
             string selectedStatus = ddlStatusFilter.SelectedValue;
             BindTransfers(selectedStatus);
         }
+        private void BindCumulative()
+        {
+            lblcumulative.Text = "0.00";
+            lblUsed.Text = "0.00";
+            lblUsed.Attributes["title"] = "Amount used in current year";
+            lblcumulative.Attributes["title"] = "Current user cumulative amount";
+
+            string role = Auth.User().iPMSRoleCode;
+
+            using (var db = new AppDbContext())
+            {
+                lblUsed.Text = Class.Budget.GetEligibleCumulativeBalance(db, role, DateTime.Now.Year).ToString("N2");
+
+                var cumulativeAmount = db.AdditionalCumulativeLimits
+                                         .Where(x => x.CumulativeApproverCode == role && x.DeletedDate == null)
+                                         .Select(x => x.AmountCumulative)
+                                         .FirstOrDefault();
+
+                lblcumulative.Text = (cumulativeAmount ?? 0m).ToString("N2");
+            }
+        }
+
         private void BindTransfers(string statusFilter = "EditableOnly")
         {
             string ba = Auth.User().iPMSBizAreaCode;
@@ -54,11 +77,11 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .ToList()
                     .Select(x =>
                     {
-                        var eligibleLimit = Class.Budget.GetEligibleCumulativeLimit(limits, x.AdditionalBudget);
+                        var eligibleLimit = Class.Budget.GetEligibleCumulativeLimit(db, limits, x.AdditionalBudget, x.ApplicationDate.Year);
                         bool canEdit = Class.Budget.CanEditCumulativeRequest(eligibleLimit, userRole, x.DeletedDate);
+                        canEdit = x.Status == 3 ? canEdit : false;
                         //string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
                         string status = canEdit ? "User Action" : Class.Budget.GetStatusName(x.Status, x.DeletedDate);
-
 
                         return new
                         {
@@ -83,6 +106,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                 gvAdditionalBudgetList.DataSource = transfers;
                 gvAdditionalBudgetList.DataBind();
             }
+            BindCumulative();
         }
         protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {

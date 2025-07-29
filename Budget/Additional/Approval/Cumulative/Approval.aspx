@@ -9,9 +9,9 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Budget/Additional/Approval/Cumulative/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton> 
-                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2 btn-revision" OnClick="btnSave_Click">
+           <%--     <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2 btn-revision" OnClick="btnSave_Click">
                     <i class="fas fa-edit"></i> Request Revision
-                </asp:LinkButton>
+                </asp:LinkButton>--%>
                 <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve" OnClick="btnSubmit_Click">
                     <i class="fas fa-circle"></i> Approve Transfer
                 </asp:LinkButton>
@@ -129,9 +129,11 @@
 
 
         <!-- Hidden fields and buttons for sweet alert postback -->
-        <asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />
+        <%--<asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />--%>
         <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click" Style="display:none;" />
         <asp:HiddenField ID="hdnTransferId" runat="server" />
+        <asp:HiddenField ID="hdnTBTGuid" runat="server" />
+
 
         
         <h4 class="mt-4">Approval History</h4>
@@ -163,7 +165,7 @@
         $(document).ready(function () {
 
             // Request Revision
-            $(".btn-revision").click(function (e) {
+           <%-- $(".btn-revision").click(function (e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Request Resubmit?',
@@ -178,7 +180,7 @@
                         $('#<%= btnRevisionConfirmed.ClientID %>').click();
                     }
                 });
-            });
+            });--%>
             // Approve Transfer
             $(".btn-approve").click(function (e) {
                 e.preventDefault();

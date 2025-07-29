@@ -223,7 +223,7 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
                     ApproverType = x.CumulativeApproverType,
                     ApproverCode = x.CumulativeApproverCode,
                     ApproverName = x.CumulativeApproverName,
-                    AmountMin = x.AmountCumulativeBalance.HasValue ? x.AmountCumulativeBalance.Value.ToString("#,##0.00") : "0.00",
+                    AmountMin = Class.Budget.GetEligibleCumulativeBalance(db, x.CumulativeApproverCode, DateTime.Now.Year).ToString(),
                     AmmountCummulative = x.AmountCumulative.HasValue ? x.AmountCumulative.Value.ToString("#,##0.00") : "0.00",
                     AmountMax = x.AmountMax.HasValue ? x.AmountMax.Value.ToString("#,##0.00") : "Unlimited",
                     Section = x.Section,

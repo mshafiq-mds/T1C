@@ -93,7 +93,6 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     Remarks = txtRemarks.Text?.Trim()
                 };
 
-
                 db.AdditionalBudgetLog.Add(logEntry);
                 db.SaveChanges();
 
@@ -111,7 +110,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
                 db.Budgets.Add(new Prodata.WebForm.Models.Budget
                 {
-                    TypeId = Guid.Parse(lblTBT.Text),
+                    TypeId = Guid.Parse(hdnTBTGuid.Value),
                     BizAreaCode = request.BA,
                     BizAreaName = new Class.IPMSBizArea().GetNameByCode(request.BA ?? "") ?? "-",
                     Date = DateTime.Now,
@@ -161,6 +160,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .Select(x => x.Name)
                     .FirstOrDefault();
                 lblTBT.Text = ToBudgetType;
+                hdnTBTGuid.Value = model.ToBudgetType.ToString();
                 lblApprovedBudget.Text = model.ApprovedBudget?.ToString("N2") ?? "-";
                 lblNewTotalBudget.Text = model.NewTotalBudget?.ToString("N2") ?? "-";
                 lblAdditionalBudget.Text = model.AdditionalBudget?.ToString("N2") ?? "-";
@@ -214,6 +214,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .OrderByDescending(x => x.ActionDate)
                     .Select(x => new
                     {
+                        x.Id,
                         x.ActionDate,
                         x.ActionType,
                         x.RoleName,
