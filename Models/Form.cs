@@ -33,6 +33,8 @@ namespace Prodata.WebForm.Models
 
         public decimal? Amount { get; set; }
 
+        public decimal? ActualAmount { get; set; }
+
         [StringLength(100)]
         public string ProcurementType { get; set; }
 

@@ -9,5 +9,6 @@ namespace Prodata.WebForm.Models.ViewModels
     {
         public Guid BudgetId { get; set; }
         public string Amount { get; set; }
+        public string Type { get; set; }
     }
 }
