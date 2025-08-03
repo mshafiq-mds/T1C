@@ -219,7 +219,7 @@ namespace Prodata.WebForm.T1C.Approval
 
                         #region Allocation
                         var budgets = db.FormBudgets
-                            .Where(fb => fb.FormId == form.Id)
+                            .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
                             .Select(fb => new
                             {
                                 fb.Budget.Ref,

@@ -59,7 +59,7 @@ namespace Prodata.WebForm.T1C
                         form.SoftDeleteTransactions();
 
                         // Delete form budgets related to the form
-                        foreach (var formBudget in form.FormBudgets)
+                        foreach (var formBudget in form.FormBudgets.ToList())
                         {
                             db.FormBudgets.Remove(formBudget);
                         }

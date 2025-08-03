@@ -14,22 +14,22 @@ namespace Prodata.WebForm.T1C.Approval
         {
             if (!IsPostBack)
             {
-                BindData(Auth.User().iPMSRoleCode, Auth.IPMSBizAreaCodes());
+                BindData(Auth.IPMSBizAreaCodes());
             }
         }
 
         protected void ddlStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            BindData(Auth.User().iPMSRoleCode, Auth.IPMSBizAreaCodes());
+            BindData(Auth.IPMSBizAreaCodes());
         }
 
         protected void gvData_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             ViewState["pageIndex"] = e.NewPageIndex.ToString();
-            BindData(Auth.User().iPMSRoleCode, Auth.IPMSBizAreaCodes());
+            BindData(Auth.IPMSBizAreaCodes());
         }
 
-        private void BindData(string ipmsRoleCode = null, List<string> ipmsBizAreaCodes = null)
+        private void BindData(List<string> ipmsBizAreaCodes = null)
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 

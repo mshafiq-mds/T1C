@@ -42,7 +42,7 @@ namespace Prodata.WebForm.T1C
                     }
                     else
                     {
-                        lblTitle.Text = "Invalid ID format.";
+                        Response.Redirect("~/T1C");
                     }
                 }
                 else
@@ -98,7 +98,7 @@ namespace Prodata.WebForm.T1C
 
                         #region Allocation
                         var budgets = db.FormBudgets
-                            .Where(fb => fb.FormId == form.Id)
+                            .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
                             .Select(fb => new
                             {
                                 fb.Budget.Ref,
