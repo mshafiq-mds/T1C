@@ -239,18 +239,36 @@ namespace Prodata.WebForm.Class
                 var budgetIds = query2.Select(q => q.Id).ToList();
 
                 // ✅ Step 2: Batch load utilized amounts per budget
-                var utilizedMap = db.Transactions.ExcludeSoftDeleted()
-                    .Where(t => budgetIds.Contains(t.FromId.Value)
-                             && t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase)
-                             && (excludedFormId == null || (t.ToId != excludedFormId.Value && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase)))
-                             && !t.Status.Equals("rejected", StringComparison.OrdinalIgnoreCase))
-                    .GroupBy(t => t.FromId)
-                    .Select(g => new
-                    {
-                        BudgetId = g.Key,
-                        Utilized = g.Sum(t => t.Amount) ?? 0m
-                    })
-                    .ToDictionary(x => x.BudgetId, x => x.Utilized);
+                var transactions = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t =>
+                        (t.FromId.HasValue && budgetIds.Contains(t.FromId.Value) && t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase)) ||
+                        (t.ToId.HasValue && budgetIds.Contains(t.ToId.Value) && t.ToType.Equals("Budget", StringComparison.OrdinalIgnoreCase))
+                    )
+                    .Where(t => !t.Status.Equals("rejected", StringComparison.OrdinalIgnoreCase));
+
+                // ✅ Apply excludedFormId filter
+                if (excludedFormId.HasValue)
+                {
+                    Guid excludedId = excludedFormId.Value;
+
+                    transactions = transactions.Where(t =>
+                        !(t.ToId == excludedId && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase)) &&
+                        !(t.FromId == excludedId && t.FromType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    );
+                }
+
+                // ✅ Group by BudgetId (FromId or ToId depending on direction)
+                var utilizedMap = transactions
+                    .GroupBy(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? t.FromId : t.ToId)
+                    .ToDictionary(
+                        g => g.Key.Value,
+                        g => g.Sum(t =>
+                        {
+                            decimal amt = t.Amount ?? 0m;
+                            // Subtract incoming (To) and add outgoing (From)
+                            return t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? amt : -amt;
+                        })
+                    );
 
                 // ✅ Step 3: Project into view model with balance
                 return query2.Select(q =>
@@ -275,12 +293,12 @@ namespace Prodata.WebForm.Class
                         Details = q.Details,
                         Wages = q.Wages.HasValue ? q.Wages.Value.ToString("#,##0.00") : string.Empty,
                         Purchase = q.Purchase.HasValue ? q.Purchase.Value.ToString("#,##0.00") : string.Empty,
-                        Amount = balance.ToString("#,##0.00"), // ✅ Use balance instead of amount
+                        Amount = balance.ToString("#,##0.00"),
                         Vendor = q.Vendor,
                         Status = q.Status
                     };
                 }).ToList();
             }
-		}
+        }
     }
 }

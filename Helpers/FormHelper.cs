@@ -60,7 +60,6 @@ namespace Prodata.WebForm.Helpers
                 var form = db.Forms.Find(formId);
                 if (form == null) return false;
 
-                // Get all approval limits for the form's amount, ordered by approval step
                 var approvalLimits = db.ApprovalLimits.ExcludeSoftDeleted()
                     .Where(al => al.AmountMin <= form.Amount && form.Amount <= al.AmountMax)
                     .OrderBy(al => al.Order)
@@ -68,33 +67,42 @@ namespace Prodata.WebForm.Helpers
 
                 if (!approvalLimits.Any()) return false;
 
-                // Get all approval codes already used to approve this form
-                var approvedCodes = db.Approvals
+                var approvals = db.Approvals
                     .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(a => a.CreatedDate)
+                    .ToList();
+
+                if (!approvals.Any()) return false;
+
+                // Step 1: Find the last "Submitted"
+                var lastSubmittedIndex = approvals.FindLastIndex(a => a.Action.Equals("Submitted", StringComparison.OrdinalIgnoreCase));
+                if (lastSubmittedIndex == -1)
+                    return false;
+
+                // Step 2: Find approvals made AFTER the last submission
+                var approvalsAfterLastSubmit = approvals
+                    .Skip(lastSubmittedIndex + 1)
+                    .Where(a => a.Action.Equals("Approved", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                var approvedCodes = approvalsAfterLastSubmit
                     .Select(a => a.ActionByCode)
                     .ToList();
 
-                // ✅ Return false if no approvals have been made yet
-                if (approvedCodes == null || !approvedCodes.Any())
-                    return false;
-
-                // Find the first approval step not yet approved
+                // Step 3: Find the next approver in the sequence who hasn't approved since last submit
                 foreach (var limit in approvalLimits)
                 {
                     if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
                     {
-                        // This is the next required approval step
-                        if (user.iPMSRoleCode == limit.ApproverCode)
-                        {
-                            return true; // Current user is the next expected approver
-                        }
-                        break; // Stop after first unapproved step
+                        // This approver is next in line
+                        return string.Equals(user.iPMSRoleCode, limit.ApproverCode, StringComparison.OrdinalIgnoreCase);
                     }
                 }
-            }
 
-            return false;
+                return false;
+            }
         }
+
 
         public static bool IsFormPendingUserAction(this Models.Form form)
         {
