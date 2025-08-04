@@ -125,6 +125,7 @@ namespace Prodata.WebForm.Models
         public DbSet<AdditionalCumulativeLimits> AdditionalCumulativeLimits { get; set; }
 
         public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<BudgetsDetails> BudgetsDetails { get; set; }
 
     }
 }

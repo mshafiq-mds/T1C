@@ -61,12 +61,12 @@ namespace Prodata.WebForm.Class
                 }
                 else if (roleCode == "") // resubmit approver to creator
                 {
-                    fullUrl = $"{baseUrl}/Budget/Transfer/Resubmit?Id={id}&userId={user.Id}";
+                    fullUrl = $"{baseUrl}/Budget/Transfer/Default";
                     actionName = "Transfer Budget Request Revision";
                 }
                 else // verify approver to next approver
                 {
-                    fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                    fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
                     actionName = "Transfer Budget Request";
                 }
 
@@ -149,7 +149,7 @@ namespace Prodata.WebForm.Class
 
             foreach (var user in userRole)
             {
-                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
                 string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
@@ -212,7 +212,7 @@ namespace Prodata.WebForm.Class
 
             foreach (var user in userRole)
             {
-                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
                 string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
@@ -262,7 +262,7 @@ namespace Prodata.WebForm.Class
 
             foreach (var user in userRole)
             {
-                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
                 string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
@@ -281,7 +281,7 @@ namespace Prodata.WebForm.Class
 
             foreach (var user in userRole)
             {
-                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Approval?Id={id}&userId={user.Id}";
+                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
                 string body = EmailTemplateBuilder.BuildTransferEmailBody(ABR, actionName, fullUrl);
                 SendFunctionEmail(user.Email, actionName, body);
             }
@@ -313,12 +313,12 @@ namespace Prodata.WebForm.Class
                 }
                 else if (roleCode == "") // resubmit approver to creator
                 {
-                    fullUrl = $"{baseUrl}/Budget/Additional/Resubmit?Id={id}&userId={user.Id}";
+                    fullUrl = $"{baseUrl}/Budget/Additional/Default";
                     actionName = "Additional Budget Request Revision";
                 }
                 else // verify approver to next approver
                 {
-                    fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Approval?Id={id}&userId={user.Id}";
+                    fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
                     actionName = "Additional Budget Request";
                 } 
                 string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);

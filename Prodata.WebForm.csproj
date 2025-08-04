@@ -2317,6 +2317,7 @@
     <Content Include="Budget\Transfer\TransferApplication\Default.aspx" />
     <Content Include="Budget\Transfer\TransferApplication\View.aspx" />
     <Content Include="Budget\Transfer\View.aspx" />
+    <Content Include="Budget\UploadFGVPISB\Default.aspx" />
     <Content Include="Budget\Upload\Default.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -3082,6 +3083,13 @@
     <Compile Include="Budget\Transfer\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\UploadFGVPISB\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\UploadFGVPISB\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Upload\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3237,6 +3245,7 @@
     <Compile Include="Models\ApprovalLimit.cs" />
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Budget.cs" />
+    <Compile Include="Models\BudgetsDetails.cs" />
     <Compile Include="Models\Form.cs" />
     <Compile Include="Models\FormBudget.cs" />
     <Compile Include="Models\FormVendor.cs" />

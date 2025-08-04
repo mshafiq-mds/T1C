@@ -165,24 +165,23 @@ namespace Prodata.WebForm.Class
                 .FirstOrDefault();
         }
 
-
         // ===========================================
         // ✅ T1C Budget Logic
         // ===========================================
 
         public List<Models.ViewModels.BudgetListViewModel> GetBudgets(
-            Guid? entityId = null, 
-            Guid? typeId = null, 
-            int? year = null, 
-            int? month = null, 
-            string bizAreaCode = null, 
-            string refNo = null, 
-            decimal? amountMin = null, 
+            Guid? entityId = null,
+            Guid? typeId = null,
+            int? year = null,
+            int? month = null,
+            string bizAreaCode = null,
+            string refNo = null,
+            decimal? amountMin = null,
             decimal? amountMax = null,
             Guid? excludedFormId = null)
-		{
-			using (var db = new AppDbContext())
-			{
+        {
+            using (var db = new AppDbContext())
+            {
                 var query = from b in db.Budgets.ExcludeSoftDeleted()
                             join t in db.BudgetTypes on b.TypeId equals t.Id into bt
                             from t in bt.DefaultIfEmpty()
@@ -210,7 +209,7 @@ namespace Prodata.WebForm.Class
                 if (entityId.HasValue)
                     query = query.Where(q => q.EntityId == entityId);
 
-				if (typeId.HasValue)
+                if (typeId.HasValue)
                     query = query.Where(q => q.TypeId == typeId);
 
                 if (year.HasValue)
@@ -281,6 +280,6 @@ namespace Prodata.WebForm.Class
                     };
                 }).ToList();
             }
-		}
+        }
     }
 }
