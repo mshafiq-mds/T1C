@@ -1,19 +1,19 @@
-﻿using FGV.Prodata.Web.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.T1C.Approval
+namespace Prodata.WebForm.T1C.PO.Upload
 {
-    public partial class Default : ProdataPage
+    public partial class Default : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                // Bind data on initial load
                 BindData(Auth.IPMSBizAreaCodes());
             }
         }
@@ -33,27 +33,17 @@ namespace Prodata.WebForm.T1C.Approval
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
-            // Get all forms
-            var data = new Class.Form().GetForms(bizAreaCodes: ipmsBizAreaCodes);
+            // Get all forms with status approved and completed
+            var data = new Class.Form().GetForms(bizAreaCodes: ipmsBizAreaCodes, statuses: new List<string> { "Approved", "Completed" });
 
             // Get selected status
             var selectedStatus = ddlStatus.SelectedValue;
 
-            // If "Pending My Action" selected
-            if (selectedStatus == "pending-my-action")
+            // Filter data based on selected status
+            if (!string.IsNullOrEmpty(selectedStatus))
             {
-                data = data.Where(d => d.IsPendingUserAction).ToList();
+                data = data.Where(d => d.Status != null && d.Status.Equals(selectedStatus, StringComparison.OrdinalIgnoreCase)).ToList();
             }
-            // Else if any specific status selected (like "Pending", "Approved", etc.)
-            else if (!string.IsNullOrWhiteSpace(selectedStatus))
-            {
-                data = data.Where(d =>
-                    !d.IsPendingUserAction &&
-                    d.Status != null &&
-                    d.Status.Equals(selectedStatus, StringComparison.OrdinalIgnoreCase)
-                ).ToList();
-            }
-            // else (empty) = no filtering, show all
 
             gvData.DataSource = data;
             gvData.PageIndex = int.Parse(ViewState["pageIndex"].ToString());

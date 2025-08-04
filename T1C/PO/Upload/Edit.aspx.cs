@@ -1,16 +1,23 @@
-﻿using FGV.Prodata.Web.UI;
+﻿using CustomGuid.AspNet.Identity;
+using FGV.Prodata.App;
+using FGV.Prodata.Web.UI;
 using Prodata.WebForm.Helpers;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
+using System.Web.Services;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace Prodata.WebForm.T1C
+namespace Prodata.WebForm.T1C.PO.Upload
 {
-    public partial class View : ProdataPage
+    public partial class Edit : ProdataPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -40,32 +47,194 @@ namespace Prodata.WebForm.T1C
                         LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
                         LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
                     }
-                    else
-                    {
-                        Response.Redirect("~/T1C");
-                    }
                 }
                 else
                 {
-                    Response.Redirect("~/T1C");
+                    Response.Redirect("~/T1C/PO/Upload");
                 }
             }
         }
 
-        protected void btnEdit_Click(object sender, EventArgs e)
+        protected void btnSave_Click(object sender, EventArgs e)
         {
-            using (var db = new AppDbContext())
+            if (IsValid)
             {
-                string id = hdnFormId.Value;
-                var form = db.Forms.Find(Guid.Parse(id));
-                if (form != null)
+                bool isSuccess = false;
+                string formId = hdnFormId.Value;
+                Guid parsedFormId = Guid.Parse(formId);
+
+                // Actual amount validation
+                if (string.IsNullOrWhiteSpace(txtActualAmount.Text))
                 {
-                    Response.Redirect($"~/T1C/Edit.aspx?Id={id}");
+                    lblActualAmountError.Text = "Actual amount is required.";
+                    lblActualAmountError.CssClass = "text-danger";
+                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
+                    return;
+                }
+
+                if (!decimal.TryParse(txtActualAmount.Text.Replace(",", ""), out decimal actualAmount))
+                {
+                    lblActualAmountError.Text = "Invalid actual amount.";
+                    lblActualAmountError.CssClass = "text-danger";
+                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
+                    return;
+                }
+
+                using (var db = new AppDbContext())
+                {
+                    using (var trans = db.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var form = db.Forms.Find(parsedFormId);
+                            if (form != null)
+                            {
+                                decimal estimateAmount = form.Amount ?? 0;
+                                decimal availableBalance = estimateAmount - actualAmount;
+
+                                decimal totalAllocated = 0;
+                                var allocations = new List<Transaction>();
+
+                                foreach (RepeaterItem item in rptBudgetAllocations.Items)
+                                {
+                                    var hdnBudgetId = (HiddenField)item.FindControl("hdnBudgetId");
+                                    var txtAllocateAmount = (TextBox)item.FindControl("txtAllocateAmount");
+
+                                    if (Guid.TryParse(hdnBudgetId.Value, out Guid budgetId) &&
+                                        decimal.TryParse(txtAllocateAmount.Text, out decimal allocateAmount) &&
+                                        allocateAmount > 0)
+                                    {
+                                        // Find all old matching transactions (not just one)
+                                        var oldAllocations = db.Transactions
+                                            .Where(t => t.FromId == form.Id &&
+                                                        t.FromType == "Form" &&
+                                                        t.ToId == budgetId &&
+                                                        t.ToType == "Budget")
+                                            .ToList();
+
+                                        // Soft delete them all
+                                        foreach (var old in oldAllocations)
+                                            db.SoftDelete(old);
+
+                                        totalAllocated += allocateAmount;
+
+                                        allocations.Add(new Transaction
+                                        {
+                                            FromId = form.Id,
+                                            FromType = "Form",
+                                            ToId = budgetId,
+                                            ToType = "Budget",
+                                            Date = DateTime.Now,
+                                            Amount = allocateAmount,
+                                            Status = "Approved"
+                                        });
+                                    }
+                                }
+
+                                if (Math.Abs(totalAllocated - availableBalance) > 0.009m)
+                                {
+                                    lblAllocationError.Text = "Total allocated does not match available balance.";
+                                    lblAllocationError.CssClass = "text-danger";
+                                    lblAllocationError.Visible = true;
+                                    return;
+                                }
+
+                                // Save actual amount to form
+                                form.ActualAmount = actualAmount;
+                                form.Status = "Completed";
+                                db.Entry(form).State = EntityState.Modified;
+
+                                // Save file upload (if any)
+                                if (fuPO.HasFile)
+                                {
+                                    // Delete existing PO attachment for this form
+                                    var existingAttachment = db.Attachments
+                                        .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
+
+                                    if (existingAttachment != null)
+                                    {
+                                        db.Attachments.Remove(existingAttachment);
+                                    }
+
+                                    var file = fuPO.PostedFile;
+                                    using (var binaryReader = new BinaryReader(file.InputStream))
+                                    {
+                                        var attachment = new Models.Attachment
+                                        {
+                                            ObjectId = form.Id,
+                                            ObjectType = "Form",
+                                            Type = "PO",
+                                            Name = Path.GetFileNameWithoutExtension(file.FileName),
+                                            FileName = Path.GetFileName(file.FileName),
+                                            ContentType = file.ContentType,
+                                            Content = binaryReader.ReadBytes(file.ContentLength),
+                                            Ext = Path.GetExtension(file.FileName),
+                                            Size = file.ContentLength,
+                                        };
+                                        db.Attachments.Add(attachment);
+                                    }
+                                }
+
+                                // Save allocations
+                                foreach (var transaction in allocations)
+                                {
+                                    db.Transactions.Add(transaction);
+                                }
+
+                                db.SaveChanges();
+                                trans.Commit();
+                                isSuccess = true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            trans.Rollback();
+                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
+                        }
+                    }
+                }
+
+                if (isSuccess)
+                {
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Form updated successfully.");
                 }
                 else
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "An error occured.");
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to update form. Please try again.");
                 }
+
+                // Reload page
+                Response.Redirect(Request.Url.GetCurrentUrl(true));
+            }
+        }
+
+        [WebMethod]
+        public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
+        {
+            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
+        }
+
+        [WebMethod]
+        public static List<Models.ViewModels.FormBudgetListViewModel> GetSelectedBudgetIds(Guid formId)
+        {
+            using (var db = new AppDbContext())
+            {
+                return db.FormBudgets
+                    .Where(fb => fb.FormId == formId && fb.Type.ToLower() == "additional")
+                    .Select(fb => new
+                    {
+                        fb.BudgetId,
+                        fb.Amount
+                    })
+                    .AsEnumerable() // switch to LINQ to Objects
+                    .Select(fb => new Models.ViewModels.FormBudgetListViewModel
+                    {
+                        BudgetId = fb.BudgetId,
+                        Amount = fb.Amount.HasValue
+                            ? fb.Amount.Value.ToString("#,##0.00")
+                            : string.Empty
+                    })
+                    .ToList();
             }
         }
 
@@ -78,15 +247,6 @@ namespace Prodata.WebForm.T1C
                     var form = db.Forms.Find(Guid.Parse(id));
                     if (form != null)
                     {
-                        if (form.IsFormEditable())
-                        {
-                            btnEdit.Visible = true;
-                        }
-                        else
-                        {
-                            btnEdit.Visible = false;
-                        }
-
                         lblTitle.Text = form.Ref;
 
                         lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
@@ -95,15 +255,26 @@ namespace Prodata.WebForm.T1C
                         lblDetails.Text = form.Details;
                         lblJustificationOfNeed.Text = form.JustificationOfNeed;
                         lblAmount.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
+                        lblAmount2.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
 
                         #region Allocation
                         var budgets = db.FormBudgets
                             .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
                             .Select(fb => new
                             {
+                                fb.BudgetId,
                                 fb.Budget.Ref,
                                 fb.Budget.Details,
-                                fb.Amount
+                                fb.Amount,
+                                AllocatedAmount = db.Transactions
+                                    .Where(t =>
+                                        t.FromId == fb.FormId &&
+                                        t.FromType == "Form" &&
+                                        t.ToId == fb.BudgetId &&
+                                        t.ToType == "Budget" &&
+                                        t.Status == "Approved"
+                                    )
+                                    .Sum(t => (decimal?)t.Amount) ?? 0
                             })
                             .ToList();
 
@@ -179,12 +350,7 @@ namespace Prodata.WebForm.T1C
                         lblC.Text = form.C.HasValue ? form.C.Value.ToString("#,##0.00") : "-";
                         lblD.Text = form.D.HasValue ? form.D.Value.ToString("#,##0.00") : "-";
 
-                        if (form.IsFormPendingUserAction())
-                        {
-                            lblStatus.Text = "Pending My Action";
-                            lblStatus.CssClass = "badge badge-primary badge-pill";
-                        }
-                        else if (form.Status != null)
+                        if (form.Status != null)
                         {
                             switch (form.Status.ToLower())
                             {
@@ -214,6 +380,29 @@ namespace Prodata.WebForm.T1C
                                     break;
                             }
                         }
+
+                        #region Allocate budget
+                        rptBudgetAllocations.DataSource = budgets;
+                        rptBudgetAllocations.DataBind();
+                        #endregion
+
+                        txtActualAmount.Text = form.ActualAmount.HasValue ? form.ActualAmount.Value.ToString("#,##0.00") : string.Empty;
+
+                        #region PO
+                        var attachmentPO = db.Attachments
+                            .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
+
+                        if (attachmentPO != null)
+                        {
+                            pnlPOView.Visible = true;
+                            lnkPO.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachmentPO.Id}";
+                            lnkPO.Text = attachmentPO.FileName;
+                        }
+                        else
+                        {
+                            pnlPOView.Visible = false;
+                        }
+                        #endregion
                     }
                 }
             }

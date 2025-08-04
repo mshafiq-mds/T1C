@@ -21,7 +21,8 @@ namespace Prodata.WebForm.Class
             DateTime? endDate = null, 
             decimal? amountMin = null, 
             decimal? amountMax = null, 
-            string procurementType = null
+            string procurementType = null,
+            List<string> statuses = null
             )
         {
             using (var db = new AppDbContext())
@@ -90,6 +91,12 @@ namespace Prodata.WebForm.Class
                 if (!string.IsNullOrEmpty(procurementType))
                     query = query.Where(q => q.ProcurementType.Equals(procurementType, StringComparison.OrdinalIgnoreCase));
 
+                if (statuses != null && statuses.Any())
+                {
+                    var loweredStatuses = statuses.Select(s => s.ToLower()).ToList();
+                    query = query.Where(q => q.Status != null && loweredStatuses.Contains(q.Status.ToLower()));
+                }
+
                 var query2 = query.OrderBy(q => q.Ref)
                     .ToList();
 
@@ -123,6 +130,7 @@ namespace Prodata.WebForm.Class
                 }).ToList();
             }
         }
+
         public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string ipmsRoleCode = null, List<string> ipmsBizAreaCodes = null)
         {
             using (var db = new AppDbContext())

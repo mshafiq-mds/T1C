@@ -13,19 +13,33 @@ namespace Prodata.WebForm.Helpers
         {
             using (var db = new AppDbContext())
             {
-                var query = db.Transactions.ExcludeSoftDeleted()
+                var query1 = db.Transactions.ExcludeSoftDeleted()
                     .Where(t => t.FromId == budgetId
                              && t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase)
                              && !t.Status.Equals("rejected", StringComparison.OrdinalIgnoreCase));
 
                 if (excludedFormId.HasValue)
                 {
-                    query = query.Where(t => t.ToId != excludedFormId.Value 
-                                          && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase));
+                    query1 = query1.Where(t =>
+                        !(t.ToId == excludedFormId.Value && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase)));
                 }
 
-                return query.Sum(t => t.Amount) ?? 0m;
+                decimal utilized = query1.Sum(t => (decimal?)t.Amount) ?? 0m;
 
+                var query2 = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t => t.ToId == budgetId
+                             && t.ToType.Equals("Budget", StringComparison.OrdinalIgnoreCase)
+                             && !t.Status.Equals("rejected", StringComparison.OrdinalIgnoreCase));
+
+                if (excludedFormId.HasValue)
+                {
+                    query2 = query2.Where(t =>
+                        !(t.FromId == excludedFormId.Value && t.FromType.Equals("Form", StringComparison.OrdinalIgnoreCase)));
+                }
+
+                utilized -= query2.Sum(t => (decimal?)t.Amount) ?? 0m;
+
+                return utilized;
             }
         }
 

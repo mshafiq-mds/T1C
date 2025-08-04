@@ -17,6 +17,9 @@ namespace Prodata.WebForm.Models
 
         public decimal? Amount { get; set; }
 
+        [StringLength(255)]
+        public string Type { get; set; }
+
         [ForeignKey("FormId")]
         public virtual Form Form { get; set; }
 

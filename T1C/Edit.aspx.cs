@@ -166,7 +166,7 @@ namespace Prodata.WebForm.T1C
                                 try
                                 {
                                     // Remove existing budgets for this form
-                                    var existingBudgets = db.FormBudgets.Where(fb => fb.FormId == form.Id).ToList();
+                                    var existingBudgets = db.FormBudgets.Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new").ToList();
                                     db.FormBudgets.RemoveRange(existingBudgets);
                                     db.SaveChanges(); // Save deletion first
 
@@ -178,7 +178,8 @@ namespace Prodata.WebForm.T1C
                                     {
                                         FormId = form.Id,
                                         BudgetId = Guid.Parse(x.id),
-                                        Amount = decimal.Parse(x.amount)
+                                        Amount = decimal.Parse(x.amount),
+                                        Type = "New"
                                     }).ToList();
                                     db.FormBudgets.AddRange(budgets);
                                     db.SaveChanges(); // Save additions
@@ -400,7 +401,7 @@ namespace Prodata.WebForm.T1C
                                 try
                                 {
                                     // Remove existing budgets for this form
-                                    var existingBudgets = db.FormBudgets.Where(fb => fb.FormId == form.Id).ToList();
+                                    var existingBudgets = db.FormBudgets.Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new").ToList();
                                     db.FormBudgets.RemoveRange(existingBudgets);
                                     db.SaveChanges(); // Save deletion first
 
@@ -412,7 +413,8 @@ namespace Prodata.WebForm.T1C
                                     {
                                         FormId = form.Id,
                                         BudgetId = Guid.Parse(x.id),
-                                        Amount = decimal.Parse(x.amount)
+                                        Amount = decimal.Parse(x.amount),
+                                        Type = "New"
                                     }).ToList();
                                     db.FormBudgets.AddRange(budgets);
                                     db.SaveChanges(); // Save additions
@@ -593,7 +595,7 @@ namespace Prodata.WebForm.T1C
             using (var db = new AppDbContext())
             {
                 return db.FormBudgets
-                    .Where(fb => fb.FormId == formId)
+                    .Where(fb => fb.FormId == formId && fb.Type.ToLower() == "new")
                     .Select(fb => new
                     {
                         fb.BudgetId,

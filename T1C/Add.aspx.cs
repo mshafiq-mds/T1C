@@ -128,7 +128,8 @@ namespace Prodata.WebForm.T1C
                                     {
                                         FormId = form.Id,
                                         BudgetId = Guid.Parse(x.id),
-                                        Amount = decimal.Parse(x.amount)
+                                        Amount = decimal.Parse(x.amount),
+                                        Type = "New"
                                     }).ToList();
 
                                     db.FormBudgets.AddRange(budgets);
@@ -337,7 +338,8 @@ namespace Prodata.WebForm.T1C
                                     {
                                         FormId = form.Id,
                                         BudgetId = Guid.Parse(x.id),
-                                        Amount = decimal.Parse(x.amount)
+                                        Amount = decimal.Parse(x.amount),
+                                        Type = "New"
                                     }).ToList();
 
                                     db.FormBudgets.AddRange(budgets);
