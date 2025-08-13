@@ -29,7 +29,7 @@ namespace Prodata.WebForm.Account
                 manager.SmsService.Send(message);
             }
 
-            Response.Redirect("/Account/VerifyPhoneNumber?PhoneNumber=" + HttpUtility.UrlEncode(PhoneNumber.Text));
+            Response.Redirect("~/Account/VerifyPhoneNumber?PhoneNumber=" + HttpUtility.UrlEncode(PhoneNumber.Text));
         }
     }
 }

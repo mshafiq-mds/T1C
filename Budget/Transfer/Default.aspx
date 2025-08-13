@@ -23,7 +23,7 @@
             </div>
 
             <div class="card-tools">
-                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Transfer/Add" CausesValidation="false">
+                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/Budget/Transfer/Add" CausesValidation="false">
                     <i class="fas fa-plus"></i> Request Transfer Budget
                 </asp:LinkButton>
             </div>
@@ -66,13 +66,13 @@
                             <ItemStyle CssClass="width-80 text-center" />
                             <ItemTemplate>
                                 <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
-                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
+                                    "<a class='btn btn-info btn-xs' href='View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
                                 <%# (Eval("Status").ToString() == "Resubmit") ? 
-                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
+                                    "<a class='btn btn-info btn-xs' href='Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
 
                                 <%# (Eval("Status").ToString() == "Submitted") ? 
-                                    "<a class='btn btn-info btn-xs' href='/Budget/Transfer/Edit.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
+                                    "<a class='btn btn-info btn-xs' href='Edit.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
 
                                 <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") 
                                     ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "' title='Delete Entry'><i class='fas fa-trash-alt'></i></a>" 

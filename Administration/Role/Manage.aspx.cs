@@ -32,7 +32,7 @@ namespace Prodata.WebForm.Administration.Role
                         }
                         else
                         {
-                            Response.Redirect("/Administration/Role");
+                            Response.Redirect("~/Administration/Role");
                         }
                     }
                     else if (Request.QueryString["Action"].ToString().ToLower().Equals("add"))
@@ -40,17 +40,17 @@ namespace Prodata.WebForm.Administration.Role
                         Page.Title = "Add Role";
                         if (!Auth.User().Can("admin-role-add"))
                         {
-                            Response.Redirect("/Administration/Role");
+                            Response.Redirect("~/Administration/Role");
                         }
                     }
                     else
                     {
-                        Response.Redirect("/Administration/Role");
+                        Response.Redirect("~/Administration/Role");
                     }
                 }
                 else
                 {
-                    Response.Redirect("/Administration/Role");
+                    Response.Redirect("~/Administration/Role");
                 }
 
                 BindPermissionTree();
@@ -167,7 +167,7 @@ namespace Prodata.WebForm.Administration.Role
                                 {
                                     trans.Rollback();
                                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                                    Response.Redirect("/Administration/Role/Manage?Action=Edit&Id=" + roleId);
+                                    Response.Redirect("~/Administration/Role/Manage?Action=Edit&Id=" + roleId);
                                 }
                             }
                         }
@@ -175,13 +175,13 @@ namespace Prodata.WebForm.Administration.Role
                     else
                     {
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Role already exists.");
-                        Response.Redirect("/Administration/Role/Manage?Action=Edit&Id=" + roleId);
+                        Response.Redirect("~/Administration/Role/Manage?Action=Edit&Id=" + roleId);
                     }
 
                     if (isSuccess)
                     {
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Role updated.");
-                        Response.Redirect("/Administration/Role");
+                        Response.Redirect("~/Administration/Role");
                     }
                     #endregion
                 }
@@ -248,7 +248,7 @@ namespace Prodata.WebForm.Administration.Role
                                 {
                                     trans.Rollback();
                                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                                    Response.Redirect("/Administration/Role/Manage?Action=Add");
+                                    Response.Redirect("~/Administration/Role/Manage?Action=Add");
                                 }
                             }
                         }
@@ -256,13 +256,13 @@ namespace Prodata.WebForm.Administration.Role
                     else
                     {
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Role already exists.");
-                        Response.Redirect("/Administration/Role/Manage?Action=Add");
+                        Response.Redirect("~/Administration/Role/Manage?Action=Add");
                     }
 
                     if (isSuccess)
                     {
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "New role added.");
-                        Response.Redirect("/Administration/Role");
+                        Response.Redirect("~/Administration/Role");
                     }
                     #endregion
                 }

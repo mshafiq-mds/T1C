@@ -130,7 +130,7 @@
                                 </div>
 
                                 <!-- Cumm Group Tab -->
-                                <div class="tab-pane fade show active" id="tab-loa-cum" role="tabpanel" aria-labelledby="tab-loa-cum-tab">
+                                <div class="tab-pane fade" id="tab-loa-cum" role="tabpanel" aria-labelledby="tab-loa-cum-tab">
                                     <asp:UpdatePanel ID="updLoaCum" runat="server">
                                         <ContentTemplate>
                                             <div class="table-responsive">

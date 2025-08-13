@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Upload Budget 1" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.Budget.Upload.Default" %>
+﻿<%@ Page Title="View Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.UploadFGVPISB.View" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -28,32 +28,49 @@
         }
     </style>
     <asp:HiddenField ID="hdnRecordId" runat="server" />
-    <asp:Button ID="btnDeleteRecord" runat="server" OnClick="btnDeleteRecord_Click" CssClass="d-none" />
     <div class="row">
         <div class="col-md-12">
             <div class="card card-outline">
                 <div class="card-header card-header-sticky">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="input-group">
-                                <div class="custom-file">
-                                    <asp:FileUpload ID="fuBudget" runat="server" CssClass="custom-file-input" />
-                                    <asp:Label runat="server" AssociatedControlID="fuBudget" CssClass="custom-file-label" Text="Choose file"></asp:Label>
-                                </div>
-                                <div class="input-group-append">
-                                    <asp:LinkButton ID="btnUpload" runat="server" CssClass="btn btn-primary" OnClick="btnUpload_Click" OnClientClick="showLoader();">
-                                        <i class="fas fa-upload"></i> Upload
-                                    </asp:LinkButton>
-                                </div>
-                            </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label font-weight-bold">Budget Type</label>
+                            <asp:DropDownList runat="server" ID="ddlBT" CssClass="form-control select2"
+                                DataValueField="Code" DataTextField="DisplayName"
+                                AutoPostBack="false" AppendDataBoundItems="true">
+                                <asp:ListItem Text="-- Select Budget Type --" Value="" />
+                            </asp:DropDownList>
                         </div>
-                        <div class="col-md-6 text-md-right mt-3 mt-sm-0">
-                            <asp:LinkButton ID="btnDownloadTemplate" runat="server" CssClass="btn btn-success" OnClick="btnDownloadTemplate_Click">
-                                <i class="fas fa-download"></i> Download Template
-                            </asp:LinkButton>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label font-weight-bold">Year</label>
+                            <asp:DropDownList runat="server" ID="ddlYear" CssClass="form-control select2"
+                                AutoPostBack="false" AppendDataBoundItems="true">
+                                <asp:ListItem Text="-- Select Year --" Value="" />
+                            </asp:DropDownList>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label font-weight-bold">Business Area</label>
+                            <asp:DropDownList runat="server" ID="ddlBA" CssClass="form-control select2"
+                                DataValueField="Code" DataTextField="DisplayName"
+                                AutoPostBack="false" AppendDataBoundItems="true" >
+                                <asp:ListItem Text="-- Select Biz Area --" Value="" />
+                            </asp:DropDownList>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 text-left">
+                            <asp:Button ID="btnApplyFilter" runat="server" CssClass="btn btn-primary mr-2"
+                                Text="Apply Filter" OnClick="ddlFilter_SelectedIndexChanged" />
+                            <asp:Button ID="btnClearFilter" runat="server" CssClass="btn btn-outline-secondary"
+                                Text="Clear Filter" OnClick="btnClearFilter_Click" />
                         </div>
                     </div>
                 </div>
+
+
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
@@ -93,14 +110,6 @@
                 </div>
             </div>
         </div>
-    </div>
-    <script>
-        $(document).ready(function () {
-            bsCustomFileInput.init();
-        });
+    </div> 
 
-        function showLoader() {
-            $('.card').find('.overlay').removeClass('d-none');
-        }
-    </script>
 </asp:Content>

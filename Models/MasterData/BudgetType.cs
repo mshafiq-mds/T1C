@@ -13,6 +13,7 @@ namespace Prodata.WebForm.Models.MasterData
 
 		[StringLength(255)]
 		public string Name { get; set; }
+		public int FormCategories { get; set; }
 
         public string DisplayName => $"{Code} - {Name}";
     }

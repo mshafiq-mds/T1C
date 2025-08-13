@@ -16,7 +16,13 @@ namespace Prodata.WebForm.Class
         // Public methods to trigger email notifications for different scenarios
 
         // ===========================================
-        // ✅ For new requests
+        // ✅ For request T1C
+        // ===========================================
+        public static void EmailsT1CForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        { EmailsT1CRequestModified(id, ABR, roleCode); } 
+
+        // ===========================================
+        // ✅ For new requests Additional Budget and Transfer Budget
         // ===========================================
         public static void EmailsAdditionalBudgetForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
         { EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode); }
@@ -38,6 +44,14 @@ namespace Prodata.WebForm.Class
         { EmailsReqAdditionalBudgetForResubmitModified(id, ABR, roleCode); }
         public static void EmailsTransferBudgetForResubmit(Guid id, TransfersTransaction ABR, string roleCode)
         { EmailsReqTransferBudgetForResubmitModified(id, ABR, roleCode); }
+        #endregion
+
+
+        #region T1C Logic
+        public static void EmailsT1CRequestModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        {
+
+        }
         #endregion
 
         #region Transfer budget Logic

@@ -104,7 +104,7 @@ namespace Prodata.WebForm.Account
             if (user != null)
             {
                 signInManager.SignIn(user, isPersistent: false, rememberBrowser: false);
-                Response.Redirect("/Account/Manage?m=RemovePhoneNumberSuccess");
+                Response.Redirect("~/Account/Manage?m=RemovePhoneNumberSuccess");
             }
         }
 
@@ -114,7 +114,7 @@ namespace Prodata.WebForm.Account
             var manager = Context.GetOwinContext().GetUserManager<UserManager>();
             manager.SetTwoFactorEnabled(User.Identity.GetUserID(), false);
 
-            Response.Redirect("/Account/Manage");
+            Response.Redirect("~/Account/Manage");
         }
 
         //EnableTwoFactorAuthentication 
@@ -123,7 +123,7 @@ namespace Prodata.WebForm.Account
             var manager = Context.GetOwinContext().GetUserManager<UserManager>();
             manager.SetTwoFactorEnabled(User.Identity.GetUserID(), true);
 
-            Response.Redirect("/Account/Manage");
+            Response.Redirect("~/Account/Manage");
         }
     }
 }

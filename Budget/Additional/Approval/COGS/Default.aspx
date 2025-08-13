@@ -59,13 +59,13 @@
                                  <div class="btn-group" role="group">
                                      <asp:PlaceHolder ID="phEditButton" runat="server" Visible='<%# Eval("CanEdit") %>'>
                                          <a class="btn btn-outline-primary btn-sm" 
-                                            href='/Budget/Additional/Approval/COGS/Approval?Id=<%# Eval("Id") %>'
+                                            href='Budget/Additional/Approval/COGS/Approval?Id=<%# Eval("Id") %>'
                                             data-toggle="tooltip" data-placement="top" title="Edit">
                                              <i class="fas fa-edit"></i>
                                          </a>
                                      </asp:PlaceHolder>
                                      <a class="btn btn-outline-secondary btn-sm" 
-                                        href='/Budget/Additional/Approval/COGS/View?Id=<%# Eval("Id") %>'
+                                        href='Budget/Additional/Approval/COGS/View?Id=<%# Eval("Id") %>'
                                         data-toggle="tooltip" data-placement="top" title="View">
                                          <i class="fas fa-eye"></i>
                                      </a>

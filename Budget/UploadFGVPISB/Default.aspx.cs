@@ -27,6 +27,24 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
             }
         }
 
+        protected void btnDownloadTemplateMain_Click(object sender, EventArgs e)
+        {
+            string filePath = Server.MapPath("~/Budget/Template_Budget.xlsx"); // Adjust path as needed
+
+            if (File.Exists(filePath))
+            {
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; // MIME type for .xlsx
+                Response.AddHeader("Content-Disposition", "attachment; filename=Template_Budget.xlsx");
+                Response.TransmitFile(filePath);
+                Response.End();
+            }
+            else
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Template not found.");
+                Response.Redirect(Request.Url.GetCurrentUrl());
+            }
+        }
         protected void btnDownloadTemplate_Click(object sender, EventArgs e)
         {
             string filePath = Server.MapPath("~/Budget/Template_BudgetFGVPISB.xlsx"); // Adjust path as needed
@@ -60,14 +78,34 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 {
                     using (var stream = fuBudget.PostedFile.InputStream)
                     {
-                        ProcessExcelFile(stream, fuBudget.FileName); // Pass stream & filename
+                        int budgetformtype;
+
+                        using (var db = new AppDbContext())
+                        {
+                            var typeId = Guid.TryParse(ddlBT.SelectedValue, out var parsedTypeId) ? parsedTypeId : Guid.Empty;
+                            budgetformtype = db.BudgetTypes
+                                .Where(x => x.Id == typeId)
+                                .Select(x => x.FormCategories)
+                                .FirstOrDefault();
+                        }
+
+                        if (budgetformtype == 1)
+                        {
+                            ProcessExcelFileFullForm(stream, fuBudget.FileName); // Pass stream & filename
+                        }
+                        else
+                        {
+                            ProcessExcelFile(stream, fuBudget.FileName); // Pass stream & filename
+                        }
+
                     }
 
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "File processed successfully.");
                 }
                 catch (Exception ex)
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error: " + ex.Message);
+                    string errmsg = "Error: " + ex.Message.Replace("'", ""); ;
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, errmsg);
                 }
 
                 Response.Redirect(Request.Url.GetCurrentUrl());
@@ -135,6 +173,111 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         }
 
         #region Process excel file
+        private void ProcessExcelFileFullForm(Stream stream, string fileName)
+        {
+            try
+            {
+                IWorkbook workbook;
+
+                if (Path.GetExtension(fileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
+                {
+                    workbook = new NPOI.HSSF.UserModel.HSSFWorkbook(stream); // for .xls
+                }
+                else
+                {
+                    workbook = new NPOI.XSSF.UserModel.XSSFWorkbook(stream); // for .xlsx
+                }
+
+                ISheet sheet = workbook.GetSheetAt(0); // read first sheet
+                if (sheet == null)
+                    throw new Exception("Sheet not found in Excel file.");
+
+                // ✅ Step 1: check header
+                IRow headerRow = sheet.GetRow(0);
+                if (headerRow == null)
+                    throw new Exception("Header row not found in Excel file.");
+
+                string[] expectedHeaders = new[]
+                {
+                    "NO", "NO.RUJUKAN", "BA", "PROJEK", "PUSAT KOS", "CC",
+                    "BUTIR-BUTIR KERJA", "BULAN", "VENDOR", "UPAH (RM)",
+                    "BELIAN ALAT GANTI (RM)", "JUMLAH (RM)", "JENIS", "TAHUN"
+                };
+
+                for (int i = 0; i < expectedHeaders.Length; i++)
+                {
+                    var cellValue = headerRow.GetCell(i)?.ToString()?.Trim();
+                    if (!string.Equals(cellValue, expectedHeaders[i], StringComparison.OrdinalIgnoreCase))
+                    {
+                        throw new Exception($"Header mismatch at column {i + 1}. Expected '{expectedHeaders[i]}', found '{cellValue}'.");
+                    }
+                }
+
+                // ✅ Step 2: process rows
+                using (var db = new AppDbContext())
+                {
+                    int skipRows = 1; // skip header row
+                    for (int rowNumber = skipRows; rowNumber <= sheet.LastRowNum; rowNumber++)
+                    {
+                        IRow row = sheet.GetRow(rowNumber);
+                        if (row == null) continue;
+
+                        // read cells
+                        string reference = row.GetCell(1)?.ToString()?.Trim();
+                        int? num = !string.IsNullOrEmpty(reference) ? int.Parse(reference.Split('/').Last()) : (int?)null;
+
+                        var typeId = Guid.TryParse(ddlBT.SelectedValue, out var parsedTypeId) ? parsedTypeId : Guid.Empty;
+
+                        int? year = TryParseInt(row.GetCell(13));
+                        int? month = ConvertMonthNameToNumber(row.GetCell(7)?.ToString()?.Trim());
+
+                        DateTime? date = null;
+                        if (year.HasValue && month.HasValue)
+                        {
+                            int day = DateTime.DaysInMonth(year.Value, month.Value);
+                            date = new DateTime(year.Value, month.Value, day);
+                        }
+
+                        // check if same Ref exists (and not soft deleted)
+                        var oldBudget = db.Budgets.ExcludeSoftDeleted().FirstOrDefault(b => b.Ref == reference);
+                        if (oldBudget != null)
+                        {
+                            db.SoftDelete(oldBudget); // keep your existing SoftDelete method
+                        }
+
+                        // insert new Budget
+                        var budget = new Models.Budget
+                        {
+                            Id = Guid.NewGuid(),
+                            TypeId = typeId,
+                            BizAreaCode = row.GetCell(2)?.ToString(),
+                            BizAreaName = row.GetCell(3)?.ToString(),
+                            Date = date,
+                            Month = month,
+                            Num = num,
+                            Ref = reference,
+                            Details = row.GetCell(6)?.ToString(),
+                            Wages = TryParseDecimal(row.GetCell(9)),
+                            Purchase = TryParseDecimal(row.GetCell(10)),
+                            Amount = TryParseDecimal(row.GetCell(11)),
+                            Vendor = row.GetCell(8)?.ToString(),
+                            CreatedDate = DateTime.Now,
+                            CreatedBy = Auth.Id()
+                        };
+                        db.Budgets.Add(budget);
+                    }
+
+                    db.SaveChanges(); // save all at once
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("Error importing Excel: " + ex.Message);
+                throw; // rethrow so caller can handle (or show alert)
+            }
+        }
+
+
         private void ProcessExcelFile(Stream stream, string fileName)
         {
             try
@@ -158,6 +301,25 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 IRow headerRow = sheet.GetRow(0);
                 if (headerRow == null)
                     throw new Exception("Header row not found.");
+
+                // ✅ Expected headers
+                string[] expectedHeaders = new string[]
+                {
+                    "NO", "PROJEK", "BA", "JUMLAH",
+                    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+                    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+                };
+
+                for (int i = 0; i < expectedHeaders.Length; i++)
+                {
+                    string actualHeader = headerRow.GetCell(i)?.ToString()?.Trim().ToUpper() ?? "";
+                    string expectedHeader = expectedHeaders[i].ToUpper();
+
+                    if (actualHeader != expectedHeader)
+                    {
+                        throw new Exception($"Header mismatch at column {i + 1}. Expected {expectedHeader}, found {actualHeader.Replace("'", "")}");
+                    }
+                }
 
                 var typeId = Guid.TryParse(ddlBT.SelectedValue, out var parsedTypeId) ? parsedTypeId : Guid.Empty;
                 var currentUserId = Auth.Id(); // cache once
@@ -270,105 +432,6 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 throw; // let caller handle
             }
         }
-
-
-        //private void ProcessExcelFile(Stream stream, string fileName)
-        //{
-        //    try
-        //    {
-        //        IWorkbook workbook;
-
-        //        // Open workbook depending on file extension
-        //        if (Path.GetExtension(fileName).Equals(".xls", StringComparison.OrdinalIgnoreCase))
-        //        {
-        //            workbook = new NPOI.HSSF.UserModel.HSSFWorkbook(stream); // for .xls
-        //        }
-        //        else
-        //        {
-        //            workbook = new NPOI.XSSF.UserModel.XSSFWorkbook(stream); // for .xlsx
-        //        }
-
-        //        ISheet sheet = workbook.GetSheetAt(0); // first sheet
-
-        //        if (sheet == null)
-        //            throw new Exception("Sheet not found in Excel file.");
-
-        //        // Read header row to find which columns are months (JAN, FEB, etc.)
-        //        IRow headerRow = sheet.GetRow(0);
-        //        if (headerRow == null)
-        //            throw new Exception("Header row not found.");
-
-        //        Dictionary<int, int> monthColumnIndexes = new Dictionary<int, int>(); // monthNumber -> columnIndex
-
-        //        for (int cellIndex = 0; cellIndex < headerRow.LastCellNum; cellIndex++)
-        //        {
-        //            string header = headerRow.GetCell(cellIndex)?.ToString()?.Trim()?.ToUpper();
-        //            int monthNumber = ConvertMonthNameToNumber(header);
-        //            if (monthNumber > 0)
-        //            {
-        //                monthColumnIndexes[monthNumber] = cellIndex;
-        //            }
-        //        }
-
-        //        if (monthColumnIndexes.Count == 0)
-        //            throw new Exception("No month columns detected in header.");
-
-        //        using (var db = new AppDbContext())
-        //        {
-        //            // start from row 1 (after header)
-        //            for (int rowNumber = 1; rowNumber <= sheet.LastRowNum; rowNumber++)
-        //            {
-        //                IRow row = sheet.GetRow(rowNumber);
-        //                if (row == null) continue;
-
-        //                int? num = TryParseInt(row.GetCell(0)); // NO
-        //                string projek = row.GetCell(1)?.ToString()?.Trim(); // PROJEK
-        //                string ba = row.GetCell(2)?.ToString()?.Trim(); // BA
-
-        //                // validate basic data before loop
-        //                if (string.IsNullOrEmpty(ba)) continue;
-
-        //                foreach (var kvp in monthColumnIndexes)
-        //                {
-        //                    int month = kvp.Key;
-        //                    int columnIndex = kvp.Value;
-
-        //                    decimal? amount = TryParseDecimal(row.GetCell(columnIndex));
-        //                    if (amount.HasValue && amount.Value != 0)
-        //                    {
-        //                        var date = new DateTime(DateTime.Now.Year, month, DateTime.DaysInMonth(DateTime.Now.Year, month));
-
-        //                        var budget = new Models.Budget
-        //                        {
-        //                            Id = Guid.NewGuid(),
-        //                            BizAreaCode = ba,
-        //                            BizAreaName = projek,
-        //                            Num = num,
-        //                            TypeId = Guid.TryParse(ddlBT.SelectedValue, out var typeId) ? typeId : Guid.Empty,
-        //                            Ref = ddlBT.SelectedItem?.Text ?? string.Empty,
-        //                            Details = ddlBT.SelectedItem?.Text ?? string.Empty,
-        //                            Month = month,
-        //                            Amount = amount.Value,
-        //                            Date = date,
-        //                            CreatedDate = DateTime.Now,
-        //                            CreatedBy = Auth.Id() // optional: depends on your model
-        //                        };
-
-        //                        db.Budgets.Add(budget);
-        //                    }
-        //                }
-        //            }
-
-        //            db.SaveChanges();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        System.Diagnostics.Debug.WriteLine("Error importing Excel: " + ex.Message);
-        //        throw; // so the caller (btnUpload_Click) can catch & alert user
-        //    }
-        //}
-
 
 
         // Helper: safe parse decimal

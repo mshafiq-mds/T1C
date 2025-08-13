@@ -70,7 +70,7 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/T1C/Add" CausesValidation="false">
+                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Add" CausesValidation="false">
                             <i class="fas fa-plus"></i> New Budget T1C
                         </asp:LinkButton>
                     </div>
@@ -119,7 +119,7 @@
                                                         <asp:LinkButton ID="btnView" runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/View?Id={Eval("Id")}" %>'>
                                                             <i class="fas fa-eye"></i>
                                                         </asp:LinkButton>
-                                                        <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='/T1C/Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>
+                                                        <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='T1C/Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <asp:LinkButton ID="btnDelete" runat="server" CssClass='<%# (bool)Eval("IsEditable") ? "btn btn-danger btn-xs button-delete" : "btn btn-danger btn-xs disabled" %>' data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "t1c-delete") %>'>

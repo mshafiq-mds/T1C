@@ -40,7 +40,7 @@ namespace Prodata.WebForm.Account
                 if (user != null)
                 {
                     signInManager.SignIn(user, isPersistent: false, rememberBrowser: false);
-                    Response.Redirect("/Account/Manage?m=AddPhoneNumberSuccess");
+                    Response.Redirect("~/Account/Manage?m=AddPhoneNumberSuccess");
                 }
             }
 

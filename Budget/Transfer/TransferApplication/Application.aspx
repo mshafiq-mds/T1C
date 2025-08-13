@@ -8,7 +8,7 @@
             <h5 class="card-title d-none d-sm-inline"><%: Page.Title %></h5>
             <div class="card-tools">
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary me-2"
-                    PostBackUrl="/Budget/Transfer/TransferApplication/Default" CausesValidation="false">
+                    PostBackUrl="~/Budget/Transfer/TransferApplication/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
          <%--       <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-warning me-2">

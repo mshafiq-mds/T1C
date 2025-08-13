@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Upload Budget FGVPISB" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.Budget.UploadFGVPISB.Default" %>
+﻿<%@ Page Title="Upload Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.Budget.UploadFGVPISB.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -53,8 +53,12 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-md-right mt-3 mt-md-0">
-                            <asp:LinkButton ID="btnDownloadTemplate" runat="server" CssClass="btn btn-success" OnClick="btnDownloadTemplate_Click">
-                                <i class="fas fa-download"></i> Download Template
+                            <asp:LinkButton ID="btnDownloadTemplate" runat="server" CssClass="btn btn-success" OnClick="btnDownloadTemplateMain_Click">
+                                <i class="fas fa-download"></i> Download Template Main
+                            </asp:LinkButton>
+                            
+                            <asp:LinkButton ID="LinkButton1" runat="server" CssClass="btn btn-success" OnClick="btnDownloadTemplate_Click">
+                                <i class="fas fa-download"></i> Download Template Other Budget
                             </asp:LinkButton>
                         </div>
                     </div>

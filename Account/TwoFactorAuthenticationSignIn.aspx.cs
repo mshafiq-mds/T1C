@@ -28,7 +28,7 @@ namespace Prodata.WebForm.Account
             var userId = signinManager.GetVerifiedUserId<User, Guid>();
             if (userId == null)
             {
-                Response.Redirect("/Account/Error", true);
+                Response.Redirect("~/Account/Error", true);
             }
             var userFactors = manager.GetValidTwoFactorProviders(userId);
             Providers.DataSource = userFactors.Select(x => x).ToList();
@@ -47,7 +47,7 @@ namespace Prodata.WebForm.Account
                     IdentityHelper.RedirectToReturnUrl(Request.QueryString["ReturnUrl"], Response);
                     break;
                 case SignInStatus.LockedOut:
-                    Response.Redirect("/Account/Lockout");
+                    Response.Redirect("~/Account/Lockout");
                     break;
                 case SignInStatus.Failure:
                 default:
@@ -61,7 +61,7 @@ namespace Prodata.WebForm.Account
         {
             if (!signinManager.SendTwoFactorCode(Providers.SelectedValue))
             {
-                Response.Redirect("/Account/Error");
+                Response.Redirect("~/Account/Error");
             }
 
             var user = manager.FindById(signinManager.GetVerifiedUserId<User, Guid>());

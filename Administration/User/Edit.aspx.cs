@@ -26,7 +26,7 @@ namespace Prodata.WebForm.Administration.User
 				}
 				else
 				{
-					Response.Redirect("/Administration/User");
+					Response.Redirect("~/Administration/User");
 				}
 
 				BindControl();
@@ -122,7 +122,7 @@ namespace Prodata.WebForm.Administration.User
 							{
 								trans.Rollback();
 								SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-								Response.Redirect("/Administration/User/Edit?Id=" + userId);
+								Response.Redirect("~/Administration/User/Edit?Id=" + userId);
 							}
 						}
 					}
@@ -130,13 +130,13 @@ namespace Prodata.WebForm.Administration.User
 				else
 				{
 					SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "User already exists.");
-                    Response.Redirect("/Administration/User/Edit?Id=" + userId);
+                    Response.Redirect("~/Administration/User/Edit?Id=" + userId);
                 }
 
 				if (isSuccess)
 				{
 					SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "User updated.");
-					Response.Redirect("/Administration/User");
+					Response.Redirect("~/Administration/User");
 				}
             }
         }

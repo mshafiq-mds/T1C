@@ -11,7 +11,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
 {
 
 
-    public partial class Default
+    public partial class View
     {
 
         /// <summary>
@@ -24,33 +24,6 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         protected global::System.Web.UI.WebControls.HiddenField hdnRecordId;
 
         /// <summary>
-        /// btnDeleteRecord control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDeleteRecord;
-
-        /// <summary>
-        /// fuBudget control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fuBudget;
-
-        /// <summary>
-        /// btnUpload control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnUpload;
-
-        /// <summary>
         /// ddlBT control.
         /// </summary>
         /// <remarks>
@@ -60,22 +33,40 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         protected global::System.Web.UI.WebControls.DropDownList ddlBT;
 
         /// <summary>
-        /// btnDownloadTemplate control.
+        /// ddlYear control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnDownloadTemplate;
+        protected global::System.Web.UI.WebControls.DropDownList ddlYear;
 
         /// <summary>
-        /// LinkButton1 control.
+        /// ddlBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton LinkButton1;
+        protected global::System.Web.UI.WebControls.DropDownList ddlBA;
+
+        /// <summary>
+        /// btnApplyFilter control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnApplyFilter;
+
+        /// <summary>
+        /// btnClearFilter control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnClearFilter;
 
         /// <summary>
         /// UpdatePanel1 control.

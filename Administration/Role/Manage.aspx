@@ -7,7 +7,7 @@
                 <div class="card-header">
                     <h3 class="card-title d-none d-sm-inline"><%: Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="/Administration/Role/Default" CausesValidation="false">
+                        <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/Administration/Role/Default" CausesValidation="false">
                             <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click">

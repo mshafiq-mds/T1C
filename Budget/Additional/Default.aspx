@@ -21,7 +21,7 @@
             </div>
 
             <div class="card-tools">
-                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="/Budget/Additional/Add" CausesValidation="false">
+                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/Budget/Additional/Add" CausesValidation="false">
                     <i class="fas fa-plus"></i> Request Additional Budget
                 </asp:LinkButton>
             </div>
@@ -56,7 +56,7 @@
                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                     <ItemStyle CssClass="width-80 text-center" />
                     <%--<ItemTemplate>
-                         <a class="btn btn-info" href='/Additional/Edit?Id=1' >
+                         <a class="btn btn-info" href='Additional/Edit?Id=1' >
                              <i class="fas fa-edit"></i>
                          </a>
                          <asp:LinkButton ID="btnDelete" runat="server" CssClass="btn btn-danger btn-xs button-delete" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-delete") %>'>
@@ -65,13 +65,13 @@
                     </ItemTemplate>--%>
                     <ItemTemplate>
                         <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review" || Eval("Status").ToString() == "Deleted") ? 
-                            "<a class='btn btn-info btn-xs' href='/Budget/Additional/View.aspx?id=" + Eval("Id") + "'><i class='fas fa-eye'></i></a>" : "" %>
+                            "<a class='btn btn-info btn-xs' href='View.aspx?id=" + Eval("Id") + "'><i class='fas fa-eye'></i></a>" : "" %>
                         
                         <%# (Eval("Status").ToString() == "Resubmit") ? 
-                            "<a class='btn btn-info btn-xs' href='/Budget/Additional/Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
+                            "<a class='btn btn-info btn-xs' href='Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
 
                         <%# (Eval("Status").ToString() == "Submitted") ? 
-                            "<a class='btn btn-info btn-xs' href='/Budget/Additional/Edit.aspx?id=" + Eval("Id") + "'><i class='fas fa-edit'></i></a>" : "" %>
+                            "<a class='btn btn-info btn-xs' href='Edit.aspx?id=" + Eval("Id") + "'><i class='fas fa-edit'></i></a>" : "" %>
     
                         <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") //||
                              //Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-delete")) 

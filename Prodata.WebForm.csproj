@@ -2318,6 +2318,7 @@
     <Content Include="Budget\Transfer\TransferApplication\View.aspx" />
     <Content Include="Budget\Transfer\View.aspx" />
     <Content Include="Budget\UploadFGVPISB\Default.aspx" />
+    <Content Include="Budget\UploadFGVPISB\View.aspx" />
     <Content Include="Budget\Upload\Default.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -3091,6 +3092,13 @@
     </Compile>
     <Compile Include="Budget\UploadFGVPISB\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\UploadFGVPISB\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\UploadFGVPISB\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="Budget\Upload\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

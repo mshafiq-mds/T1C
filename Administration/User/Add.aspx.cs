@@ -92,7 +92,7 @@ namespace Prodata.WebForm.Administration.User
 							{
 								trans.Rollback();
 								SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-								Response.Redirect("/Administration/User/Add");
+								Response.Redirect("~/Administration/User/Add");
 							}
 						}
 					}
@@ -100,13 +100,13 @@ namespace Prodata.WebForm.Administration.User
 				else
 				{
 					SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "User already exists.");
-                    Response.Redirect("/Administration/User/Add");
+                    Response.Redirect("~/Administration/User/Add");
                 }
 
 				if (isSuccess)
 				{
 					SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "New user added.");
-					Response.Redirect("/Administration/User");
+					Response.Redirect("~/Administration/User");
 				}
 			}
         }
