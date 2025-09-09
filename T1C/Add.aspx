@@ -9,7 +9,48 @@
         .custom-control-label {
             font-weight: normal !important;
         }
+
+        th[data-bs-toggle="tooltip"] {
+            cursor: help; /* help cursor to show it's hoverable */
+        } 
+
+        td[data-bs-toggle="tooltip"] {
+            cursor: help; /* show help cursor so users know it's hoverable */
+        }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
+
     </style>
+    <!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
+
     <div class="row">
         <div class="col-lg-12">
             <div class="card card-outline">
@@ -19,10 +60,10 @@
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/Default" CausesValidation="false">
                             <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return collectData();">
+                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return beforeSubmit();">
                             <i class="fas fa-save"></i> Save
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return collectData();">
+                        <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return beforeSubmit();">
                             <i class="fas fa-share"></i> Submit
                         </asp:LinkButton>
                     </div>
@@ -110,6 +151,14 @@
                                         </div>
                                     </div>
 
+                                 <%--   <div class="form-group row">
+                                        <label class="col-lg-2 col-sm-3 col-form-label">Total Allocation</label>
+                                        <div class="col-lg-6 col-sm-5">
+                                            <span id="lblTotalAllocation" class="font-weight-bold text-primary">RM 0.00</span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="showAllocationPopup()">Show Allocations</button>--%>
+
                                     <!-- Plus button below dropdowns -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddAllocation">
                                         <i class="fa fa-plus"></i> Add Allocation
@@ -134,6 +183,13 @@
                                 <div class="col-lg-10 col-sm-9">
                                     <div id="vendorContainer">
                                         <div class="input-group mb-2 vendor-group">
+                                        
+                                            <asp:TextBox ID="txtVendor1" runat="server" CssClass="form-control vendor-input" placeholder="Contractor"></asp:TextBox>
+                                        </div>
+                                        <div class="input-group mb-2 vendor-group">
+                                            <asp:TextBox ID="txtVendor2" runat="server" CssClass="form-control vendor-input" placeholder="Contractor"></asp:TextBox>
+                                        </div>
+                                        <div class="input-group mb-2 vendor-group">
                                             <asp:TextBox ID="txtVendor" runat="server" CssClass="form-control vendor-input" placeholder="Contractor"></asp:TextBox>
                                             <div class="input-group-append">
                                                 <button type="button" class="btn btn-danger btnRemoveVendor" disabled>
@@ -143,6 +199,7 @@
                                         </div>
                                     </div>
 
+                                    <!-- Plus button below textboxes -->
                                     <!-- Plus button below textboxes -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
                                         <i class="fa fa-plus"></i> Add Contractor
@@ -167,51 +224,100 @@
                                                     <th colspan="3" class="text-center">YTD <%= DateTime.Now.Year - 1 %> (RM/MT)</th>
                                                 </tr>
                                                 <tr>
-                                                    <th></th>
-                                                    <th class="text-center">Actual YTD</th>
-                                                    <th class="text-center">Annual Budget</th>
-                                                    <th class="text-center">Actual (RM)</th>
-                                                    <th class="text-center">Actual</th>
-                                                    <th class="text-center">Budget</th>
+                                                    <th >
+                                                         
+                                                    </th>
+                                                    <th class="text-center"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
+                                                        title="Attach copy of Processing Cost Report (ZFPI001A) for the previous month approved by mill management">
+                                                        Actual YTD <i class="fas fa-info-circle text-muted"></i>
+                                                    </th>
+                                                    <th class="text-center"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
+                                                        title="Attach copy of 2024 Budget approved by mill management">
+                                                        Annual Budget <i class="fas fa-info-circle text-muted"></i>
+                                                    </th>
+                                                    <th class="text-center"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
+                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (in RM) approved by mill management">
+                                                        Actual (RM) <i class="fas fa-info-circle text-muted"></i>
+                                                    </th>
+                                                    <th class="text-center"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
+                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (in RM/MT) approved by mill management">
+                                                        Actual <i class="fas fa-info-circle text-muted"></i>
+                                                    </th>
+                                                    <th class="text-center"
+                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
+                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (Budget in RM/MT) approved by mill management">
+                                                        Budget <i class="fas fa-info-circle text-muted"></i>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <th class="text-nowrap align-middle">S & M</th>
-                                                    <td>
-                                                        <asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                                    <td>
-                                                        <asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                                    <td>
-                                                        <asp:TextBox ID="txtPreviousYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                                    <td>
-                                                        <asp:TextBox ID="txtPreviousYearActual" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                                    <td>
-                                                        <asp:TextBox ID="txtPreviousYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <td class="text-nowrap align-middle"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        data-bs-boundary="window"
+                                                        title="S&M refers to Maintenance & Repair Costs">
+                                                        S & M <i class="fas fa-info-circle text-muted"></i>
+                                                    </td>
+                                                    <td><asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <td><asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <td><asp:TextBox ID="txtPreviousYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <td><asp:TextBox ID="txtPreviousYearActual" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <td><asp:TextBox ID="txtPreviousYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
                                                 </tr>
                                             </tbody>
                                         </table>
+
                                     </div>
                                     <table style="width: 100%;">
                                         <tbody>
                                             <tr>
-                                                <th class="text-center align-middle pl-2 pr-1">A</th>
+                                                <th class="text-center align-middle pl-2 pr-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Annual Budget Balance for Maintenance & Repair 2024 (RM)">
+                                                    A 
+                                                    <i class="fas fa-info-circle text-muted ms-1"></i>
+                                                </th>
                                                 <td>
-                                                    <asp:TextBox ID="txtA" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
-                                                <th class="text-center align-middle pl-2 pr-1">C</th>
+                                                    <asp:TextBox ID="txtA" runat="server" CssClass="form-control input-number2"></asp:TextBox>
+                                                </td>
+                                                <th class="text-center align-middle pl-2 pr-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Attach ZMM30 report copy verified by mill management">
+                                                    C 
+                                                    <i class="fas fa-info-circle text-muted ms-1"></i>
+                                                </th>
                                                 <td>
-                                                    <asp:TextBox ID="txtC" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <asp:TextBox ID="txtC" runat="server" CssClass="form-control input-number2"></asp:TextBox>
+                                                </td>
                                             </tr>
                                             <tr>
-                                                <th class="text-center align-middle pl-2 pr-1">B</th>
+                                                <th class="text-center align-middle pl-2 pr-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Deadline & repair cost of the requested machine from IW38 (include copy verified by mill management)">
+                                                    B 
+                                                    <i class="fas fa-info-circle text-muted ms-1"></i>
+                                                </th>
                                                 <td>
-                                                    <asp:TextBox ID="txtB" runat="server" CssClass="form-control"></asp:TextBox></td>
-                                                <th class="text-center align-middle pl-2 pr-1">D</th>
+                                                    <asp:TextBox ID="txtB" runat="server" CssClass="form-control"></asp:TextBox>
+                                                </td>
+                                                <th class="text-center align-middle pl-2 pr-1"
+                                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                                    title="Attach summary report from Procurehere verified by mill management">
+                                                    D 
+                                                    <i class="fas fa-info-circle text-muted ms-1"></i>
+                                                </th>
                                                 <td>
-                                                    <asp:TextBox ID="txtD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
+                                                    <asp:TextBox ID="txtD" runat="server" CssClass="form-control input-number2"></asp:TextBox>
+                                                </td>
                                             </tr>
                                         </tbody>
                                     </table>
+
                                 </div>
                             </div>
                             <div class="form-group row mt-4">
@@ -358,7 +464,76 @@
             </div>
         </div>
     </div>
-    <script>
+    <script> 
+        // ========================
+        // Extra code for Total Allocation
+        // ========================
+
+        // Create a container below allocationContainer if not exists
+        if ($("#totalAllocationContainer").length === 0) {
+            $("#allocationContainer").after(` 
+                <div class="form-group row"> 
+                    <div class="col-lg-6 col-sm-5">
+                        <span id="totalAllocationContainer" class="font-weight-bold">RM 0.00</span>
+                    </div>
+                </div>
+            `);
+        }
+
+        // Function to update total allocation
+        function updateTotalAllocation() {
+            var total = 0;
+            $(".allocation-group .input-number2").each(function () {
+                var val = $(this).val().replace(/,/g, "").trim();
+                if (val) {
+                    var num = parseFloat(val);
+                    if (!isNaN(num)) {
+                        total += num;
+                    }
+                }
+            });
+
+            var formattedTotal = total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            var estimateVal = $("#<%= txtAmount.ClientID %>").val().replace(/,/g, "").trim();
+            var estimate = estimateVal ? parseFloat(estimateVal) : 0;
+
+            $("#totalAllocationContainer").text("Total Allocation: RM " + formattedTotal);
+
+            if (estimate > 0 && total > estimate) {
+                $("#totalAllocationContainer").css("color", "red");   // Over allocation
+            } else if (estimate > 0 && total === estimate) {
+                $("#totalAllocationContainer").css("color", "green"); // Perfect match
+            } else {
+                $("#totalAllocationContainer").css("color", "blue");  // Under allocation
+            }
+
+        }
+
+        // Triggers
+        $(document).on("input blur", ".allocation-group .input-number2", updateTotalAllocation);
+        $(document).on("input blur", "#<%= txtAmount.ClientID %>", updateTotalAllocation);
+        $(document).on("click", ".btnRemoveAllocation", updateTotalAllocation);
+        $("#btnAddAllocation").click(function () {
+            setTimeout(updateTotalAllocation, 200);
+        });
+
+        // Run once on load
+        updateTotalAllocation();
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        document.addEventListener("DOMContentLoaded", function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (el) {
+                return new bootstrap.Tooltip(el, {
+                    boundary: 'window',
+                    trigger: 'hover',
+                    delay: { show: 300, hide: 150 }
+                })
+            })
+        });
+
         $(document).ready(function () {
             bsCustomFileInput.init();
 
@@ -723,6 +898,16 @@
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             }));
+        }
+        function beforeSubmit() {
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Run your existing collectData() if defined
+            collectData();
+
+            // Continue with ASP.NET postback
+            return true;
         }
     </script>
 </asp:Content>

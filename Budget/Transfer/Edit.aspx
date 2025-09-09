@@ -40,13 +40,60 @@
                 });
             });
         });
+        function beforeSubmit() {
+            // Disable all buttons to prevent multiple clicks
+            $("button, .btn").prop("disabled", true);
+
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Run your existing collectData() if defined
+            if (typeof collectData === "function") {
+                collectData();
+            }
+
+            // Continue with ASP.NET postback
+            return true;
+        }
     </script>
 
     <style>
         .fixed-dropdown {
             width: 300px !important;
         }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
     </style>
+    <!-- Page-specific Preloader -->
+    <div id="pagePreloader" class="page-preloader flex-column justify-content-center align-items-center" style="display:none;">
+        <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+             alt="Loading..." height="200" width="200" />
+        <p class="mt-3 text-white">Processing...</p>
+    </div>
+
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
@@ -57,7 +104,7 @@
 <%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
                     <i class="fas fa-save"></i> Save
                 </asp:LinkButton>--%>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="collectData();"> <%----%>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="return beforeSubmit();"> <%----%>
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>
@@ -133,8 +180,9 @@
                     <td>From Budget</td>
                     <td><asp:TextBox runat="server" ID="txtFromGL" CssClass="form-control txtreadonly" placeholder="Example: 53000060" /></td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="ddFromBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>
+                        <asp:Label runat="server" ID ="ddFromBA" /> - <asp:Label runat="server" ID ="ddFromBAName" />
+                       <%-- <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="ddFromBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
                     <td><asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
                     <td><asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
@@ -145,8 +193,9 @@
                     <td>To Budget</td>
                     <td><asp:TextBox runat="server" ID="txtToGL" CssClass="form-control txtreadonly" placeholder="Example: 55200060" /></td> 
                     <td>
-                        <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>
+                        <asp:Label runat="server" ID ="ddToBA" /> - <asp:Label runat="server" ID ="ddToBAName" />
+                       <%-- <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
                     <td><asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
                     <td><asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>

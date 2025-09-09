@@ -1,6 +1,13 @@
 ﻿<%@ Page Title="Edit Budget T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.Edit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    
+    <!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
     <style>
         .custom-control.custom-radio {
             margin-bottom: -15px;
@@ -8,6 +15,31 @@
 
         .custom-control-label {
             font-weight: normal !important;
+        }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
         }
     </style>
     <asp:HiddenField ID="hdnFormId" runat="server" />
@@ -20,10 +52,10 @@
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/Default" CausesValidation="false">
                             <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return collectData();">
+                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return beforeSubmit();">
                             <i class="fas fa-save"></i> Save
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return collectData();">
+                        <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return beforeSubmit();">
                             <i class="fas fa-share"></i> <asp:Label ID="btnSubmitLabel" runat="server" Text="Submit"></asp:Label>
                         </asp:LinkButton>
                     </div>
@@ -889,6 +921,18 @@
             $("#<%= hdnVendorList.ClientID %>").val(vendors.join(","));
             $("#<%= hdnAllocationList.ClientID %>").val(JSON.stringify(allocations));
 
+            return true;
+        }
+        function beforeSubmit() {
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Run your existing collectData() if defined
+            if (typeof collectData === "function") {
+                collectData();
+            }
+
+            // Continue with ASP.NET postback
             return true;
         }
     </script>

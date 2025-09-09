@@ -91,11 +91,11 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
 
                         if (budgetformtype == 1)
                         {
-                            ProcessExcelFileFullForm(stream, fuBudget.FileName); // Pass stream & filename
+                            ProcessExcelFileFullForm(stream, fuBudget.FileName); // Pass stream & filename (selenggaraan)
                         }
                         else
                         {
-                            ProcessExcelFile(stream, fuBudget.FileName); // Pass stream & filename
+                            ProcessExcelFile(stream, fuBudget.FileName); // Pass stream & filename 
                         }
 
                     }
@@ -307,7 +307,8 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 {
                     "NO", "PROJEK", "BA", "JUMLAH",
                     "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-                    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+                    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+                    "YEAR"
                 };
 
                 for (int i = 0; i < expectedHeaders.Length; i++)
@@ -326,8 +327,17 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
 
                 using (var db = new AppDbContext())
                 {
+                    IRow rowCheckYear = sheet.GetRow(1);
+                    if (rowCheckYear == null)
+                    { 
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Year in Excel is missing or invalid."); 
+                        return;
+                    }
+
+                    int? yearExcel= TryParseInt(rowCheckYear.GetCell(16)); //
+
                     // 🧹 Soft delete existing Budgets & BudgetsDetails for this TypeId
-                    var oldBudgets = db.Budgets.Where(b => b.TypeId == typeId && b.DeletedDate == null).ToList();
+                    var oldBudgets = db.Budgets.Where(b => b.TypeId == typeId && b.DeletedDate == null && b.Date.Value.Year == yearExcel).ToList();
 
                     bool isSuccessbudget = true;
 
@@ -345,24 +355,27 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                         SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to delete old Budgets.");
                     }
 
-                    var oldDetails = db.BudgetsDetails.Where(d => d.TypeId == typeId && d.DeletedDate == null).ToList();
+                    //var oldDetails = db.BudgetsDetails.Where(d => d.TypeId == typeId && d.DeletedDate == null).ToList();
 
-                    bool isSuccessdetail = true;
+                    //bool isSuccessdetail = true;
 
-                    foreach (var detail in oldDetails)
-                    {
-                        if (!db.SoftDelete(detail))
-                        {
-                            isSuccessdetail = false;
-                            break;
-                        }
-                    }
+                    //foreach (var detail in oldDetails)
+                    //{
+                    //    if (!db.SoftDelete(detail))
+                    //    {
+                    //        isSuccessdetail = false;
+                    //        break;
+                    //    }
+                    //}
 
-                    if (!isSuccessdetail)
-                    {
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to delete old Details Budget.");
-                    }
+                    //if (!isSuccessdetail)
+                    //{
+                    //    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to delete old Details Budget.");
+                    //}
 
+                    int year = yearExcel.Value;
+
+                    var today = DateTime.Today;
                     // start from row 1 (after header)
                     for (int rowNumber = 1; rowNumber <= sheet.LastRowNum; rowNumber++)
                     {
@@ -392,7 +405,8 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                             Details = detailsText,
                             Amount = jumlah.Value,
                             CreatedDate = DateTime.Now,
-                            CreatedBy = currentUserId
+                            CreatedBy = currentUserId,
+                            Date = new DateTime(year, today.Month, today.Day) // ✅ year from excel, day/month today
                         };
                         db.Budgets.Add(budget);
 

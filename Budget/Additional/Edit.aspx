@@ -1,5 +1,51 @@
 ﻿<%@ Page Title="Edit Additional Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.Budget.AddBudget.Edit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <script>    
+    function beforeSubmit() {
+            // Disable all buttons to prevent multiple clicks
+            $("button, .btn").prop("disabled", true);
+
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Continue with ASP.NET postback
+            return true;
+        }
+    </script>
+    <style>
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
+    </style>
+
+       <!-- Page-specific Preloader -->
+    <div id="pagePreloader" class="page-preloader flex-column justify-content-center align-items-center" style="display:none;">
+        <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+             alt="Loading..." height="200" width="200" />
+        <p class="mt-3 text-white">Processing...</p>
+    </div>
     <asp:Panel runat="server" CssClass="card shadow-sm p-4 rounded-3">
         <!-- Header -->
                 <div class="card-header card-header-sticky">
@@ -11,7 +57,7 @@
 <%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();">
                     <i class="fas fa-save"></i> Save
                 </asp:LinkButton>--%>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="collectData();"> <%----%>
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return beforeSubmit();"> <%----%>
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>

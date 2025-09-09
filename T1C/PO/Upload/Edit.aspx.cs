@@ -196,15 +196,44 @@ namespace Prodata.WebForm.T1C.PO.Upload
 
                 if (isSuccess)
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Form updated successfully.");
+                    string script = @"
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Form updated successfully.',
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
+                        });";
+
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
                 }
                 else
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to update form. Please try again.");
+                    string script = @"
+                        Swal.fire({d
+                            icon: 'error',
+                            title: 'Failed to update form. Please try again.',
+                            showConfirmButton: true
+                        }).then(function() {
+                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
+                        });";
+
+                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
                 }
 
+                //if (isSuccess)
+                //{
+                //    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Form updated successfully.");
+                //}
+                //else
+                //{
+                //    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to update form. Please try again.");
+                //}
+
                 // Reload page
-                Response.Redirect(Request.Url.GetCurrentUrl(true));
+                //Response.Redirect(Request.Url.GetCurrentUrl(true));
+                //Response.Redirect(Request.Url.GetLeftPart(UriPartial.Path));
+
             }
         }
 

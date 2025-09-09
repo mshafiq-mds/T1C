@@ -2344,6 +2344,10 @@
     <Content Include="Error\404.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="Images\Background.png" />
+    <Content Include="Images\certificate-in-cost-control-management-training-course.jpg" />
+    <Content Include="Images\Felda_Global_Ventures_Logo.png" />
+    <Content Include="Images\fgv-logo.ico" />
     <Content Include="Images\user-alt-solid-darkgray.svg" />
     <Content Include="Images\user-circle-solid-darkgray.svg" />
     <Content Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx" />
@@ -2707,6 +2711,7 @@
     <Content Include="DocumentHandler.ashx" />
     <Content Include="Budget\Template_Budget.xlsx" />
     <Content Include="DownloadAttachment.ashx" />
+    <Content Include="Budget\Template_BudgetFGVPISB.xlsx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -2740,6 +2745,11 @@
     <Content Include="T1C\Approval\Edit.aspx" />
     <Content Include="T1C\Default.aspx" />
     <Content Include="T1C\Edit.aspx" />
+    <Content Include="T1C\PoolBudget\Add.aspx" />
+    <Content Include="T1C\PoolBudget\Approval\Default.aspx" />
+    <Content Include="T1C\PoolBudget\Approval\Edit.aspx" />
+    <Content Include="T1C\PoolBudget\Default.aspx" />
+    <Content Include="T1C\PoolBudget\View.aspx" />
     <Content Include="T1C\PO\Upload\Default.aspx" />
     <Content Include="T1C\PO\Upload\Edit.aspx" />
     <Content Include="T1C\View.aspx" />
@@ -3258,9 +3268,12 @@
     <Compile Include="Models\BudgetsDetails.cs" />
     <Compile Include="Models\Form.cs" />
     <Compile Include="Models\FormBudget.cs" />
+    <Compile Include="Models\FormsProcurement.cs" />
+    <Compile Include="Models\FormsProcurementDocuments.cs" />
     <Compile Include="Models\FormVendor.cs" />
     <Compile Include="Models\MasterData\BudgetType.cs" />
     <Compile Include="Models\MasterData\FormType.cs" />
+    <Compile Include="Models\MasterData\PurchaseTypes.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransferApprovalLimits.cs" />
     <Compile Include="Models\TransferApprovalLog.cs" />
@@ -3271,6 +3284,7 @@
     <Compile Include="Models\ViewModels\ApprovalViewModel.cs" />
     <Compile Include="Models\ViewModels\BudgetViewModel.cs" />
     <Compile Include="Models\ViewModels\FormBudgetViewModel.cs" />
+    <Compile Include="Models\ViewModels\FormsProcurementListViewModel.cs" />
     <Compile Include="Models\ViewModels\FormViewModel.cs" />
     <Compile Include="Models\ViewModels\IPMSBizAreaViewModel.cs" />
     <Compile Include="Models\ViewModels\IPMSRoleViewModel.cs" />
@@ -3376,6 +3390,41 @@
     </Compile>
     <Compile Include="T1C\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Approval\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Approval\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Approval\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Approval\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
     </Compile>
     <Compile Include="T1C\PO\Upload\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

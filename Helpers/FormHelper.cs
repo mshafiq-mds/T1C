@@ -109,6 +109,11 @@ namespace Prodata.WebForm.Helpers
             return IsFormPendingUserAction(form.Id);
         }
 
+        public static bool IsFormProcumentPendingUserAction(this Models.FormsProcurement form)
+        {
+            return IsFormPendingUserAction(form.Id);
+        }
+
         public static string GetLatestFormRemark(Guid formId)
         {
             using (var db = new AppDbContext())

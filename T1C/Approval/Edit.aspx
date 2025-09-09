@@ -380,7 +380,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="remarkModalLabel">Enter Remark</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button id="modalClose" type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -388,14 +388,14 @@
                     <textarea id="txtRemark" class="form-control" rows="4" placeholder="Enter your remark here..."></textarea>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button id="modalCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button id="modalSubmit" type="button" class="btn btn-primary">Confirm</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
+    <script> 
         $(document).ready(function () {
             $('#remarkModal').on('hidden.bs.modal', function () {
                 // Clear the textarea when the modal is fully hidden
@@ -428,6 +428,9 @@
             var remark = document.getElementById("txtRemark").value;
             document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
 
+            $("button").prop("disabled", true);
+
+            $(".preloader").fadeIn(200);
             // Trigger hidden button for server postback
             document.getElementById("<%= btnApproveConfirm.ClientID %>").click();
         }
@@ -436,6 +439,9 @@
             var remark = document.getElementById("txtRemark").value;
             document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
 
+            $("button").prop("disabled", true);
+
+            $(".preloader").fadeIn(200);
             // Trigger hidden button for server postback
             document.getElementById("<%= btnRejectConfirm.ClientID %>").click();
         }
@@ -444,6 +450,9 @@
             var remark = document.getElementById("txtRemark").value;
             document.getElementById("<%= hdnRemark.ClientID %>").value = remark;
 
+            $("button").prop("disabled", true);
+
+            $(".preloader").fadeIn(200);
             // Trigger hidden button for server postback
             document.getElementById("<%= btnSendBackConfirm.ClientID %>").click();
         }

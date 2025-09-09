@@ -1,4 +1,5 @@
-﻿<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
+﻿
+<%@ Page Title="New Budget Transfer" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Add" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script type="text/javascript">  
 
@@ -88,6 +89,21 @@
                 }
             });
         });
+        function beforeSubmit() {
+
+            // Disable all buttons to prevent multiple clicks 
+            //$("button, .btn").prop("disabled", true);
+            //$("button, a.btn").addClass("disabled").attr("aria-disabled", "true");
+
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Run your existing collectData() if defined
+            validateBeforeSubmit();
+
+            // Continue with ASP.NET postback
+            return true;
+        }
     </script>
 
 
@@ -95,7 +111,38 @@
         .fixed-dropdown {
             width: 300px !important;
         }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
     </style>
+    <!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
@@ -103,7 +150,7 @@
                 <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/Budget/Transfer/Default" CausesValidation="false">
                     <i class="fas fa-angle-double-left"></i> Back
                 </asp:LinkButton>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="return validateBeforeSubmit();">
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click1" OnClientClick="return beforeSubmit();">
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>

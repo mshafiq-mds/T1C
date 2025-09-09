@@ -54,7 +54,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                         b => b.TypeId,
                         t => t.Id,
                         (b, t) => new { b, t.Name })
-                    .Where(x => x.b.Date.HasValue && x.b.Date.Value.Year == selectedYear);
+                    .Where(x => x.b.Date.HasValue && x.b.Date.Value.Year == selectedYear && x.b.DeletedDate == null);
 
                 if (typeId.HasValue)
                     query = query.Where(x => x.b.TypeId == typeId.Value);

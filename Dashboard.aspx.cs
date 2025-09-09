@@ -35,7 +35,8 @@ namespace Prodata.WebForm
                     LblAdditionalComplete.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 3).ToString();
                     LblAdditionalReview.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 2).ToString();
                     LblAdditionalResubmit.Text = db.AdditionalBudgetRequests.Count(x => x.Status == 0).ToString();
-                    LblAdditionalSubmitted.Text = db.AdditionalBudgetRequests.Count(x => x.Status == null).ToString();
+                    //LblAdditionalSubmitted.Text = db.AdditionalBudgetRequests.Count(x => x.Status == null).ToString();
+                    LblAdditionalSubmitted.Text = db.AdditionalBudgetRequests.Count(x => x.DeletedDate == null).ToString();
 
                     // Transfers
                     LblTransferDeleted.Text = db.TransfersTransaction.Count(x => x.DeletedDate != null).ToString();
@@ -43,10 +44,16 @@ namespace Prodata.WebForm
                     LblTransferComplete.Text = db.TransfersTransaction.Count(x => x.status == 3).ToString();
                     LblTransferReview.Text = db.TransfersTransaction.Count(x => x.status == 2).ToString();
                     LblTransferResubmit.Text = db.TransfersTransaction.Count(x => x.status == 0).ToString();
-                    LblTransferSubmitted.Text = db.TransfersTransaction.Count(x => x.status == null).ToString();
+                    //LblTransferSubmitted.Text = db.TransfersTransaction.Count(x => x.status == null).ToString();
+                    LblTransferSubmitted.Text = db.TransfersTransaction.Count(x => x.DeletedDate == null).ToString();
 
                     // Forms
-                    LblT1CTotal.Text = db.Forms.Count(x => x.DeletedDate == null).ToString();
+                    //LblT1CTotal.Text = db.Forms.Count(x => x.DeletedDate == null).ToString();
+                    LblT1CDeleted.Text = db.Forms.Count(x => x.DeletedDate != null).ToString();
+                    LblT1CComplete.Text = db.Forms.Count(x => x.Status == "Approved").ToString();
+                    LblT1CReview.Text = db.Forms.Count(x => x.Status == "Pending").ToString();
+                    LblT1CResubmit.Text = db.Forms.Count(x => x.Status == "SentBack").ToString();
+                    LblT1CSubmitted.Text = db.Forms.Count(x => x.DeletedDate == null).ToString();
                 }
                 catch (Exception ex)
                 {

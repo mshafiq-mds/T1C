@@ -2,6 +2,7 @@
 using Prodata.WebForm.Models.MasterData;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -15,6 +16,11 @@ namespace Prodata.WebForm.Class
         {
             using (var context = new AppDbContext())
             {
+
+                if (string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode))
+                {
+                    Auth.User().iPMSBizAreaCode = ConfigurationManager.AppSettings["SuperadminBA"];
+                }
                 var refTypeParam = new SqlParameter("@RefType", refType);
                 var bizAreaParam = new SqlParameter("@BizArea", Auth.User().iPMSBizAreaCode);
                 var isPreviewParam = new SqlParameter("@IsPreview", isPreview ? 1 : 0);

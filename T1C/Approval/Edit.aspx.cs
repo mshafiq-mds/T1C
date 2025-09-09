@@ -88,6 +88,8 @@ namespace Prodata.WebForm.T1C.Approval
                         db.Entry(form).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
                     }
+                    Class.Emails.EmailsT1CForApprover(form.Id, form, Auth.User().iPMSRoleCode);
+
                 }
             }
             catch (Exception ex)
@@ -136,6 +138,8 @@ namespace Prodata.WebForm.T1C.Approval
                     form.SoftDeleteTransactions(); // Soft delete related transactions
 
                     db.SaveChanges();
+                    Class.Emails.EmailsT1CForApprover(form.Id, form);
+
                 }
             }
             catch (Exception ex)
@@ -176,6 +180,8 @@ namespace Prodata.WebForm.T1C.Approval
                     form.Status = "SentBack";
                     db.Entry(form).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
+
+                    Class.Emails.EmailsT1CForApprover(form.Id, form);
                 }
             }
             catch (Exception ex)

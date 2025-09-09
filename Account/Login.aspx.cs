@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Web;
-using System.Web.UI;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Owin;
 using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.Auth;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Web;
+using System.Web.UI;
 
 namespace Prodata.WebForm.Account
 {
@@ -95,7 +96,6 @@ namespace Prodata.WebForm.Account
                             }
                         }
                     }
-
                     // **If user does not exist in iPMS, return an error**
                     if (!userExistsInIPMS)
                     {
@@ -211,9 +211,26 @@ namespace Prodata.WebForm.Account
                         }
                         else
                         {
-                            FailureText.Text = "Failed to update user info.";
-                            ErrorMessage.Visible = true;
-                            return;
+                            //FailureText.Text = "Failed to update user info.";
+                            //ErrorMessage.Visible = true;
+                            //return;
+
+                            // Get connection string
+                            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+                            string databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
+
+                            if (databaseName.Equals("CCMS_TEST", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // ✅ In TEST DB → Allow sign-in
+                                signinManager.SignIn(existingUser, RememberMe.Checked, false);
+                            }
+                            else if (databaseName.Equals("CCMS", StringComparison.OrdinalIgnoreCase))
+                            {
+                                // ❌ In PROD DB → Block with error message
+                                FailureText.Text = "Failed to update user info.";
+                                ErrorMessage.Visible = true;
+                                return;
+                            }
                         }
                     }
                 }

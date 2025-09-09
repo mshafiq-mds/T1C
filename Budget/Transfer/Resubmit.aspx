@@ -40,13 +40,54 @@
                 });
             });
         });
+        function beforeSubmit() {
+ 
+            // Show the page-specific preloader
+            $("#pagePreloader").fadeIn(200);
+
+            // Continue with ASP.NET postback
+            return true;
+        }
     </script>
 
     <style>
         .fixed-dropdown {
             width: 300px !important;
         }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
+
     </style>
+    <!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
+
     <asp:Panel runat="server" CssClass="card p-4">
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
@@ -57,7 +98,7 @@
 <%--                <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="collectData();"> OnClientClick="collectData();"
                     <i class="fas fa-save"></i> Save
                 </asp:LinkButton>--%>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click">  
+                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success" OnClick="btnSubmit_Click" OnClientClick="return beforeSubmit();">  
                     <i class="fas fa-share"></i> Submit Application
                 </asp:LinkButton>
             </div>

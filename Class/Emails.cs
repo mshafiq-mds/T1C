@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading.Tasks;
 using System.Web;
+using static System.Net.WebRequestMethods;
 
 namespace Prodata.WebForm.Class
 {
@@ -15,53 +17,206 @@ namespace Prodata.WebForm.Class
         #region Public call email Function EmailsTransferBudgetForResubmit
         // Public methods to trigger email notifications for different scenarios
 
+        public static string urlsystem()
+        {
+            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            string appPath = HttpContext.Current.Request.ApplicationPath.TrimEnd('/');
+            return baseUrl + appPath;
+        }
         // ===========================================
+        // ✅ For new requests  
+        // ===========================================
+
+        // ✅ For request T2
+        public static void EmailsT2ForNewRequest(Guid id, Models.FormsProcurement FoP, string roleCode)
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsT2RequestModified(id, FoP, roleCode, baseUrl));
+        }
+
         // ✅ For request T1C
-        // ===========================================
-        public static void EmailsT1CForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
-        { EmailsT1CRequestModified(id, ABR, roleCode); } 
+        public static void EmailsT1CForNewRequest(Guid id, Models.Form Fo, string roleCode)
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsT1CRequestModified(id, Fo, roleCode, baseUrl));
+        }
 
-        // ===========================================
-        // ✅ For new requests Additional Budget and Transfer Budget
-        // ===========================================
+        // ✅ For request Additional
         public static void EmailsAdditionalBudgetForNewRequest(Guid id, AdditionalBudgetRequests ABR, string roleCode)
-        { EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsAdditionalBudgetForNewRequestModified(id, ABR, roleCode, baseUrl));
+        }
+
+
+        // ✅ For request Transfer
         public static void EmailsReqTransferBudgetForNewRequest(Guid id, TransfersTransaction TT, string roleCode)
-        { EmailsTransferBudgetForNewRequestModified(id, TT, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsTransferBudgetForNewRequestModified(id, TT, roleCode, baseUrl));
+        }
+
 
         // ===========================================
-        // ✅ For submissions next approver
-        // ===========================================
+        // ✅ For submissions next approver              //resubmit or complete (roleCode = "")
+        // =========================================== 
+
+        // ✅ For request T2
+        public static void EmailsT2ForApprover(Guid id, Models.FormsProcurement FoP)
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqT2ForApproverModified(id, FoP, baseUrl));
+        }
+
+        // ✅ For request T1C
+        public static void EmailsT1CForApprover(Guid id, Models.Form Fo, string roleCode = "")
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqT1CForApproverModified(id, Fo, roleCode, baseUrl));
+        }
+
+        // ✅ For request Additional
         public static void EmailsAdditionalBudgetForApprover(Guid id, AdditionalBudgetRequests ABR, string roleCode = "")
-        { EmailsReqAdditionalBudgetForApproverModified(id, ABR, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqAdditionalBudgetForApproverModified(id, ABR, roleCode, baseUrl));
+        }
+
+
+        // ✅ For request Transfer 
         public static void EmailsReqTransferBudgetForApprover(Guid id, TransfersTransaction TT, string roleCode = "")
-        { EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode, baseUrl));
+        }
+
 
         // ===========================================
-        // ✅ For resubmissions to creator
+        // ✅ For resubmissions to approver
         // ===========================================
+         
+        // ✅ For request T1C
+        public static void EmailsT1CForResubmit(Guid id, Models.Form Fo, string roleCode)
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqT1CForResubmitModified(id, Fo, roleCode, baseUrl));
+        }
+
+        // ✅ For request Additional
         public static void EmailsAdditionalBudgetForResubmit(Guid id, AdditionalBudgetRequests ABR, string roleCode)
-        { EmailsReqAdditionalBudgetForResubmitModified(id, ABR, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqAdditionalBudgetForResubmitModified(id, ABR, roleCode, baseUrl));
+        }
+
+
+        // ✅ For request Transfer
         public static void EmailsTransferBudgetForResubmit(Guid id, TransfersTransaction ABR, string roleCode)
-        { EmailsReqTransferBudgetForResubmitModified(id, ABR, roleCode); }
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsReqTransferBudgetForResubmitModified(id, ABR, roleCode, baseUrl));
+        }
+
         #endregion
 
 
+
+
+
+
+
         #region T1C Logic
-        public static void EmailsT1CRequestModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        public static void EmailsT1CRequestModified(Guid id, Models.Form Fo, string roleCode, string baseUrl)
         {
+            decimal amount = Fo.Amount ?? 0;
+
+            List<string> nextApproverCodes = GetNextApproverCodesForTransT1CNewRequest(amount, roleCode, out var db);
+            if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
+
+            // First try direct match on BizArea
+            List<User> userRole = db.Users
+                .Where(x => nextApproverCodes.Contains(x.iPMSRoleCode) && x.iPMSBizAreaCode == Fo.BizAreaCode)
+                .ToList();
+
+            // Fallback: Try zone-level using helper
+            if (!userRole.Any())
+            {
+                foreach (var code in nextApproverCodes)
+                {
+                    var fallbackUsers = GetUsersDetails(db, code, Fo.BizAreaCode);
+                    if (fallbackUsers.Any())
+                    {
+                        userRole.AddRange(fallbackUsers);
+                    }
+                }
+
+                // Optional: remove duplicates by Email if multiple fallback hits
+                userRole = userRole.GroupBy(u => u.Email).Select(g => g.First()).ToList();
+            }
+
+            if (!userRole.Any()) return; // Still no users, exit
+
+            string actionName = "New T1C Request";
+
+
+            foreach (var user in userRole)
+            {
+                string fullUrl = $"{baseUrl}/T1C/Approval/Default"; 
+                string body = EmailTemplateBuilder.BuildT1CEmailBody(Fo, actionName, fullUrl, user);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        private static List<string> GetNextApproverCodesForTransT1CNewRequest(decimal amount, string roleCode, out AppDbContext db)
+        {
+            db = new AppDbContext();
+
+            return db.ApprovalLimits
+                .Where(x => x.DeletedDate == null &&
+                            x.AmountMin <= amount &&
+                            (x.AmountMax == null || amount <= x.AmountMax) &&
+                            x.Order == 1)
+                .Select(x => x.ApproverCode)
+                .Distinct()
+                .ToList();
 
         }
         #endregion
 
+        #region T2 Logic
+        public static void EmailsT2RequestModified(Guid id, Models.FormsProcurement FoP, string roleCode, string baseUrl)
+        {
+            using (var db = new AppDbContext())
+            {
+                    // First try direct match on BizArea
+                List<User> userRole = db.Users
+                    .Where(x => (x.iPMSRoleCode == "MM" || x.iPMSRoleCode == "AM" || x.iPMSRoleCode == "AMM")
+                                && x.iPMSBizAreaCode == FoP.BizAreaCode)
+                    .ToList();
+
+                if (!userRole.Any()) return; // Still no users, exit
+
+                string actionName = "New Budget Transaction";
+
+                var budgettype = db.BudgetTypes.Where(x => x.Id == FoP.TypeId).Select(x => x.Name).FirstOrDefault();
+
+                foreach (var user in userRole)
+                {
+                    string fullUrl = $"{baseUrl}/T1C/PoolBudget/Approval/Default";
+                    string body = EmailTemplateBuilder.BuildT2EmailBody(FoP, actionName, fullUrl, budgettype, user);
+                    SendFunctionEmail(user.Email, actionName, body);
+                }
+            }
+        }
+
+        #endregion
+
         #region Transfer budget Logic
-        public static void EmailsReqTransferBudgetModifiedForApprover(Guid id, TransfersTransaction TT, string roleCode)
+        public static void EmailsReqTransferBudgetModifiedForApprover(Guid id, TransfersTransaction TT, string roleCode, string baseUrl)
         {
             string nextApproverCode = GetNextTransferApproverCode(TT.FromTransfer ?? 0, roleCode, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
 
-            List<User> userRole = GetUsersDetails(db, nextApproverCode, TT.BA);
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, TT.BA); 
             string actionName = "";
             string fullUrl = "";
 
@@ -84,7 +239,7 @@ namespace Prodata.WebForm.Class
                     actionName = "Transfer Budget Request";
                 }
 
-                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
@@ -127,7 +282,7 @@ namespace Prodata.WebForm.Class
         #endregion
 
         #region  Transfer budget For Requestor Logic
-        public static void EmailsTransferBudgetForNewRequestModified(Guid id, TransfersTransaction TT, string roleCode)
+        public static void EmailsTransferBudgetForNewRequestModified(Guid id, TransfersTransaction TT, string roleCode, string baseUrl)
         {
             decimal amount = TT.FromTransfer ?? 0;
 
@@ -156,15 +311,14 @@ namespace Prodata.WebForm.Class
             }
 
             if (!userRole.Any()) return; // Still no users, exit
-
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+             
             string actionName = "Transfer Budget Request";
 
 
             foreach (var user in userRole)
             {
                 string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
-                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
@@ -189,7 +343,7 @@ namespace Prodata.WebForm.Class
         #endregion
 
         #region  Additional budget For Requestor Logic
-        public static void EmailsAdditionalBudgetForNewRequestModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        public static void EmailsAdditionalBudgetForNewRequestModified(Guid id, AdditionalBudgetRequests ABR, string roleCode, string baseUrl)
         {
             string type = ABR.CheckType == "FINANCE" ? "Finance" : "COGS";
             decimal amount = ABR.AdditionalBudget ?? 0;
@@ -219,15 +373,14 @@ namespace Prodata.WebForm.Class
             }
 
             if (!userRole.Any()) return; // Still no users, exit
-
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+             
             string actionName = "Additional Budget Request";
 
 
             foreach (var user in userRole)
             {
                 string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
-                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
@@ -264,47 +417,185 @@ namespace Prodata.WebForm.Class
         #endregion
 
         #region  Additional budget For Resubmit Logic
-        public static void EmailsReqAdditionalBudgetForResubmitModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        public static void EmailsReqAdditionalBudgetForResubmitModified(Guid id, AdditionalBudgetRequests ABR, string roleCode, string baseUrl)
         {
             string type = ABR.CheckType == "FINANCE" ? "Finance" : "COGS";
             decimal amount = ABR.AdditionalBudget ?? 0;
 
             var db = new AppDbContext();
-            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA);
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA); 
             string actionName = "Additional Budget Request";
 
             foreach (var user in userRole)
             {
                 string fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
-                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl, user);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        #endregion 
+
+        #region  T1C For Resubmit Logic
+        public static void EmailsReqT1CForResubmitModified(Guid id, Models.Form Fo, string roleCode, string baseUrl)
+        {
+            decimal amount = Fo.Amount ?? 0;
+
+            var db = new AppDbContext();
+            List<User> userRole = GetUsersDetails(db, roleCode, Fo.BizAreaCode);
+            string actionName = "Transfer Budget Request";
+
+            foreach (var user in userRole)
+            {
+                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
+                string body = EmailTemplateBuilder.BuildT1CEmailBody(Fo, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
         #endregion
 
         #region  Transfer budget For Resubmit Logic
-        public static void EmailsReqTransferBudgetForResubmitModified(Guid id, TransfersTransaction ABR, string roleCode)
+        public static void EmailsReqTransferBudgetForResubmitModified(Guid id, TransfersTransaction ABR, string roleCode, string baseUrl)
         {
             decimal amount = ABR.FromTransfer ?? 0;
 
             var db = new AppDbContext();
-            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA);
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA); 
             string actionName = "Transfer Budget Request";
 
             foreach (var user in userRole)
             {
                 string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
-                string body = EmailTemplateBuilder.BuildTransferEmailBody(ABR, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(ABR, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
         #endregion
 
+        #region  T2 Approver Logic
+        public static void EmailsReqT2ForApproverModified(Guid id, Models.FormsProcurement Fo, string baseUrl)
+        {
+            AppDbContext db;
+            string nextApproverCode = GetT2OwnerCode(out db, id); 
+
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, Fo.BizAreaCode);
+            string actionName = "";
+            string fullUrl = "";
+            var budgettype = db.BudgetTypes.Where(x => x.Id == Fo.TypeId).Select(x => x.Name).FirstOrDefault();
+
+            foreach (var user in userRole)
+            {
+
+                if (Fo.Status == "Approved") // completed Transaction budget
+                {
+                    fullUrl = $"{baseUrl}/T1C/PoolBudget/View?Id={id}";
+                    actionName = "Completed T1C Budget";
+                } 
+
+                string body = EmailTemplateBuilder.BuildT2EmailBody(Fo, actionName, fullUrl, budgettype, user);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        private static string GetT2OwnerCode( out AppDbContext db, Guid? id = null)
+        { 
+            db = new AppDbContext();
+            Guid? eligibleID = Guid.Empty;
+
+            if (id.HasValue)
+            {
+                eligibleID = db.FormsProcurement
+                    .Where(x => x.Id == id.Value)
+                    .Select(x => x.CreatedBy)
+                    .FirstOrDefault();
+            }
+
+            var user = db.Users
+                .Where(x => x.Id == eligibleID)
+                .FirstOrDefault();
+
+            return user?.iPMSRoleCode; 
+        }
+        #endregion
+
+
+        #region  T1C Approver Logic
+        public static void EmailsReqT1CForApproverModified(Guid id, Models.Form Fo, string roleCode, string baseUrl)
+        {
+            AppDbContext db;
+            string nextApproverCode = GetNextT1CApproverCode(Fo.Amount ?? 0, roleCode, out db, id);
+            if (string.IsNullOrEmpty(nextApproverCode))
+            {
+                nextApproverCode = GetNextT1CApproverCode(Fo.Amount ?? 0, "", out db, id);
+                if (string.IsNullOrEmpty(nextApproverCode)) return;
+            }
+
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, Fo.BizAreaCode); 
+            string actionName = "";
+            string fullUrl = "";
+
+            foreach (var user in userRole)
+            {
+
+                if (Fo.Status == "Approved") // completed Transaction budget
+                {
+                    fullUrl = $"{baseUrl}/T1C/View?Id={id}";
+                    actionName = "Completed T1C Budget";
+                }
+                else if (Fo.Status == "SentBack" && roleCode == "") // resubmit approver to creator
+                {
+                    fullUrl = $"{baseUrl}/T1C/Default";
+                    actionName = "T1C Budget Request Revision";
+                }
+                else // verify approver to next approver
+                {
+                    fullUrl = $"{baseUrl}/T1C/Approval/Default";
+                    actionName = "T1C Budget Request";
+                }
+
+                string body = EmailTemplateBuilder.BuildT1CEmailBody(Fo, actionName, fullUrl, user);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        private static string GetNextT1CApproverCode(decimal amount, string roleCode, out AppDbContext db, Guid? id = null)
+        {
+            if (roleCode == "") // resubmit approver to creator
+            {
+                db = new AppDbContext();
+                Guid? eligibleID = Guid.Empty;
+
+                if (id.HasValue)
+                {
+                    eligibleID = db.Forms
+                        .Where(x => x.Id == id.Value)
+                        .Select(x => x.CreatedBy)
+                        .FirstOrDefault();
+                }
+
+                var user = db.Users
+                    .Where(x => x.Id == eligibleID)
+                    .FirstOrDefault();
+
+                return user?.iPMSRoleCode;
+            }
+            else // verify approver to next approver
+            {
+                db = new AppDbContext();
+                var eligible = db.ApprovalLimits
+                    .Where(x => x.DeletedDate == null && x.AmountMin <= amount && (x.AmountMax == null || amount <= x.AmountMax))
+                    .OrderBy(x => x.Order)
+                    .ToList();
+
+                var current = eligible.FirstOrDefault(x => x.ApproverCode == roleCode);
+                var next = eligible.FirstOrDefault(x => current != null && x.Order > current.Order);
+
+                return next?.ApproverCode;
+            }
+
+        }
+        #endregion
+
         #region  Additional budget For Approver Logic
 
-        public static void EmailsReqAdditionalBudgetForApproverModified(Guid id, AdditionalBudgetRequests ABR, string roleCode)
+        public static void EmailsReqAdditionalBudgetForApproverModified(Guid id, AdditionalBudgetRequests ABR, string roleCode, string baseUrl)
         {
             string type = ABR.CheckType == "FINANCE" ? "Finance" : "COGS";
             decimal amount = ABR.AdditionalBudget ?? 0;
@@ -312,8 +603,7 @@ namespace Prodata.WebForm.Class
             string nextApproverCode = GetNextApproverCodeForAdditionalBudget(amount, roleCode, type, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
 
-            List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA);
-            string baseUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA); 
             string actionName = "Additional Budget Request";
 
 
@@ -335,7 +625,7 @@ namespace Prodata.WebForm.Class
                     fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
                     actionName = "Additional Budget Request";
                 } 
-                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl);
+                string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
@@ -408,40 +698,15 @@ namespace Prodata.WebForm.Class
                 : users.Where(x => x.iPMSBizAreaCode == bizAreaCode).ToList();
         }
 
-        public static void SendFunctionEmail(string email, string subject, string body)
-        {
-            try
-            {
-                var smtpClient = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
-                {
-                    Credentials = new NetworkCredential("b79f1fe30948da", "b0fbba86f8d7da"),
-                    EnableSsl = true
-                };
-
-                MailMessage mailMessage = new MailMessage
-                {
-                    From = new MailAddress("siserver.fps@fgvholdings.com"),
-                    Subject = "(CCMS) " + subject,
-                    Body = body,
-                    IsBodyHtml = true
-                };
-
-                mailMessage.To.Add(email);
-                smtpClient.Send(mailMessage);
-            }
-            catch (Exception ex)
-            {
-                HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
-            }
-        }
         //public static void SendFunctionEmail(string email, string subject, string body)
         //{
         //    try
         //    {
-        //        SmtpClient smtpClient = new SmtpClient("mx.felda.net.my")
+        //        var smtpClient = new SmtpClient("sandbox.smtp.mailtrap.io", 25)
         //        {
-        //            Port = 25,
-        //            UseDefaultCredentials = false
+        //            Credentials = new NetworkCredential("cdc48d9f523501", "28fdc344fda835"),    //ijat
+        //            //Credentials = new NetworkCredential("b79f1fe30948da", "b0fbba86f8d7da"), // capek
+        //            EnableSsl = true
         //        };
 
         //        MailMessage mailMessage = new MailMessage
@@ -460,6 +725,32 @@ namespace Prodata.WebForm.Class
         //        HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
         //    }
         //}
+        public static void SendFunctionEmail(string email, string subject, string body)
+        {
+            try
+            {
+                SmtpClient smtpClient = new SmtpClient("mx.felda.net.my")
+                {
+                    Port = 25,
+                    UseDefaultCredentials = false
+                };
+
+                MailMessage mailMessage = new MailMessage
+                {
+                    From = new MailAddress("siserver.fps@fgvholdings.com"),
+                    Subject = "(CCMS) " + subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+
+                mailMessage.To.Add(email);
+                smtpClient.Send(mailMessage);
+            }
+            catch (Exception ex)
+            {
+                HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
+            }
+        }
         #endregion
     }
 }

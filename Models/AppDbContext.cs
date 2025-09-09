@@ -126,6 +126,11 @@ namespace Prodata.WebForm.Models
 
         public DbSet<Attachment> Attachments { get; set; }
         public DbSet<BudgetsDetails> BudgetsDetails { get; set; }
+        public DbSet<PurchaseTypes> PurchaseTypes { get; set; }
+        public DbSet<FormsProcurement> FormsProcurement { get; set; }
+        public DbSet<FormsProcurementDocuments> FormsProcurementDocuments { get; set; }
+        
+
 
     }
 }

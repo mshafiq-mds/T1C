@@ -1,6 +1,39 @@
 ﻿<%@ Page Title="Upload PO" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.PO.Upload.Edit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    <style>
+    .page-preloader {
+        position: fixed;
+        z-index: 99999;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .page-preloader img {
+        animation: shake 1.5s infinite;
+    }
+
+    @keyframes shake {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(3deg); }
+        50% { transform: rotate(0deg); }
+        75% { transform: rotate(-3deg); }
+        100% { transform: rotate(0deg); }
+    }
+</style>
+    <!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
     <asp:HiddenField ID="hdnFormId" runat="server" />
     <div class="row">
         <div class="col-lg-12">
@@ -13,7 +46,7 @@
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/PO/Upload/Default" CausesValidation="false">
                             <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
-                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return beforeSave();">
+                        <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click" OnClientClick="return beforeSubmitPageload();">
                             <i class="fas fa-save"></i> Save
                         </asp:LinkButton>
                     </div>
@@ -577,5 +610,17 @@
 
             return !hasError; // prevent save if any error
         }
+        function beforeSubmitPageload() {
+            // Run validation first
+            if (!beforeSave()) {
+                return false; // stop if validation fails
+            }
+
+            // Show preloader only if validation passes
+            $("#pagePreloader").fadeIn(200);
+
+            return true; // continue with ASP.NET postback
+        }
     </script>
+
 </asp:Content>

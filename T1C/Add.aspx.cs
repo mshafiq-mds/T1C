@@ -437,6 +437,9 @@ namespace Prodata.WebForm.T1C
                             db.SaveChanges();
                             trans.Commit();
                             isSuccess = true;
+
+
+                            Emails.EmailsT1CForNewRequest(form.Id, form, Auth.User().iPMSRoleCode);
                         }
                         catch (Exception ex)
                         {

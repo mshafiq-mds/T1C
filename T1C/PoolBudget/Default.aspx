@@ -1,4 +1,4 @@
-﻿<%@ Page Title="T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.Default" %>
+﻿<%@ Page Title="T1C Pool Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnRecordId" runat="server" />
@@ -53,7 +53,7 @@
                                     <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnSearch_Click">
                                         <i class="fas fa-search"></i> Search
                                     </asp:LinkButton>
-                                    <asp:LinkButton ID="btnReset" runat="server" CssClass="btn btn-link" PostBackUrl="~/T1C/Default">
+                                    <asp:LinkButton ID="btnReset" runat="server" CssClass="btn btn-link" PostBackUrl="~/T1C/PoolBudget/Default">
                                         <i class="fas fa-sync"></i> Reset
                                     </asp:LinkButton>
                                 </div>
@@ -70,7 +70,7 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Add" CausesValidation="false">
+                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/PoolBudget/Add" CausesValidation="false">
                             <i class="fas fa-plus"></i> New Budget T1C
                         </asp:LinkButton>
                     </div>
@@ -116,12 +116,12 @@
                                                     <HeaderStyle CssClass="width-80 text-center align-middle" />
                                                     <ItemStyle CssClass="width-80 text-center text-nowrap" />
                                                     <ItemTemplate>
-                                                        <asp:LinkButton ID="btnView" runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/View?Id={Eval("Id")}" %>'>
+                                                        <asp:LinkButton ID="btnView" runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/PoolBudget/View?Id={Eval("Id")}" %>'>
                                                             <i class="fas fa-eye"></i>
                                                         </asp:LinkButton>
-                                                        <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>
+                                                      <%--  <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>
                                                             <i class="fas fa-edit"></i>
-                                                        </a>
+                                                        </a>--%>
                                                         <asp:LinkButton ID="btnDelete" runat="server" CssClass='<%# (bool)Eval("IsEditable") ? "btn btn-danger btn-xs button-delete" : "btn btn-danger btn-xs disabled" %>' data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "t1c-delete") %>'>
                                                             <i class="fas fa-trash-alt"></i>
                                                         </asp:LinkButton>
@@ -167,3 +167,4 @@
         });
     </script>
 </asp:Content>
+

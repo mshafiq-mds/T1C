@@ -7,164 +7,155 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Prodata.WebForm
+namespace Prodata.WebForm.T1C.PoolBudget.Approval
 {
 
 
-    public partial class Dashboard
+    public partial class Edit
     {
 
         /// <summary>
-        /// LblT1CSubmitted control.
+        /// hdnFormId control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblT1CSubmitted;
+        protected global::System.Web.UI.WebControls.HiddenField hdnFormId;
 
         /// <summary>
-        /// LblT1CReview control.
+        /// hdnRemark control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblT1CReview;
+        protected global::System.Web.UI.WebControls.HiddenField hdnRemark;
 
         /// <summary>
-        /// LblT1CResubmit control.
+        /// btnApproveConfirm control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblT1CResubmit;
+        protected global::System.Web.UI.WebControls.Button btnApproveConfirm;
 
         /// <summary>
-        /// LblT1CComplete control.
+        /// btnBack control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblT1CComplete;
+        protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// LblT1CDeleted control.
+        /// btnApprove control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblT1CDeleted;
+        protected global::System.Web.UI.WebControls.LinkButton btnApprove;
 
         /// <summary>
-        /// LblAdditionalSubmitted control.
+        /// lblBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalSubmitted;
+        protected global::System.Web.UI.WebControls.Label lblBA;
 
         /// <summary>
-        /// LblAdditionalReview control.
+        /// lblDetails control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalReview;
+        protected global::System.Web.UI.WebControls.Label lblDetails;
 
         /// <summary>
-        /// LblAdditionalResubmit control.
+        /// lblJustificationOfNeed control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalResubmit;
+        protected global::System.Web.UI.WebControls.Label lblJustificationOfNeed;
 
         /// <summary>
-        /// LblAdditionalComplete control.
+        /// lblRemarks control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalComplete;
+        protected global::System.Web.UI.WebControls.Label lblRemarks;
 
         /// <summary>
-        /// LblAdditionalDeleted control.
+        /// pnlUploadedDocument control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalDeleted;
+        protected global::System.Web.UI.WebControls.Panel pnlUploadedDocument;
 
         /// <summary>
-        /// LblAdditionalFinalized control.
+        /// phDocumentList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblAdditionalFinalized;
+        protected global::System.Web.UI.WebControls.PlaceHolder phDocumentList;
 
         /// <summary>
-        /// LblTransferSubmitted control.
+        /// lblRefNo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferSubmitted;
+        protected global::System.Web.UI.WebControls.Label lblRefNo;
 
         /// <summary>
-        /// LblTransferReview control.
+        /// lblDate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferReview;
+        protected global::System.Web.UI.WebControls.Label lblDate;
 
         /// <summary>
-        /// LblTransferResubmit control.
+        /// lblAmount control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferResubmit;
+        protected global::System.Web.UI.WebControls.Label lblAmount;
 
         /// <summary>
-        /// LblTransferComplete control.
+        /// lblProcurementType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferComplete;
+        protected global::System.Web.UI.WebControls.Label lblProcurementType;
 
         /// <summary>
-        /// LblTransferDeleted control.
+        /// lblStatus control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferDeleted;
-
-        /// <summary>
-        /// LblTransferFinalized control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label LblTransferFinalized;
+        protected global::System.Web.UI.WebControls.Label lblStatus;
     }
 }

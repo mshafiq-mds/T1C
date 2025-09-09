@@ -21,7 +21,7 @@ namespace Prodata.WebForm.Budget.Transfer
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
                     LoadTransfer(_transferId);
-                    BindControl();
+                    //BindControl();
                     LoadDocument(_transferId);
                     Loadhistory(_transferId);
                 }
@@ -62,7 +62,8 @@ namespace Prodata.WebForm.Budget.Transfer
                     .Select(x => x.Name)
                     .FirstOrDefault();
                 txtFromGL.Text = fromGLBudgetType ?? "Unknown";
-                ddFromBA.SelectedValue = transfer.FromBA;
+                ddFromBA.Text = transfer.FromBA;
+                ddFromBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA);
                 txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
                 txtFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
@@ -74,7 +75,8 @@ namespace Prodata.WebForm.Budget.Transfer
                     .Select(x => x.Name)
                     .FirstOrDefault();
                 txtToGL.Text = toGLBudgetType ?? "Unknown";
-                ddToBA.SelectedValue = transfer.ToBA;
+                ddToBA.Text = transfer.ToBA;
+                ddToBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.ToBA);
                 txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
                 txtToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
@@ -154,20 +156,20 @@ namespace Prodata.WebForm.Budget.Transfer
             }
         }
 
-        private void BindControl()
-        {
-            ddFromBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            ddFromBA.DataValueField = "Code";
-            ddFromBA.DataTextField = "DisplayName";
-            ddFromBA.DataBind();
-            ddFromBA.Items.Insert(0, new ListItem("", ""));
+        //private void BindControl()
+        //{
+        //    ddFromBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
+        //    ddFromBA.DataValueField = "Code";
+        //    ddFromBA.DataTextField = "DisplayName";
+        //    ddFromBA.DataBind();
+        //    ddFromBA.Items.Insert(0, new ListItem("", ""));
 
-            ddToBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            ddToBA.DataValueField = "Code";
-            ddToBA.DataTextField = "DisplayName";
-            ddToBA.DataBind();
-            ddToBA.Items.Insert(0, new ListItem("", ""));
-        }
+        //    ddToBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
+        //    ddToBA.DataValueField = "Code";
+        //    ddToBA.DataTextField = "DisplayName";
+        //    ddToBA.DataBind();
+        //    ddToBA.Items.Insert(0, new ListItem("", ""));
+        //}
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())
