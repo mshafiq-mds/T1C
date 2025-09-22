@@ -1,4 +1,4 @@
-﻿<%@ Page Title="T1C Pool Budget Details Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Approval.Edit" %>
+﻿<%@ Page Title="T1C Others Budget Details Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Approval.Edit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
@@ -89,7 +89,7 @@
 
                             <!-- Remarks -->
                             <div class="form-group">
-                                <asp:Label runat="server" CssClass="text-bold" Text=""></asp:Label>
+                                <asp:Label runat="server" CssClass="text-bold" Text="Remarks"></asp:Label>
                                 <div class="text-muted">
                                     <asp:Label ID="lblRemarks" runat="server"></asp:Label>
                                 </div>

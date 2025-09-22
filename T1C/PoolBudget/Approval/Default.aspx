@@ -1,4 +1,4 @@
-﻿<%@ Page Title="T1C Pool Budget List Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Approval.Default" %>
+﻿<%@ Page Title="T1C Others Budget List Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Approval.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <div class="row">

@@ -13,5 +13,7 @@ namespace Prodata.WebForm.Models.MasterData
 
         [StringLength(255)]
         public string Name { get; set; } 
+
+        public Guid? BudgetTypeID { get; set; }
     }
 }

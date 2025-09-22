@@ -24,6 +24,7 @@ namespace Prodata.WebForm.Models
         [StringLength(100)]
         public string Ref { get; set; }
         public string Details { get; set; }
+        public Guid? PurchaseType { get; set; }
         public string JustificationOfNeed { get; set; }
         public string Remarks { get; set; }
         public decimal? Amount { get; set; }

@@ -89,6 +89,9 @@ namespace Prodata.WebForm.T1C.PoolBudget
                     var form = db.FormsProcurement.Find(Guid.Parse(hdnRecordId.Value));
                     bool isSuccess = db.SoftDelete(form);
 
+                    form.Remarks = hdnDeleteRemarks.Value;
+                    db.SaveChanges();
+
                     if (isSuccess)
                     {
                         var transactions = db.Transactions.Where(t => t.ToId == form.Id).ToList();

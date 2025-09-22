@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.View" %>
+﻿<%@ Page Title="T1C Others Budget View" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.View" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnFormId" runat="server" />
@@ -45,7 +45,7 @@
 
                             <!-- Remarks -->
                             <div class="form-group">
-                                <asp:Label runat="server" CssClass="text-bold" Text="Remarks From Approver"></asp:Label>
+                                <asp:Label runat="server" CssClass="text-bold" Text="Remarks"></asp:Label>
                                 <div class="text-muted">
                                     <asp:Label ID="lblRemarks" runat="server"></asp:Label>
                                 </div>
@@ -101,12 +101,12 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    
                         <h4 class="mt-4">Uploaded Document</h4>
                             <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group" Visible="false">
                                 <asp:PlaceHolder ID="phDocumentList" runat="server" />
                             </asp:Panel>
-                    </div>
-
                     <!-- keep your documents, audit trail etc. template unchanged -->
                 </div>
             </div>

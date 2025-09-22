@@ -1,5 +1,4 @@
-﻿<%@ Page Title="New Budget T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Add.aspx.cs" Inherits="Prodata.WebForm.T1C.Add" %>
-
+﻿<%@ Page Title="New Budget T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Addv1.aspx.cs" Inherits="Prodata.WebForm.T1C.Addv1" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <style>
         .custom-control.custom-radio {
@@ -50,6 +49,41 @@
          alt="Loading..." height="200" width="200" />
     <p class="mt-3 text-white">Processing...</p>
 </div>
+
+    <div class="modal fade" id="allocationModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Select Allocations</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <input type="text" id="allocationSearch" class="form-control mb-2" placeholder="Search allocation...">
+
+              <table class="table table-bordered table-sm">
+                <thead>
+                  <tr>
+                    <th>Select</th>
+                    <th>Allocation</th>
+                    <th>Balance</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody id="allocationList">
+                  <!-- Filled dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+          <div class="modal-footer">
+            <button type="button" id="btnConfirmAllocations" class="btn btn-success">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <div class="row">
         <div class="col-lg-12">
@@ -136,35 +170,37 @@
                                 </div>
                             </div>
                             <div class="form-group row">
-                                <asp:Label ID="lblAllocation" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="ddlAllocation" Text="Allocation"></asp:Label>
+                                <asp:Label ID="Label1" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label"  Style="font-weight:bold;" Text="Budget Type"></asp:Label>
                                 <div class="col-lg-9 col-sm-8">
-                                    <div id="allocationContainer">
-                                        <div class="input-group mb-2 allocation-group">
-                                            <asp:DropDownList ID="ddlAllocation" runat="server" CssClass="form-control select2 allocation-input col-md-6" data-placeholder="Allocation"></asp:DropDownList>
-                                            <asp:TextBox ID="txtAllocationAmount" runat="server" CssClass="form-control input-number2" placeholder="Amount" Enabled="false"></asp:TextBox>
-                                            <div class="input-group-append">
-                                                <button type="button" class="btn btn-danger btnRemoveAllocation" disabled>
-                                                    <i class="fa fa-minus"></i>
-                                                </button>
-                                            </div>
-                                            <span class="balance col-md-3 mt-1 ml-2">Balance: RM 0.00</span>
-                                        </div>
-                                    </div>
-
-                                 <%--   <div class="form-group row">
-                                        <label class="col-lg-2 col-sm-3 col-form-label">Total Allocation</label>
-                                        <div class="col-lg-6 col-sm-5">
-                                            <span id="lblTotalAllocation" class="font-weight-bold text-primary">RM 0.00</span>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn btn-primary" onclick="showAllocationPopup()">Show Allocations</button>--%>
-
-                                    <!-- Plus button below dropdowns -->
-                                    <button type="button" class="btn btn-info mt-1" id="btnAddAllocation">
-                                        <i class="fa fa-plus"></i> Add Allocation
-                                    </button>
+                                    <asp:DropDownList 
+                                        runat="server" 
+                                        ID="ddlBT" 
+                                        CssClass="form-control select2"
+                                        DataValueField="Code" 
+                                        DataTextField="DisplayName"
+                                        data-placeholder="Select Type"
+                                        AutoPostBack="true"
+                                        CausesValidation="false"
+                                        OnSelectedIndexChanged="BudgetType_SelectedIndexChanged"  >
+                                    </asp:DropDownList> 
                                 </div>
                             </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblAllocation" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label"  Style="font-weight:bold;" Text="Allocation"></asp:Label>
+                                <div class="col-lg-9 col-sm-8">
+                                    <asp:Button ID="btnSelectAllocations" runat="server" 
+                                        CssClass="btn btn-info" 
+                                        Text='Select Allocations' 
+                                        OnClientClick="$('#allocationModal').modal('show'); return false;" 
+                                        UseSubmitBehavior="false" 
+                                        Enabled="false" />
+
+                                    <div id="allocationContainer">
+                                        <!-- Selected allocations will appear here -->
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group row">
                                 <asp:Label ID="lblProcurementType" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="rblProcurementType" Text="Quotation Method"></asp:Label>
                                 <div class="col-lg-10 col-sm-9 mb-3">
@@ -199,7 +235,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Plus button below textboxes -->
                                     <!-- Plus button below textboxes -->
                                     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
                                         <i class="fa fa-plus"></i> Add Contractor
@@ -482,6 +517,8 @@
 
         // Function to update total allocation
         function updateTotalAllocation() {
+
+            console.log("Function updateTotalAllocation");
             var total = 0;
             $(".allocation-group .input-number2").each(function () {
                 var val = $(this).val().replace(/,/g, "").trim();
@@ -497,6 +534,10 @@
 
             var estimateVal = $("#<%= txtAmount.ClientID %>").val().replace(/,/g, "").trim();
             var estimate = estimateVal ? parseFloat(estimateVal) : 0;
+            console.log("total :", total);
+            console.log("formattedTotal :", formattedTotal);
+            console.log("estimateVal :", estimateVal);
+            console.log("estimate :", estimate);
 
             $("#totalAllocationContainer").text("Total Allocation: RM " + formattedTotal);
 
@@ -571,67 +612,67 @@
                 }
             });
 
-            $("#btnAddAllocation").click(function () {
-                var newInputGroup = $(`
-                    <div class="input-group input-group-sm mb-2 allocation-group">
-                        <select class="form-control form-control-sm select2 allocation-input col-md-6" data-placeholder="Allocation"></select>
-                        <input type="text" class="form-control form-control-sm input-number2" placeholder="Amount" disabled />
-                        <div class="input-group-append">
-                            <button type="button" class="btn btn-danger btnRemoveAllocation">
-                                <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
-                        <span class="balance col-md-3 mt-1 ml-2">Balance: RM 0.00</span>
-                    </div>
-                `);
+            //$("#btnAddAllocation").click(function () {
+            //    var newInputGroup = $(`
+            //        <div class="input-group input-group-sm mb-2 allocation-group">
+            //            <select class="form-control form-control-sm select2 allocation-input col-md-6" data-placeholder="Allocation"></select>
+            //            <input type="text" class="form-control form-control-sm input-number2" placeholder="Amount" disabled />
+            //            <div class="input-group-append">
+            //                <button type="button" class="btn btn-danger btnRemoveAllocation">
+            //                    <i class="fa fa-minus"></i>
+            //                </button>
+            //            </div>
+            //            <span class="balance col-md-3 mt-1 ml-2">Balance: RM 0.00</span>
+            //        </div>
+            //    `);
 
-                $("#allocationContainer").append(newInputGroup);
+            //    $("#allocationContainer").append(newInputGroup);
 
-                var $select = newInputGroup.find("select.select2");
-                var $amountInput = newInputGroup.find(".input-number2");
+            //    var $select = newInputGroup.find("select.select2");
+            //    var $amountInput = newInputGroup.find(".input-number2");
 
-                // Load allocation options
-                loadAllocations($select);
+            //    // Load allocation options
+            //    loadAllocations($select);
 
-                // Initialize Select2
-                $select.select2({
-                    allowClear: true,
-                    theme: "bootstrap4",
-                    dropdownParent: $('body')
-                }).next('.select2-container').find('.select2-selection').addClass('form-control-sm');
+            //    // Initialize Select2
+            //    $select.select2({
+            //        allowClear: true,
+            //        theme: "bootstrap4",
+            //        dropdownParent: $('body')
+            //    }).next('.select2-container').find('.select2-selection').addClass('form-control-sm');
 
-                updateRemoveButtons("#allocationContainer", ".btnRemoveAllocation");
+            //    updateRemoveButtons("#allocationContainer", ".btnRemoveAllocation");
 
-                // Enable amount input only when allocation is selected
-                $select.on('change', function () {
-                    if ($(this).val()) {
-                        $amountInput.prop('disabled', false);
-                    } else {
-                        $amountInput.prop('disabled', true).val('');
-                    }
-                });
+            //    // Enable amount input only when allocation is selected
+            //    $select.on('change', function () {
+            //        if ($(this).val()) {
+            //            $amountInput.prop('disabled', false);
+            //        } else {
+            //            $amountInput.prop('disabled', true).val('');
+            //        }
+            //    });
 
-                // Reinitialize amount input formatting
-                $amountInput.attr('type', 'text');
+            //    // Reinitialize amount input formatting
+            //    $amountInput.attr('type', 'text');
 
-                $amountInput.on('focus', function () {
-                    $(this).val($(this).val().replace(/,/g, ''));
-                    $(this).attr('type', 'number');
-                });
+            //    $amountInput.on('focus', function () {
+            //        $(this).val($(this).val().replace(/,/g, ''));
+            //        $(this).attr('type', 'number');
+            //    });
 
-                $amountInput.on('blur', function () {
-                    $(this).attr('type', 'text');
-                    if ($(this).val()) {
-                        var value = parseFloat($(this).val());
-                        if (!isNaN(value)) {
-                            $(this).val(value.toLocaleString(undefined, {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2
-                            }));
-                        }
-                    }
-                });
-            });
+            //    $amountInput.on('blur', function () {
+            //        $(this).attr('type', 'text');
+            //        if ($(this).val()) {
+            //            var value = parseFloat($(this).val());
+            //            if (!isNaN(value)) {
+            //                $(this).val(value.toLocaleString(undefined, {
+            //                    minimumFractionDigits: 2,
+            //                    maximumFractionDigits: 2
+            //                }));
+            //            }
+            //        }
+            //    });
+            //});
 
             $(document).on("change", ".allocation-input", function () {
                 var $input = $(this);
@@ -745,9 +786,9 @@
             $(document).on("change", ".allocation-input", updateAllocationDropdowns);
 
             // Also call after adding a new allocation row
-            $("#btnAddAllocation").click(function () {
-                setTimeout(updateAllocationDropdowns, 200);
-            });
+            //$("#btnAddAllocation").click(function () {
+            //    setTimeout(updateAllocationDropdowns, 200);
+            //});
 
             // Call once on page load
             updateAllocationDropdowns();
@@ -803,21 +844,42 @@
         }
 
         function collectData() {
+            console.log("function collectData")
+
             var vendors = [];
+            var allVendorsValid = true;
+
             $(".vendor-input").each(function () {
                 var vendorVal = $(this).val().trim();
-                if (vendorVal !== "") {
+                if (vendorVal === "") {
+                    allVendorsValid = false;
+                    $(this).addClass("is-invalid"); // highlight empty input
+                } else {
+                    $(this).removeClass("is-invalid");
                     vendors.push(vendorVal);
                 }
             });
+
+            if (!allVendorsValid) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Contractor',
+                    text: 'Please fill in all contractor fields before submitting.',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
 
             var allocations = [];
             var totalAllocation = 0;
 
             $(".allocation-group").each(function () {
-                var allocationId = $(this).find(".allocation-input").val();
-                var amountStr = $(this).find(".input-number2").val().replace(/,/g, "").trim();
+                var allocationId = $(this).find("input[name='AllocationIds']").val();
+                //var amountStr = $(this).find(".input-number2").val().replace(/,/g, "").trim();
+                var amountStr = $(this).find("input[name='AllocationAmounts']").val().replace(/,/g, "").trim();
                 var amount = parseFloat(amountStr);
+                console.log("value amount", amount)
+                console.log("value allocationId", allocationId)
 
                 if (allocationId && !isNaN(amount)) {
                     allocations.push({
@@ -831,6 +893,7 @@
                     totalAllocation += amount;
                 }
             });
+            console.log("value totalAllocation", totalAllocation)
 
             // Get estimate amount
             var estimateAmountStr = $("#<%= txtAmount.ClientID %>").val().replace(/,/g, "").trim();
@@ -900,17 +963,178 @@
             }));
         }
         function beforeSubmit() {
-            // Run collectData() and check result
-            if (!collectData()) {
-                // Allocation mismatch, stop postback, hide preloader
-                $("#pagePreloader").fadeOut(200);
+            // Run ASP.NET client-side validation first
+            if (typeof (Page_ClientValidate) == 'function' && !Page_ClientValidate()) {
+                // Validation failed → don’t show preloader, stop postback
                 return false;
             }
 
-            // If valid → show preloader and continue postback
+            // Run custom allocation check
+            if (!collectData()) {
+                return false;
+            }
+
+            // Everything valid → show preloader and continue
             $("#pagePreloader").fadeIn(200);
             return true;
         }
 
+        // Ensure preloader is hidden when page loads/reloads
+        $(window).on("load", function () {
+            $("#pagePreloader").fadeOut(200);
+        });
+
+        // Attach validation to allocation amount fields inside the modal
+        $(document).on("input", ".allocationAmount", function () {
+            console.log("function allocationAmount");
+
+            var $row = $(this).closest("tr");
+            console.log("value $row", $row);
+
+            var balanceCell = $row.find(".allocationBalance");
+            if (balanceCell.length === 0) {
+                console.warn("No .allocationBalance found in row:", $row);
+                return;
+            }
+
+            // Get numeric balance safely
+            var balanceRaw = balanceCell.data("balance");
+            if (balanceRaw === undefined) {
+                console.warn("data-balance not set for allocationBalance:", balanceCell);
+                return;
+            }
+
+            var balance = parseFloat(balanceRaw.toString().replace(/,/g, "")) || 0;
+            console.log("value balanceRaw", balanceRaw);
+            console.log("value balance", balance);
+
+            var amountRaw = $(this).val().replace(/,/g, "");
+            var amount = parseFloat(amountRaw) || 0;
+            console.log("value amountRaw", amountRaw);
+            console.log("value amount", amount);
+
+            if (amount > balance) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid Amount",
+                    text: "Amount cannot exceed balance (RM " + balance.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    }) + ")."
+                });
+
+                $(this).val(balance.toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }));
+            }
+        });
+
+
+
+        function loadAllocationsModal(budgets) {
+            var tbody = $("#allocationList");
+            tbody.empty();
+
+            budgets.forEach(function (b) {
+                tbody.append(`
+            <tr>
+                <td><input type="checkbox" class="chkAllocation" value="${b.Id}" data-display="${b.DisplayName}" data-balance="${b.Amount}" /></td>
+                <td>${b.DisplayName}</td>
+                <td class="allocationBalance" data-balance="${b.Amount}">RM ${b.Amount}</td>
+                <td><input type="number" class="form-control form-control-sm allocationAmount" disabled /></td>
+            </tr>
+        `);
+            });
+
+            // Enable/disable amount input on check
+            $(".chkAllocation").change(function () {
+                var row = $(this).closest("tr");
+                var input = row.find(".allocationAmount");
+                if (this.checked) {
+                    input.prop("disabled", false);
+                } else {
+                    input.prop("disabled", true).val("");
+                }
+            });
+        }
+        $("#btnConfirmAllocations").click(function () {
+            $("#allocationContainer").empty();
+
+            $("#allocationList .chkAllocation:checked").each(function () {
+                var id = $(this).val();
+                var display = $(this).data("display");
+
+                // Clean commas before parsing
+                var balanceRaw = $(this).data("balance").toString().replace(/,/g, "");
+                var amountRaw = $(this).closest("tr").find(".allocationAmount").val().replace(/,/g, "");
+
+                var balance = parseFloat(balanceRaw) || 0;
+                var amount = parseFloat(amountRaw) || 0;
+
+                // Calculate remaining balance
+                var newBalance = balance - amount;
+
+                // 🔍 Debug values
+                console.log("Selected Allocation:");
+                console.log("ID:", id);
+                console.log("Display:", display);
+                console.log("Original Balance:", balance);
+                console.log("Amount:", amount);
+                console.log("New Balance:", newBalance);
+
+                var html = `
+            <div class="input-group mb-2 allocation-group">
+                <input type="hidden" name="AllocationIds" value="${id}" />
+                <span class="form-control flex-grow-2" style="max-width: 100%;">${display}</span>
+                <input type="text" class="form-control input-number2" name="AllocationAmounts" style="max-width: 15%;" value="${amount}" readonly />
+                <span class="balance col-md-3 mt-1 ml-2" style="max-width: 20%;">
+                    Balance: RM ${newBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-danger btnRemoveAllocation">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+                $("#allocationContainer").append(html);
+            });
+
+            // Allow removing
+            $(".btnRemoveAllocation").click(function () {
+                $(this).closest(".allocation-group").remove();
+            });
+
+            // Close modal
+            $("#allocationModal").modal("hide");
+            updateTotalAllocation();
+
+        });
+        var budgets = <%= BudgetsJson %>;
+        $(document).ready(function () {
+            loadAllocationsModal(budgets);
+        });
+        // Live search filter
+        $("#allocationSearch").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#allocationList tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+
     </script>
+     <script type="text/javascript">
+         $(function () {
+             // Attach to dropdown change
+             $("#<%= ddlBT.ClientID %>").change(function () {
+         // Show preloader
+         $("#pagePreloader").fadeIn(200);
+
+         // Trigger ASP.NET postback manually
+         __doPostBack('<%= ddlBT.UniqueID %>', '');
+         });
+     });
+     </script>
 </asp:Content>

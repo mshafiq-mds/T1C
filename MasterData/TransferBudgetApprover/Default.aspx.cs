@@ -24,10 +24,15 @@ namespace Prodata.WebForm.MasterData.TransferBudgetApprover
 
         protected void btnEdit_Click(object sender, EventArgs e)
         {
+            //GridViewRow row = (GridViewRow)((LinkButton)sender).NamingContainer;
+            //string budgetApproverId = ((HiddenField)row.FindControl("hdnId")).Value;
+            //string test = (Request.Url.GetCurrentUrl() + "/Edit?Id=" + budgetApproverId).ToString();
+            //Response.Redirect("~/"+Request.Url.GetCurrentUrl() + "/Edit?Id=" + budgetApproverId);
+
+
             GridViewRow row = (GridViewRow)((LinkButton)sender).NamingContainer;
-            string budgetApproverId = ((HiddenField)row.FindControl("hdnId")).Value;
-            string test = (Request.Url.GetCurrentUrl() + "/Edit?Id=" + budgetApproverId).ToString();
-            Response.Redirect("~/"+Request.Url.GetCurrentUrl() + "/Edit?Id=" + budgetApproverId);
+            string budgetTypeId = ((HiddenField)row.FindControl("hdnId")).Value;
+            Response.Redirect(Request.Url.GetCurrentUrl() + "/Edit?Id=" + budgetTypeId);
         }
 
         protected void btnDeleteRecord_Click(object sender, EventArgs e)

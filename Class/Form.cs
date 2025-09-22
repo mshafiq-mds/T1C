@@ -241,23 +241,24 @@ namespace Prodata.WebForm.Class
         }
 
         public List<Models.ViewModels.FormsProcurementListViewModel> GetFormsProcurement(
-            Guid? entityId = null,
-            Guid? typeId = null,
-            string bizAreaCode = null,
-            List<string> bizAreaCodes = null,
-            int? year = null,
-            string refNo = null,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
-            decimal? amountMin = null,
-            decimal? amountMax = null,
-            string procurementType = null,
-            List<string> statuses = null
+    Guid? entityId = null,
+    Guid? typeId = null,
+    string bizAreaCode = null,
+    List<string> bizAreaCodes = null,
+    int? year = null,
+    string refNo = null,
+    DateTime? startDate = null,
+    DateTime? endDate = null,
+    decimal? amountMin = null,
+    decimal? amountMax = null,
+    string procurementType = null,
+    List<string> statuses = null
 )
         {
             using (var db = new AppDbContext())
             {
-                var query = from f in db.FormsProcurement.ExcludeSoftDeleted()
+                // 🔹 Remove ExcludeSoftDeleted() so we can see deleted records too
+                var query = from f in db.FormsProcurement
                             join t in db.FormTypes on f.TypeId equals t.Id into ft
                             from t in ft.DefaultIfEmpty()
                             select new
@@ -276,10 +277,11 @@ namespace Prodata.WebForm.Class
                                 f.Amount,
                                 f.ProcurementType,
                                 f.Status,
-                                f.ActualAmount
+                                f.ActualAmount,
+                                f.DeletedDate // 🔹 track if soft deleted
                             };
 
-                // Filtering
+                // Filtering (same as before)
                 if (entityId.HasValue)
                     query = query.Where(q => q.EntityId == entityId);
 
@@ -320,32 +322,155 @@ namespace Prodata.WebForm.Class
                 }
 
                 var query2 = query.OrderByDescending(q => q.Ref).ToList();
-                var Name = Auth.User().Name;
-                var Id = Auth.User().Id;
-                var iPMSRoleCode = Auth.User().iPMSRoleCode;
-                var Roles = Auth.User().Roles;
+
+                var user = Auth.User();
+                var iPMSRoleCode = user.iPMSRoleCode;
+                var userName = user.Name;
+
                 // Projection to ViewModel
-                return query2.Select(q => new Models.ViewModels.FormsProcurementListViewModel
+                return query2.Select(q =>
                 {
-                    Id = q.Id,
-                    Type = q.Type,
-                    BizAreaCode = q.BizAreaCode,
-                    BizAreaName = q.BizAreaName,
-                    BizAreaDisplayName = q.BizAreaCode + " - " + q.BizAreaName,
-                    Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
-                    Ref = q.Ref,
-                    Details = q.Details,
-                    JustificationOfNeed = q.JustificationOfNeed,
-                    Remarks = q.Remarks,
-                    Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
-                    ProcurementType = q.ProcurementType,
-                    Status = q.Status != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status) : string.Empty,
-                    ActualAmount = q.ActualAmount.HasValue ? q.ActualAmount.Value.ToString("#,##0.00") : string.Empty,
-                    IsEditable = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false,
-                    IsPendingUserAction = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false
+                    bool isDeleted = q.DeletedDate != null;
+
+                    return new Models.ViewModels.FormsProcurementListViewModel
+                    {
+                        Id = q.Id,
+                        Type = q.Type,
+                        BizAreaCode = q.BizAreaCode,
+                        BizAreaName = q.BizAreaName,
+                        BizAreaDisplayName = q.BizAreaCode + " - " + q.BizAreaName,
+                        Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+                        Ref = q.Ref,
+                        Details = q.Details,
+                        JustificationOfNeed = q.JustificationOfNeed,
+                        Remarks = q.Remarks,
+                        Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
+                        ProcurementType = q.ProcurementType,
+
+                        // 🔹 Override deleted rows
+                        Status = isDeleted ? "Deleted" :
+                                 q.Status != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status) : string.Empty,
+
+                        ActualAmount = q.ActualAmount.HasValue ? q.ActualAmount.Value.ToString("#,##0.00") : string.Empty,
+
+                        IsEditable = (!isDeleted && q.Status == "Pending" &&
+                                      (iPMSRoleCode == "MM" || iPMSRoleCode == "AM" || iPMSRoleCode == "KB" ||
+                                       userName.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))),
+
+                        IsPendingUserAction = (!isDeleted && q.Status == "Pending" &&
+                                               (iPMSRoleCode == "MM" || iPMSRoleCode == "AM" ||
+                                                userName.Equals("Superadmin", StringComparison.OrdinalIgnoreCase)))
+                    };
                 }).ToList();
             }
         }
+
+        //        public List<Models.ViewModels.FormsProcurementListViewModel> GetFormsProcurement(
+        //            Guid? entityId = null,
+        //            Guid? typeId = null,
+        //            string bizAreaCode = null,
+        //            List<string> bizAreaCodes = null,
+        //            int? year = null,
+        //            string refNo = null,
+        //            DateTime? startDate = null,
+        //            DateTime? endDate = null,
+        //            decimal? amountMin = null,
+        //            decimal? amountMax = null,
+        //            string procurementType = null,
+        //            List<string> statuses = null
+        //)
+        //        {
+        //            using (var db = new AppDbContext())
+        //            {
+        //                var query = from f in db.FormsProcurement.ExcludeSoftDeleted()
+        //                            join t in db.FormTypes on f.TypeId equals t.Id into ft
+        //                            from t in ft.DefaultIfEmpty()
+        //                            select new
+        //                            {
+        //                                f.Id,
+        //                                f.EntityId,
+        //                                f.TypeId,
+        //                                Type = t.Name,
+        //                                f.BizAreaCode,
+        //                                f.BizAreaName,
+        //                                f.Date,
+        //                                f.Ref,
+        //                                f.Details,
+        //                                f.JustificationOfNeed,
+        //                                f.Remarks,
+        //                                f.Amount,
+        //                                f.ProcurementType,
+        //                                f.Status,
+        //                                f.ActualAmount
+        //                            };
+
+        //                // Filtering
+        //                if (entityId.HasValue)
+        //                    query = query.Where(q => q.EntityId == entityId);
+
+        //                if (typeId.HasValue)
+        //                    query = query.Where(q => q.TypeId == typeId);
+
+        //                if (!string.IsNullOrEmpty(bizAreaCode))
+        //                    query = query.Where(q => q.BizAreaCode == bizAreaCode);
+
+        //                if (bizAreaCodes != null && bizAreaCodes.Any())
+        //                    query = query.Where(q => bizAreaCodes.Contains(q.BizAreaCode));
+
+        //                if (year.HasValue)
+        //                    query = query.Where(q => q.Date.HasValue && q.Date.Value.Year == year.Value);
+
+        //                if (!string.IsNullOrEmpty(refNo))
+        //                    query = query.Where(q => q.Ref.Contains(refNo));
+
+        //                if (startDate.HasValue)
+        //                    query = query.Where(q => q.Date.HasValue && q.Date.Value >= startDate.Value);
+
+        //                if (endDate.HasValue)
+        //                    query = query.Where(q => q.Date.HasValue && q.Date.Value <= endDate.Value);
+
+        //                if (amountMin.HasValue)
+        //                    query = query.Where(q => q.Amount >= amountMin);
+
+        //                if (amountMax.HasValue)
+        //                    query = query.Where(q => q.Amount <= amountMax);
+
+        //                if (!string.IsNullOrEmpty(procurementType))
+        //                    query = query.Where(q => q.ProcurementType.Equals(procurementType, StringComparison.OrdinalIgnoreCase));
+
+        //                if (statuses != null && statuses.Any())
+        //                {
+        //                    var loweredStatuses = statuses.Select(s => s.ToLower()).ToList();
+        //                    query = query.Where(q => q.Status != null && loweredStatuses.Contains(q.Status.ToLower()));
+        //                }
+
+        //                var query2 = query.OrderByDescending(q => q.Ref).ToList();
+        //                var Name = Auth.User().Name;
+        //                var Id = Auth.User().Id;
+        //                var iPMSRoleCode = Auth.User().iPMSRoleCode;
+        //                var Roles = Auth.User().Roles;
+        //                // Projection to ViewModel
+        //                return query2.Select(q => new Models.ViewModels.FormsProcurementListViewModel
+        //                {
+        //                    Id = q.Id,
+        //                    Type = q.Type,
+        //                    BizAreaCode = q.BizAreaCode,
+        //                    BizAreaName = q.BizAreaName,
+        //                    BizAreaDisplayName = q.BizAreaCode + " - " + q.BizAreaName,
+        //                    Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+        //                    Ref = q.Ref,
+        //                    Details = q.Details,
+        //                    JustificationOfNeed = q.JustificationOfNeed,
+        //                    Remarks = q.Remarks,
+        //                    Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
+        //                    ProcurementType = q.ProcurementType,
+        //                    Status = q.Status != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status) : string.Empty,
+        //                    ActualAmount = q.ActualAmount.HasValue ? q.ActualAmount.Value.ToString("#,##0.00") : string.Empty,
+        //                    IsEditable = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false,
+        //                    IsPendingUserAction = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false
+        //                }).ToList();
+        //            }
+        //        }
 
     }
 }

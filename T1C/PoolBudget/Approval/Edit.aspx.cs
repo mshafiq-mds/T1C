@@ -151,8 +151,16 @@ namespace Prodata.WebForm.T1C.PoolBudget.Approval
                 lblProcurementType.Text = db.BudgetTypes.Where(x => x.Id == form.TypeId).Select(x => x.Name).FirstOrDefault();
 
                 // Status badge
-                lblStatus.Text = form.Status;
-                lblStatus.CssClass = "badge badge-pill " + GetStatusCss(form.Status);
+                if (form.DeletedDate != null) // assuming your entity has DeletedDate
+                {
+                    lblStatus.Text = "Deleted";
+                    lblStatus.CssClass = "badge badge-pill badge-danger"; // red badge
+                }
+                else
+                {
+                    lblStatus.Text = form.Status;
+                    lblStatus.CssClass = "badge badge-pill " + GetStatusCss(form.Status);
+                }
 
                 if (form.Status == "Pending")
                     btnApprove.Visible = true;

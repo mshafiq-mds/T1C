@@ -1,7 +1,9 @@
-﻿<%@ Page Title="T1C Pool Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Default" %>
+﻿<%@ Page Title="T1C Others Budget" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PoolBudget.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:HiddenField ID="hdnRecordId" runat="server" />
+    <asp:HiddenField ID="hdnRecordId" runat="server" />    
+    <asp:HiddenField ID="hdnDeleteRemarks" runat="server" />
+
     <asp:Button ID="btnDeleteRecord" runat="server" OnClick="btnDeleteRecord_Click" CssClass="d-none" />
     <div class="row">
         <div class="col-md-12">
@@ -70,7 +72,7 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/PoolBudget/Add" CausesValidation="false">
+                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/PoolBudget/Addv1" CausesValidation="false">
                             <i class="fas fa-plus"></i> New Budget T1C
                         </asp:LinkButton>
                     </div>
@@ -122,7 +124,7 @@
                                                       <%--  <a class="btn btn-outline-secondary btn-xs<%# (bool)Eval("IsEditable") ? "" : " disabled" %>" href='Edit?Id=<%# Eval("Id") %>' onclick='<%# (bool)Eval("IsEditable") ? "" : "return false;" %>'>
                                                             <i class="fas fa-edit"></i>
                                                         </a>--%>
-                                                        <asp:LinkButton ID="btnDelete" runat="server" CssClass='<%# (bool)Eval("IsEditable") ? "btn btn-danger btn-xs button-delete" : "btn btn-danger btn-xs disabled" %>' data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "t1c-delete") %>'>
+                                                        <asp:LinkButton ID="btnDelete" runat="server" CssClass='<%# (bool)Eval("IsEditable") ? "btn btn-danger btn-xs button-delete" : "btn btn-danger btn-xs disabled" %>' data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "t1c-pool-delete") %>'>
                                                             <i class="fas fa-trash-alt"></i>
                                                         </asp:LinkButton>
                                                         <asp:HiddenField ID="hdnFormId" runat="server" Value='<%# Eval("Id") %>' />
@@ -141,7 +143,7 @@
             </div>
         </div>
     </div>
-    <script>
+    <%--<script>
         $(document).ready(function () {
             // Use event delegation for dynamically rendered buttons
             $(document).on("click", ".button-delete", function (event) {
@@ -165,6 +167,44 @@
                 });
             });
         });
-    </script>
+    </script>--%>
+    <!-- SweetAlert script -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script type="text/javascript">
+    $(document).on("click", ".button-delete", function (e) {
+        e.preventDefault();
+
+        var recordId = $(this).data("id");
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "This transfer will be deleted!",
+            input: 'textarea',
+            inputLabel: 'Remarks (required)',
+            inputPlaceholder: 'Enter reason for deletion...',
+            inputAttributes: {
+                'aria-label': 'Remarks for deletion'
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Remarks are required!';
+                }
+            },
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#<%= hdnRecordId.ClientID %>').val(recordId);
+                $('#<%= hdnDeleteRemarks.ClientID %>').val(result.value);
+                __doPostBack('<%= btnDeleteRecord.UniqueID %>', '');
+            }
+        });
+    });
+
+</script>
 </asp:Content>
 

@@ -2741,11 +2741,13 @@
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
     <Content Include="Site.Master" />
     <Content Include="T1C\Add.aspx" />
+    <Content Include="T1C\Addv1.aspx" />
     <Content Include="T1C\Approval\Default.aspx" />
     <Content Include="T1C\Approval\Edit.aspx" />
     <Content Include="T1C\Default.aspx" />
     <Content Include="T1C\Edit.aspx" />
     <Content Include="T1C\PoolBudget\Add.aspx" />
+    <Content Include="T1C\PoolBudget\Addv1.aspx" />
     <Content Include="T1C\PoolBudget\Approval\Default.aspx" />
     <Content Include="T1C\PoolBudget\Approval\Edit.aspx" />
     <Content Include="T1C\PoolBudget\Default.aspx" />
@@ -3363,6 +3365,13 @@
     <Compile Include="T1C\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
+    <Compile Include="T1C\Addv1.aspx.cs">
+      <DependentUpon>Addv1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\Addv1.aspx.designer.cs">
+      <DependentUpon>Addv1.aspx</DependentUpon>
+    </Compile>
     <Compile Include="T1C\Approval\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3397,6 +3406,13 @@
     </Compile>
     <Compile Include="T1C\PoolBudget\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Addv1.aspx.cs">
+      <DependentUpon>Addv1.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PoolBudget\Addv1.aspx.designer.cs">
+      <DependentUpon>Addv1.aspx</DependentUpon>
     </Compile>
     <Compile Include="T1C\PoolBudget\Approval\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

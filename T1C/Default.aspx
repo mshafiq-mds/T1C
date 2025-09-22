@@ -70,7 +70,7 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Add" CausesValidation="false">
+                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Addv1" CausesValidation="false">
                             <i class="fas fa-plus"></i> New Budget T1C
                         </asp:LinkButton>
                     </div>
