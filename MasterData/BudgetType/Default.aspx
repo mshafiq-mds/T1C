@@ -14,14 +14,21 @@
                         </asp:LinkButton>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <div class="row">
                         <div class="col-12">
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                 <ContentTemplate>
                                     <div class="table-responsive">
-                                        <asp:GridView ID="gvBudgetType" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvBudgetType_PageIndexChanging" EmptyDataText="No record.">
-                                            <Columns>
+                                        <asp:GridView ID="gvBudgetType" runat="server" AutoGenerateColumns="false"
+                                            CssClass="table table-bordered table-sm"
+                                            PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>'
+                                            AllowPaging="true"
+                                            OnPageIndexChanging="gvBudgetType_PageIndexChanging"
+                                            EmptyDataText="No record.">
+
+                                            <Columns> 
                                                 <asp:TemplateField HeaderText="#">
                                                     <HeaderStyle CssClass="width-30 text-center" />
                                                     <ItemStyle CssClass="width-30 text-center" />
@@ -29,22 +36,42 @@
                                                         <%# Container.DataItemIndex + 1 %>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
+
                                                 <asp:BoundField DataField="Code" HeaderText="Code" />
+
                                                 <asp:BoundField DataField="Name" HeaderText="Name" />
+
+                                                <asp:TemplateField HeaderText="Form Categories">
+                                                    <ItemTemplate>
+                                                        <%# 
+                                                            Eval("FormCategories").ToString() == "1" ? "Details Budget" :
+                                                            Eval("FormCategories").ToString() == "2" ? "Others Budget" :
+                                                            Eval("FormCategories").ToString() == "3" ? "Pool Budget" : "-"
+                                                        %>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
+
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center" />
                                                     <ItemStyle CssClass="width-80 text-center" />
                                                     <ItemTemplate>
-                                                        <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit_Click" Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-type-edit") %>'>
+                                                        <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-info btn-xs"
+                                                            OnClick="btnEdit_Click"
+                                                            Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-type-edit") %>'>
                                                             <i class="fas fa-edit"></i>
                                                         </asp:LinkButton>
-                                                        <asp:LinkButton ID="btnDelete" runat="server" CssClass="btn btn-danger btn-xs button-delete" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-type-delete") %>'>
+
+                                                        <asp:LinkButton ID="btnDelete" runat="server" CssClass="btn btn-danger btn-xs button-delete"
+                                                            data-id='<%# Eval("Id") %>'
+                                                            Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "budget-type-delete") %>'>
                                                             <i class="fas fa-trash-alt"></i>
                                                         </asp:LinkButton>
+
                                                         <asp:HiddenField ID="hdnId" runat="server" Value='<%# Eval("Id") %>' />
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
                                             </Columns>
+
                                             <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
                                             <PagerStyle CssClass="pagination-ys" />
                                         </asp:GridView>
@@ -57,12 +84,11 @@
             </div>
         </div>
     </div>
+
     <script>
         $(document).ready(function () {
-            // Use event delegation for dynamically rendered buttons
             $(document).on("click", ".button-delete", function (event) {
-                event.preventDefault(); // Prevent immediate postback
-
+                event.preventDefault();
                 var recordId = $(this).data("id");
 
                 Swal.fire({
@@ -74,7 +100,7 @@
                     cancelButtonColor: "#3085d6",
                     confirmButtonText: "Yes, delete it!"
                 }).then((result) => {
-                    if (result.isConfirmed) {  // ✅ Only proceed if the user confirms
+                    if (result.isConfirmed) {
                         $('#<%= hdnRecordId.ClientID %>').val(recordId);
                         __doPostBack("<%= btnDeleteRecord.UniqueID %>", "");
                     }

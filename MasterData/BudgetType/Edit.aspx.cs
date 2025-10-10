@@ -1,6 +1,7 @@
 ﻿using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
 using Prodata.WebForm.Models;
+using Prodata.WebForm.Models.MasterData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,7 @@ namespace Prodata.WebForm.MasterData.BudgetType
                     if (Guid.TryParse(id, out guid))
                     {
                         hdnId.Value = id;
+                        BindFormCategories();
                         BindData(id);
                     }
                 }
@@ -42,6 +44,7 @@ namespace Prodata.WebForm.MasterData.BudgetType
                 string code = txtCode.Text.Trim();
                 string name = txtName.Text.Trim();
 
+
                 if (!RecordExists(id, code, name))
                 {
                     try
@@ -51,6 +54,10 @@ namespace Prodata.WebForm.MasterData.BudgetType
                             var budgetType = db.BudgetTypes.Find(id);
                             budgetType.Code = code;
                             budgetType.Name = name;
+
+                            int formCategory = int.Parse(ddlFormCategories.SelectedValue);
+                            budgetType.FormCategories = formCategory;
+
                             db.Entry(budgetType).State = System.Data.Entity.EntityState.Modified;
                             db.SaveChanges();
 
@@ -89,6 +96,10 @@ namespace Prodata.WebForm.MasterData.BudgetType
 
                     txtCode.Text = budgetType.Code;
                     txtName.Text = budgetType.Name;
+
+                    // Preselect FormCategories dropdown
+                    if (budgetType.FormCategories != null)
+                        ddlFormCategories.SelectedValue = budgetType.FormCategories.ToString();
                 }
             }
         }
@@ -109,5 +120,27 @@ namespace Prodata.WebForm.MasterData.BudgetType
                 );
             }
         }
+        private void BindFormCategories()
+        {
+            // If values come from DB:
+            using (var db = new AppDbContext())
+            {
+                // Example: If your FormCategories are stored in a table, replace this with real table
+                var categories = new List<dynamic>
+        {
+            new { Value = 1, Text = "Details Budget" },
+            new { Value = 2, Text = "Others Budget" },
+            new { Value = 3, Text = "Pool Budget" }
+        };
+
+                ddlFormCategories.DataSource = categories;
+                ddlFormCategories.DataTextField = "Text";
+                ddlFormCategories.DataValueField = "Value";
+                ddlFormCategories.DataBind();
+            }
+
+            ddlFormCategories.Items.Insert(0, new ListItem("-- Select --", ""));
+        }
+
     }
 }

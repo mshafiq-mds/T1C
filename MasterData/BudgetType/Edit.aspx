@@ -15,27 +15,50 @@
                         </asp:LinkButton>
                     </div>
                 </div>
+
                 <div class="card-body">
                     <asp:HiddenField ID="hdnId" runat="server" />
                     <div class="row">
                         <div class="col-md-8 offset-md-2">
+
                             <div class="form-group row">
-                                <asp:Label ID="lblCode" runat="server" AssociatedControlID="txtCode" CssClass="col-md-3 col-form-label text-md-right" Text="Code"></asp:Label>
+                                <asp:Label ID="lblCode" runat="server" AssociatedControlID="txtCode"
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Code"></asp:Label>
                                 <div class="col-md-7">
                                     <asp:TextBox ID="txtCode" runat="server" CssClass="form-control input-uppercase" placeholder="Code"></asp:TextBox>
-                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCode" CssClass="text-danger" Display="Dynamic" ErrorMessage="Code is required"></asp:RequiredFieldValidator>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCode"
+                                        CssClass="text-danger" Display="Dynamic"
+                                        ErrorMessage="Code is required"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
+
                             <div class="form-group row">
-                                <asp:Label ID="lblName" runat="server" AssociatedControlID="txtName" CssClass="col-md-3 col-form-label text-md-right" Text="Name"></asp:Label>
+                                <asp:Label ID="lblName" runat="server" AssociatedControlID="txtName"
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Name"></asp:Label>
                                 <div class="col-md-7">
                                     <asp:TextBox ID="txtName" runat="server" CssClass="form-control" placeholder="Name"></asp:TextBox>
-                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtName" CssClass="text-danger" Display="Dynamic" ErrorMessage="Name is required"></asp:RequiredFieldValidator>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtName"
+                                        CssClass="text-danger" Display="Dynamic"
+                                        ErrorMessage="Name is required"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <asp:Label ID="lblFormCategories" runat="server" AssociatedControlID="ddlFormCategories"
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Form Category"></asp:Label>
+                                <div class="col-md-7">
+                                    <asp:DropDownList ID="ddlFormCategories" runat="server" CssClass="form-control">
+                                    </asp:DropDownList>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlFormCategories"
+                                        InitialValue="" CssClass="text-danger" Display="Dynamic"
+                                        ErrorMessage="Form category is required"></asp:RequiredFieldValidator>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

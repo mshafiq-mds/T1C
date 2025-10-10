@@ -228,7 +228,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
 
                         var typeId = Guid.TryParse(ddlBT.SelectedValue, out var parsedTypeId) ? parsedTypeId : Guid.Empty;
 
-                        int? year = TryParseInt(row.GetCell(13));
+                        int? year = TryParseInt(row.GetCell(12));
                         int? month = ConvertMonthNameToNumber(row.GetCell(7)?.ToString()?.Trim());
 
                         DateTime? date = null;

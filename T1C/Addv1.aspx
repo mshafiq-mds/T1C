@@ -236,9 +236,9 @@
                                     </div>
 
                                     <!-- Plus button below textboxes -->
-                                    <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
+                               <%--     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
                                         <i class="fa fa-plus"></i> Add Contractor
-                                    </button>
+                                    </button>--%>
                                 </div>
                             </div>
                             <div class="form-group row" id="divJustificationDirectAward" style="display: none;">
@@ -322,7 +322,7 @@
                                                 </td>
                                                 <th class="text-center align-middle pl-2 pr-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Attach ZMM30 report copy verified by mill management">
+                                                    title="Work Order & Purchase Order Costs Not Yet GR This Month (RM)">
                                                     C 
                                                     <i class="fas fa-info-circle text-muted ms-1"></i>
                                                 </th>
@@ -333,7 +333,7 @@
                                             <tr>
                                                 <th class="text-center align-middle pl-2 pr-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Deadline & repair cost of the requested machine from IW38 (include copy verified by mill management)">
+                                                    title="Final Repair Date & Cost (Date & RM)">
                                                     B 
                                                     <i class="fas fa-info-circle text-muted ms-1"></i>
                                                 </th>
@@ -342,7 +342,7 @@
                                                 </td>
                                                 <th class="text-center align-middle pl-2 pr-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Attach summary report from Procurehere verified by mill management">
+                                                    title="RFS/RFQ In-Progress Costs This Month (RM)">
                                                     D 
                                                     <i class="fas fa-info-circle text-muted ms-1"></i>
                                                 </th>
@@ -576,6 +576,56 @@
         });
 
         $(document).ready(function () {
+        //    // ==============================
+        //    // Contractor field control logic
+        //    // ==============================
+        //    function updateContractorFields(type) {
+        //        var $container = $("#vendorContainer");
+        //        $container.empty();
+
+        //        if (type === "quotation_inclusive") {
+        //            $container.closest(".vendor-section").hide(); // hide contractor section
+        //        } else if (type === "quotation_selective") {
+        //            $container.closest(".vendor-section").show();
+        //            for (let i = 1; i <= 3; i++) {
+        //                $container.append(`
+        //        <div class="input-group input-group-sm mb-2 vendor-group">
+        //            <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor ${i}">
+        //            <div class="input-group-append">
+        //                <button type="button" class="btn btn-danger btnRemoveVendor">
+        //                    <i class="fa fa-minus"></i>
+        //                </button>
+        //            </div>
+        //        </div>
+        //    `);
+        //            }
+        //        } else if (type === "direct_negotiation") {
+        //            $container.closest(".vendor-section").show();
+        //            $container.append(`
+        //    <div class="input-group input-group-sm mb-2 vendor-group">
+        //        <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor">
+        //        <div class="input-group-append">
+        //            <button type="button" class="btn btn-danger btnRemoveVendor">
+        //                <i class="fa fa-minus"></i>
+        //            </button>
+        //        </div>
+        //    </div>
+        //`);
+        //        }
+
+        //        updateRemoveButtons("#vendorContainer", ".btnRemoveVendor");
+        //    }
+
+        //    // Event handler for procurement type radio buttons
+        //    $("input[name$='rblProcurementType']").change(function () {
+        //        var selected = $(this).val();
+        //        updateContractorFields(selected);
+        //    });
+
+        //    // Run once on page load
+        //    var initialType = $("input[name$='rblProcurementType']:checked").val();
+        //    if (initialType) updateContractorFields(initialType);
+
             bsCustomFileInput.init();
 
             let radioListId = "<%= rblProcurementType.ClientID %>";
@@ -1125,7 +1175,7 @@
 
 
     </script>
-     <script type="text/javascript">
+     <%--<script type="text/javascript">
          $(function () {
              // Attach to dropdown change
              $("#<%= ddlBT.ClientID %>").change(function () {
@@ -1136,5 +1186,101 @@
          __doPostBack('<%= ddlBT.UniqueID %>', '');
          });
      });
-     </script>
+     </script>--%>
+    <script type="text/javascript">
+        // Reinitialize logic after partial postback
+        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+            console.log("Page reloaded via postback — reinitializing contractor logic");
+            initializeContractorLogic();
+        });
+
+        // Run once on full page load
+        $(document).ready(function () {
+            initializeContractorLogic();
+        });
+
+        function initializeContractorLogic() {
+            console.log("initializeContractorLogic running");
+
+            function updateContractorFields(type) {
+                var $container = $("#vendorContainer");
+                $container.empty();
+
+                if (type === "quotation_inclusive") {
+                    $container.closest(".vendor-section").hide();
+                }
+                else if (type === "quotation_selective") {
+                    $container.closest(".vendor-section").show();
+
+                    // Create 3 mandatory contractor inputs
+                    for (let i = 1; i <= 3; i++) {
+                        $container.append(`
+                        <div class="input-group input-group-sm mb-2 vendor-group">
+                            <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor ${i}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary btnRemoveVendor" disabled>
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                    }
+
+                    // Optional: Add button to add more contractors if needed
+                    $container.append(`
+                    <button type="button" class="btn btn-success btn-sm mt-2" id="btnAddVendor">
+                        <i class="fa fa-plus"></i> Add Contractor
+                    </button>
+                `);
+
+                    // Add functionality to dynamically add contractors (can remove)
+                    $("#btnAddVendor").off("click").on("click", function () {
+                        var count = $container.find(".vendor-group").length + 1;
+                        var $newVendor = $(`
+                        <div class="input-group input-group-sm mb-2 vendor-group">
+                            <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor ${count}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-danger btnRemoveVendor">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                        $(this).before($newVendor);
+                        updateRemoveButtons("#vendorContainer", ".btnRemoveVendor");
+                    });
+                }
+                else if (type === "direct_negotiation") {
+                    $container.closest(".vendor-section").show();
+                    $container.append(`
+                    <div class="input-group input-group-sm mb-2 vendor-group">
+                        <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor">
+                        <div class="input-group-append">
+                        </div>
+                    </div>
+                `);
+                }
+
+                updateRemoveButtons("#vendorContainer", ".btnRemoveVendor");
+            }
+
+            // Reusable remove button logic
+            function updateRemoveButtons(containerSelector, buttonSelector) {
+                $(containerSelector).off("click", buttonSelector).on("click", buttonSelector, function () {
+                    $(this).closest(".vendor-group").remove();
+                });
+            }
+
+            // Attach change event
+            $("input[name$='rblProcurementType']").off("change").on("change", function () {
+                updateContractorFields($(this).val());
+            });
+
+            // Run once if a type is already selected
+            var initialType = $("input[name$='rblProcurementType']:checked").val();
+            if (initialType) updateContractorFields(initialType);
+        }
+    </script>
+
+
 </asp:Content>
