@@ -8,6 +8,7 @@ using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -104,7 +105,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 }
                 catch (Exception ex)
                 {
-                    string errmsg = "Error: " + ex.Message.Replace("'", ""); ;
+                    string errmsg = "Error: " + ex.Message.Replace("'", "").Replace("\r", "").Replace("\n", "") ;
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, errmsg);
                 }
 
@@ -156,7 +157,16 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
             var budget = new Class.Budget();
-            var list = budget.GetBudgets().Where(x => x.Vendor == null).ToList();
+            //var list = budget.GetBudgets().Where(x => x.Vendor == null).ToList();
+            int currentYear = DateTime.Now.Year;
+
+            var list = budget.GetBudgets()
+                .Where(x => !string.IsNullOrEmpty(x.Date) &&
+                            DateTime.TryParseExact(x.Date, "dd/MM/yyyy",
+                                CultureInfo.InvariantCulture, DateTimeStyles.None, out var d) &&
+                            d.Year == currentYear)
+                .ToList();
+
 
             gvBudget.DataSource = list;
             gvBudget.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
@@ -201,7 +211,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 {
                     "NO", "NO.RUJUKAN", "BA", "PROJEK", "PUSAT KOS", "CC",
                     "BUTIR-BUTIR KERJA", "BULAN", "VENDOR", "UPAH (RM)",
-                    "BELIAN ALAT GANTI (RM)", "JUMLAH (RM)", "JENIS", "TAHUN"
+                    "BELIAN ALAT GANTI (RM)", "JUMLAH (RM)", "TAHUN"
                 };
 
                 for (int i = 0; i < expectedHeaders.Length; i++)
@@ -273,7 +283,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine("Error importing Excel: " + ex.Message);
-                throw; // rethrow so caller can handle (or show alert)
+                throw new Exception($"Data mismatch. Expected Error importing Excel: " + ex.Message); // rethrow so caller can handle (or show alert)
             }
         }
 

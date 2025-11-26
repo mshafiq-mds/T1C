@@ -25,6 +25,7 @@ namespace Prodata.WebForm.MasterData.BudgetType
                     {
                         hdnId.Value = id;
                         BindFormCategories();
+                        BindBudgetCategories();
                         BindData(id);
                     }
                 }
@@ -57,6 +58,9 @@ namespace Prodata.WebForm.MasterData.BudgetType
 
                             int formCategory = int.Parse(ddlFormCategories.SelectedValue);
                             budgetType.FormCategories = formCategory;
+
+                            int BudgetCategory = int.Parse(ddlBudgetCategories.SelectedValue);
+                            budgetType.BudgetCategories = BudgetCategory;
 
                             db.Entry(budgetType).State = System.Data.Entity.EntityState.Modified;
                             db.SaveChanges();
@@ -100,6 +104,9 @@ namespace Prodata.WebForm.MasterData.BudgetType
                     // Preselect FormCategories dropdown
                     if (budgetType.FormCategories != null)
                         ddlFormCategories.SelectedValue = budgetType.FormCategories.ToString();
+
+                    if (budgetType.BudgetCategories != null)
+                        ddlBudgetCategories.SelectedValue = budgetType.BudgetCategories.ToString();
                 }
             }
         }
@@ -120,27 +127,38 @@ namespace Prodata.WebForm.MasterData.BudgetType
                 );
             }
         }
+        private void BindDropdown(DropDownList ddl, List<dynamic> data)
+        {
+            ddl.DataSource = data;
+            ddl.DataTextField = "Text";
+            ddl.DataValueField = "Value";
+            ddl.DataBind();
+
+            ddl.Items.Insert(0, new ListItem("-- Select --", ""));
+        }
         private void BindFormCategories()
         {
-            // If values come from DB:
-            using (var db = new AppDbContext())
+            var categories = new List<dynamic>
             {
-                // Example: If your FormCategories are stored in a table, replace this with real table
-                var categories = new List<dynamic>
-        {
-            new { Value = 1, Text = "Details Budget" },
-            new { Value = 2, Text = "Others Budget" },
-            new { Value = 3, Text = "Pool Budget" }
-        };
+                new { Value = 1, Text = "Details Form" },
+                new { Value = 2, Text = "Others Form" },
+                new { Value = 3, Text = "Pool Form" }
+            };
 
-                ddlFormCategories.DataSource = categories;
-                ddlFormCategories.DataTextField = "Text";
-                ddlFormCategories.DataValueField = "Value";
-                ddlFormCategories.DataBind();
-            }
-
-            ddlFormCategories.Items.Insert(0, new ListItem("-- Select --", ""));
+            BindDropdown(ddlFormCategories, categories);
         }
+        private void BindBudgetCategories()
+        {
+            var categories = new List<dynamic>
+            {
+                new { Value = 1, Text = "Details Budget" },
+                new { Value = 2, Text = "Others Budget" },
+                new { Value = 3, Text = "Pool Budget" }
+            };
+
+            BindDropdown(ddlBudgetCategories, categories);
+        }
+
 
     }
 }

@@ -26,7 +26,50 @@
         .custom-file-sm .custom-file-label::after {
             padding: .3rem .75rem;
         }
+        .page-preloader {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .page-preloader img {
+            animation: shake 1.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-3deg); }
+            100% { transform: rotate(0deg); }
+        }
     </style>
+    <script>
+        // Show preloader when clicking GridView pager links or filter buttons
+        $(document).on('click', '#<%= gvBudget.ClientID %> a, #<%= btnApplyFilter.ClientID %>, #<%= btnClearFilter.ClientID %>', function () {
+            $("#pagePreloader").fadeIn(200);
+        });
+
+        // Hide preloader once async postback completes
+        Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+            $("#pagePreloader").fadeOut(200);
+        });
+    </script>
+
+<!-- Page-specific Preloader -->
+<div id="pagePreloader" class="page-preloader flex-column justify-content-center align-items-center" style="display:none;">
+    <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" 
+         alt="Loading..." height="200" width="200" />
+    <p class="mt-3 text-white">Processing...</p>
+</div>
     <asp:HiddenField ID="hdnRecordId" runat="server" />
     <div class="row">
         <div class="col-md-12">
@@ -77,7 +120,7 @@
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                 <ContentTemplate>
                                     <div class="table-responsive">
-                                        <asp:GridView ID="gvBudget" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvBudget_PageIndexChanging" EmptyDataText="No record." EnableViewState="true">
+                                        <asp:GridView ID="gvBudget" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='100' AllowPaging="true" OnPageIndexChanging="gvBudget_PageIndexChanging" EmptyDataText="No record." EnableViewState="true">
                                             <Columns>
                                                 <asp:TemplateField HeaderText="#">
                                                     <HeaderStyle CssClass="width-30 text-center align-middle" />

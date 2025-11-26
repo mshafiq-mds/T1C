@@ -167,7 +167,8 @@
             <thead>
                 <tr>
                     <th>Item</th>
-                    <th>GL/Asset Class</th>
+                    <th>GL</th>
+                    <th>Asset Class</th>
                     <th style="min-width: 120px;">BA</th>
                     <th>Original Budget (RM)</th>
                     <th>Current Balance (RM)</th>
@@ -178,29 +179,31 @@
             <tbody>
                 <tr>
                     <td>From Budget</td>
-                    <td><asp:TextBox runat="server" ID="txtFromGL" CssClass="form-control txtreadonly" placeholder="Example: 53000060" /></td>
+                    <td><asp:Label runat="server" ID="txtFromGL" /></td>
+                    <td><asp:Label runat="server" ID="txtFromBudgetType" /></td>
                     <td>
                         <asp:Label runat="server" ID ="ddFromBA" /> - <asp:Label runat="server" ID ="ddFromBAName" />
                        <%-- <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ControlToValidate="ddFromBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
-                    <td><asp:TextBox runat="server" ID="txtFromBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtFromBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtFromTransfer" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtFromAfter" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:Label runat="server" ID="txtFromBudget" /></td>
+                    <td><asp:Label runat="server" ID="txtFromBalance" /></td>
+                    <td><asp:Label runat="server" ID="txtFromTransfer" /></td>
+                    <td><asp:Label runat="server" ID="txtFromAfter" /></td>
                 </tr>
                 <tr>
                     <td>To Budget</td>
-                    <td><asp:TextBox runat="server" ID="txtToGL" CssClass="form-control txtreadonly" placeholder="Example: 55200060" /></td> 
+                    <td><asp:Label runat="server" ID="txtToGL"  /></td> 
+                    <td><asp:Label runat="server" ID="txtToBudgetType"  /></td> 
                     <td>
                         <asp:Label runat="server" ID ="ddToBA" /> - <asp:Label runat="server" ID ="ddToBAName" />
                        <%-- <asp:DropDownList runat="server" ID="ddToBA" CssClass="form-control fixed-dropdown select2 txtreadonly" data-placeholder="BA" ></asp:DropDownList>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ControlToValidate="ddToBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Sila pilih BA" InitialValue=""></asp:RequiredFieldValidator>--%>
                     </td>
-                    <td><asp:TextBox runat="server" ID="txtToBudget" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtToBalance" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtToTransfer" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
-                    <td><asp:TextBox runat="server" ID="txtToAfter" CssClass="form-control txtreadonly" placeholder="0.00" oninput="formatCurrencyInput(this)" /></td>
+                    <td><asp:Label runat="server" ID="txtToBudget" /></td>
+                    <td><asp:Label runat="server" ID="txtToBalance" /></td>
+                    <td><asp:Label runat="server" ID="txtToTransfer" /></td>
+                    <td><asp:Label runat="server" ID="txtToAfter" /></td>
                 </tr>
             </tbody>
         </table>

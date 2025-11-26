@@ -120,7 +120,16 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromGL;
+        protected global::System.Web.UI.WebControls.Label txtFromGL;
+
+        /// <summary>
+        /// txtFromBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label txtFromBudgetType;
 
         /// <summary>
         /// ddFromBA control.
@@ -147,7 +156,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromBudget;
+        protected global::System.Web.UI.WebControls.Label txtFromBudget;
 
         /// <summary>
         /// txtFromBalance control.
@@ -156,7 +165,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromBalance;
+        protected global::System.Web.UI.WebControls.Label txtFromBalance;
 
         /// <summary>
         /// txtFromTransfer control.
@@ -165,7 +174,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromTransfer;
+        protected global::System.Web.UI.WebControls.Label txtFromTransfer;
 
         /// <summary>
         /// txtFromAfter control.
@@ -174,7 +183,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFromAfter;
+        protected global::System.Web.UI.WebControls.Label txtFromAfter;
 
         /// <summary>
         /// txtToGL control.
@@ -183,7 +192,16 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToGL;
+        protected global::System.Web.UI.WebControls.Label txtToGL;
+
+        /// <summary>
+        /// txtToBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label txtToBudgetType;
 
         /// <summary>
         /// ddToBA control.
@@ -210,7 +228,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToBudget;
+        protected global::System.Web.UI.WebControls.Label txtToBudget;
 
         /// <summary>
         /// txtToBalance control.
@@ -219,7 +237,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToBalance;
+        protected global::System.Web.UI.WebControls.Label txtToBalance;
 
         /// <summary>
         /// txtToTransfer control.
@@ -228,7 +246,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToTransfer;
+        protected global::System.Web.UI.WebControls.Label txtToTransfer;
 
         /// <summary>
         /// txtToAfter control.
@@ -237,7 +255,7 @@ namespace Prodata.WebForm.Budget.Transfer
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtToAfter;
+        protected global::System.Web.UI.WebControls.Label txtToAfter;
 
         /// <summary>
         /// txtJustification control.

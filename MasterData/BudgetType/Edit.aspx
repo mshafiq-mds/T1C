@@ -42,7 +42,7 @@
                                         ErrorMessage="Name is required"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
-
+                            
                             <div class="form-group row">
                                 <asp:Label ID="lblFormCategories" runat="server" AssociatedControlID="ddlFormCategories"
                                     CssClass="col-md-3 col-form-label text-md-right" Text="Form Category"></asp:Label>
@@ -52,6 +52,18 @@
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlFormCategories"
                                         InitialValue="" CssClass="text-danger" Display="Dynamic"
                                         ErrorMessage="Form category is required"></asp:RequiredFieldValidator>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <asp:Label ID="Label1" runat="server" AssociatedControlID="ddlBudgetCategories"
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Budget Category"></asp:Label>
+                                <div class="col-md-7">
+                                    <asp:DropDownList ID="ddlBudgetCategories" runat="server" CssClass="form-control">
+                                    </asp:DropDownList>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBudgetCategories"
+                                        InitialValue="" CssClass="text-danger" Display="Dynamic"
+                                        ErrorMessage="Budget category is required"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
 

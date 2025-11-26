@@ -218,9 +218,9 @@
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtCostCentre" ErrorMessage="Cost Centre is required." CssClass="text-danger" Display="Dynamic" />
                     </td>
                     <td class="width-80" style="width: 195px"> 
-                        <asp:DropDownList runat="server" ID="txtBT" CssClass="form-control fixed-dropdown select2" data-placeholder="Type"
+                        <asp:DropDownList runat="server" ID="txtToBudgetType" CssClass="form-control fixed-dropdown select2" data-placeholder="Type"
                             DataValueField="Code" DataTextField="DisplayName" />
-                        <asp:RequiredFieldValidator ID="rfvFromGL" runat="server" ControlToValidate="txtBT" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:RequiredFieldValidator ID="rfvToBudgetType" runat="server" ControlToValidate="txtToBudgetType" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
                         <asp:TextBox runat="server" ID="txtApprovedBudget" CssClass="form-control" placeholder="0.00" oninput="formatCurrencyInput(this)" />

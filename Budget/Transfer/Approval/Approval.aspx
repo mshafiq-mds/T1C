@@ -56,7 +56,8 @@
             <thead class="table-primary text-center">
                 <tr>
                     <th>Item</th>
-                    <th>GL/Asset Class</th>
+                    <th>GL</th>
+                    <th>Asset Class</th>
                     <th>BA</th>
                     <th>Original Budget (RM)</th>
                     <th>Current Balance (RM)</th>
@@ -68,6 +69,7 @@
                 <tr>
                     <td>From Budget</td>
                     <td><asp:Label ID="lblFromGL" runat="server" /></td>
+                    <td><asp:Label ID="lblFromBudgetType" runat="server" /></td>
                     <td><asp:Label ID="lblFromBA" runat="server" /></td>
                     <td><asp:Label ID="lblFromBudget" runat="server" /></td>
                     <td><asp:Label ID="lblFromBalance" runat="server" /></td>
@@ -77,6 +79,7 @@
                 <tr>
                     <td>To Budget</td>
                     <td><asp:Label ID="lblToGL" runat="server" /></td>
+                    <td><asp:Label ID="lblToBudgetType" runat="server" /></td>
                     <td><asp:Label ID="lblToBA" runat="server" /></td>
                     <td><asp:Label ID="lblToBudget" runat="server" /></td>
                     <td><asp:Label ID="lblToBalance" runat="server" /></td>

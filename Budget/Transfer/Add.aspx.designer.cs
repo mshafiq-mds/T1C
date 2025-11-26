@@ -195,22 +195,40 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvWorkDetails;
 
         /// <summary>
-        /// txtFromGL control.
+        /// txtFromGLCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList txtFromGL;
+        protected global::System.Web.UI.WebControls.TextBox txtFromGLCode;
 
         /// <summary>
-        /// rfvFromGL control.
+        /// rfvFromGLCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromGL;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromGLCode;
+
+        /// <summary>
+        /// txtFromBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList txtFromBudgetType;
+
+        /// <summary>
+        /// rfvFromBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromBudgetType;
 
         /// <summary>
         /// ddFromBA control.
@@ -276,22 +294,40 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtFromAfter;
 
         /// <summary>
-        /// txtToGL control.
+        /// txtToGLCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList txtToGL;
+        protected global::System.Web.UI.WebControls.TextBox txtToGLCode;
 
         /// <summary>
-        /// rfvToGL control.
+        /// rfvToGLCode control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToGL;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToGLCode;
+
+        /// <summary>
+        /// txtToBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList txtToBudgetType;
+
+        /// <summary>
+        /// rfvtxtToBudgetType control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvtxtToBudgetType;
 
         /// <summary>
         /// lblToBA control.

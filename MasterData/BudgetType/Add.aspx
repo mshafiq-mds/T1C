@@ -43,15 +43,32 @@
                             <!-- Budget Type Dropdown -->
                             <div class="form-group row">
                                 <asp:Label ID="lblBudgetType" runat="server" AssociatedControlID="ddlBudgetType"
-                                    CssClass="col-md-3 col-form-label text-md-right" Text="Budget Type"></asp:Label>
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Budget Form Type"></asp:Label>
                                 <div class="col-md-7">
                                     <asp:DropDownList ID="ddlBudgetType" runat="server" CssClass="form-control">
-                                        <asp:ListItem Value="">-- Select Budget Type --</asp:ListItem>
+                                        <asp:ListItem Value="">-- Select Form Type --</asp:ListItem>
+                                        <asp:ListItem Value="1">Details Form</asp:ListItem>
+                                        <asp:ListItem Value="2">Others Form</asp:ListItem>
+                                        <asp:ListItem Value="3">Pool Form</asp:ListItem>
+                                    </asp:DropDownList>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBudgetType"
+                                        InitialValue="" CssClass="text-danger" Display="Dynamic"
+                                        ErrorMessage="Please select a Form Type."></asp:RequiredFieldValidator>
+                                </div>
+                            </div>
+
+                            <!-- Budget Type Dropdown -->
+                            <div class="form-group row">
+                                <asp:Label ID="lblFormType" runat="server" AssociatedControlID="ddlFormType"
+                                    CssClass="col-md-3 col-form-label text-md-right" Text="Budget Details"></asp:Label>
+                                <div class="col-md-7">
+                                    <asp:DropDownList ID="ddlFormType" runat="server" CssClass="form-control">
+                                        <asp:ListItem Value="">-- Select Upload Budget Details --</asp:ListItem>
                                         <asp:ListItem Value="1">Details Budget</asp:ListItem>
                                         <asp:ListItem Value="2">Others Budget</asp:ListItem>
                                         <asp:ListItem Value="3">Pool Budget</asp:ListItem>
                                     </asp:DropDownList>
-                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlBudgetType"
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlFormType"
                                         InitialValue="" CssClass="text-danger" Display="Dynamic"
                                         ErrorMessage="Please select a Budget Type."></asp:RequiredFieldValidator>
                                 </div>

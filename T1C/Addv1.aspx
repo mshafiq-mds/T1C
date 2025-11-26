@@ -159,14 +159,14 @@
                                         <asp:TextBox ID="txtAmount" runat="server" CssClass="form-control input-number2" placeholder="Estimate Amount"></asp:TextBox>
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter estimate amount (RM)"></asp:RequiredFieldValidator>
-                                    <asp:CustomValidator ID="cvAmountLimit" runat="server" 
+                                  <%--  <asp:CustomValidator ID="cvAmountLimit" runat="server" 
                                         ControlToValidate="txtAmount"
                                         OnServerValidate="cvAmountLimit_ServerValidate"
                                         ClientValidationFunction="validateAmountLimit"
                                         EnableClientScript="true"
                                         CssClass="text-danger" Display="Dynamic"
                                         ErrorMessage="Amount is outside the allowed range.">
-                                    </asp:CustomValidator>
+                                    </asp:CustomValidator>--%>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -971,7 +971,7 @@
             return true;
         }
 
-        function validateAmountLimit(source, args) {
+       <%-- function validateAmountLimit(source, args) {
             var role = '<%= Prodata.WebForm.Auth.User().iPMSRoleCode?.ToLower() %>';
             var rawValue = args.Value.replace(/,/g, ''); // remove commas
             var value = parseFloat(rawValue);
@@ -981,14 +981,16 @@
                 return;
             }
 
-            if (role === "kb") {
-                args.IsValid = value <= 10000;
-            } else if (role === "mm") {
-                args.IsValid = value >= 10000.01;
-            } else {
-                args.IsValid = false;
-            }
-        }
+            //if (role === "kb") {
+                //args.IsValid = value <= 10000;
+            //} else if (role === "mm") {
+            //    args.IsValid = value >= 10000.01;
+            //} else {
+            //    args.IsValid = false;
+            //}
+            args.IsValid = false;
+
+        }--%>
 
         function updateRowBalance($row) {
             var $select = $row.find(".allocation-input");

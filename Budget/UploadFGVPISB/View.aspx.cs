@@ -42,51 +42,117 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                 ddlYear.Items.Add(new ListItem(i.ToString(), i.ToString()));
         }
 
+        //private void BindData(Guid? typeId = null, int? year = null, string bizArea = null)
+        //{
+        //    int selectedYear = year ?? DateTime.Now.Year;
+        //    int pageIndex = ViewState["pageIndex"] is string indexStr && int.TryParse(indexStr, out int idx) ? idx : 0;
+
+        //    using (var db = new AppDbContext())
+        //    {
+        //        var query = db.Budgets.ExcludeSoftDeleted()
+        //            .Join(db.BudgetTypes,
+        //                b => b.TypeId,
+        //                t => t.Id,
+        //                (b, t) => new { b, t.Name })
+        //            .Where(x => x.b.Date.HasValue && x.b.Date.Value.Year == selectedYear && x.b.DeletedDate == null);
+
+        //        if (typeId.HasValue)
+        //            query = query.Where(x => x.b.TypeId == typeId.Value);
+
+        //        if (!string.IsNullOrEmpty(bizArea))
+        //            query = query.Where(x => x.b.BizAreaCode == bizArea);
+
+        //        var list = query
+        //            .OrderBy(x => x.b.Ref)
+        //            .ToList()
+        //            .Select((x, i) => new BudgetListViewModel
+        //            {
+        //                Id = x.b.Id,
+        //                No = i + 1,
+        //                Type = x.Name,
+        //                BizAreaCode = x.b.BizAreaCode,
+        //                BizAreaName = x.b.BizAreaName,
+        //                Date = x.b.Date?.ToString("dd/MM/yyyy") ?? "",
+        //                Month = x.b.Month?.ToString(),
+        //                Ref = x.b.Ref,
+        //                Name = x.b.Name,
+        //                DisplayName = $"{x.b.Ref} - {x.b.Name}",
+        //                Details = x.b.Details,
+        //                Wages = FormatDecimal(x.b.Wages),
+        //                Purchase = FormatDecimal(x.b.Purchase),
+        //                Amount = FormatDecimal(x.b.Amount),
+        //                Vendor = x.b.Vendor,
+        //                Status = x.b.Status
+        //            }).ToList();
+
+        //        gvBudget.DataSource = list;
+        //        gvBudget.PageIndex = pageIndex;
+        //        gvBudget.DataBind();
+        //    }
+        //}
         private void BindData(Guid? typeId = null, int? year = null, string bizArea = null)
         {
             int selectedYear = year ?? DateTime.Now.Year;
-            int pageIndex = ViewState["pageIndex"] is string indexStr && int.TryParse(indexStr, out int idx) ? idx : 0;
+            int pageIndex = int.TryParse(ViewState["pageIndex"]?.ToString(), out int idx) ? idx : 0;
 
             using (var db = new AppDbContext())
             {
-                var query = db.Budgets.ExcludeSoftDeleted()
-                    .Join(db.BudgetTypes,
-                        b => b.TypeId,
-                        t => t.Id,
-                        (b, t) => new { b, t.Name })
-                    .Where(x => x.b.Date.HasValue && x.b.Date.Value.Year == selectedYear && x.b.DeletedDate == null);
+                var budgets = db.Budgets
+                    .ExcludeSoftDeleted()
+                    .Where(b => b.Date.HasValue && b.Date.Value.Year == selectedYear && b.DeletedDate == null);
 
                 if (typeId.HasValue)
-                    query = query.Where(x => x.b.TypeId == typeId.Value);
+                    budgets = budgets.Where(b => b.TypeId == typeId.Value);
 
                 if (!string.IsNullOrEmpty(bizArea))
-                    query = query.Where(x => x.b.BizAreaCode == bizArea);
+                    budgets = budgets.Where(b => b.BizAreaCode == bizArea);
 
+                // Step 1: Project without formatting (still in database)
+                var query = from b in budgets
+                            join t in db.BudgetTypes on b.TypeId equals t.Id
+                            orderby b.Ref
+                            select new
+                            {
+                                b.Id,
+                                Type = t.Name,
+                                b.BizAreaCode,
+                                b.BizAreaName,
+                                b.Date,
+                                b.Month,
+                                b.Ref,
+                                b.Name,
+                                b.Details,
+                                b.Wages,
+                                b.Purchase,
+                                b.Amount,
+                                b.Vendor,
+                                b.Status
+                            };
+
+                // Step 2: Materialize to memory, then format values
                 var list = query
-                    .OrderBy(x => x.b.Ref)
-                    .ToList()
-                    .Select((x, i) => new BudgetListViewModel
+                    .AsEnumerable()
+                    .Select(b => new BudgetListViewModel
                     {
-                        Id = x.b.Id,
-                        No = i + 1,
-                        Type = x.Name,
-                        BizAreaCode = x.b.BizAreaCode,
-                        BizAreaName = x.b.BizAreaName,
-                        Date = x.b.Date?.ToString("dd/MM/yyyy") ?? "",
-                        Month = x.b.Month?.ToString(),
-                        Ref = x.b.Ref,
-                        Name = x.b.Name,
-                        DisplayName = $"{x.b.Ref} - {x.b.Name}",
-                        Details = x.b.Details,
-                        Wages = FormatDecimal(x.b.Wages),
-                        Purchase = FormatDecimal(x.b.Purchase),
-                        Amount = FormatDecimal(x.b.Amount),
-                        Vendor = x.b.Vendor,
-                        Status = x.b.Status
+                        Id = b.Id,
+                        Type = b.Type,
+                        BizAreaCode = b.BizAreaCode,
+                        BizAreaName = b.BizAreaName,
+                        Date = b.Date.HasValue ? b.Date.Value.ToString("dd/MM/yyyy") : "",
+                        Month = b.Month.HasValue ? b.Month.ToString() : "",
+                        Ref = b.Ref,
+                        Name = b.Name,
+                        DisplayName = $"{b.Ref} - {b.Name}",
+                        Details = b.Details,
+                        Wages = FormatDecimal(b.Wages),
+                        Purchase = FormatDecimal(b.Purchase),
+                        Amount = FormatDecimal(b.Amount),
+                        Vendor = b.Vendor,
+                        Status = b.Status
                     }).ToList();
 
-                gvBudget.DataSource = list;
                 gvBudget.PageIndex = pageIndex;
+                gvBudget.DataSource = list;
                 gvBudget.DataBind();
             }
         }

@@ -59,19 +59,21 @@ namespace Prodata.WebForm.Budget.Transfer
                     EVisaNo = refNo,
                     WorkDetails = txtWorkDetails.Text.Trim(),
 
-                    FromGL = Guid.TryParse(txtFromGL.Text.Trim(), out var fromGLGuid) ? fromGLGuid : Guid.Empty,
+                    FromBudgetType = Guid.TryParse(txtFromBudgetType.Text.Trim(), out var FromBudgetTypeGuid) ? FromBudgetTypeGuid : Guid.Empty,
                     FromBA = ddFromBA.SelectedValue,
                     FromBudget = string.IsNullOrWhiteSpace(txtFromBudget.Text) ? 0 : Convert.ToDecimal(txtFromBudget.Text),
                     FromBalance = string.IsNullOrWhiteSpace(txtFromBalance.Text) ? 0 : Convert.ToDecimal(txtFromBalance.Text),
                     FromTransfer = string.IsNullOrWhiteSpace(txtFromTransfer.Text) ? 0 : Convert.ToDecimal(txtFromTransfer.Text),
-                    FromAfter = string.IsNullOrWhiteSpace(txtFromAfter.Text) ? 0 : Convert.ToDecimal(txtFromAfter.Text),  
+                    FromAfter = string.IsNullOrWhiteSpace(txtFromAfter.Text) ? 0 : Convert.ToDecimal(txtFromAfter.Text),
+                    FromGL = txtFromGLCode.Text.Trim(),
 
-                    ToGL = Guid.TryParse(txtToGL.Text.Trim(), out var toGLGuid) ? toGLGuid : Guid.Empty,
+                    ToBudgetType = Guid.TryParse(txtToBudgetType.Text.Trim(), out var ToBudgetTypeGuid) ? ToBudgetTypeGuid : Guid.Empty,
                     ToBA = lblToBA.Text.Trim(),
                     ToBudget = string.IsNullOrWhiteSpace(txtToBudget.Text) ? 0 : Convert.ToDecimal(txtToBudget.Text),
                     ToBalance = string.IsNullOrWhiteSpace(txtToBalance.Text) ? 0 : Convert.ToDecimal(txtToBalance.Text),
                     ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),  
                     ToAfter = string.IsNullOrWhiteSpace(txtToAfter.Text) ? 0 : Convert.ToDecimal(txtToAfter.Text), 
+                    ToGL = txtToGLCode.Text.Trim(),
                     status = 1,
                     //Nota
                     //status == 0 ? "Resubmit" :
@@ -134,8 +136,8 @@ namespace Prodata.WebForm.Budget.Transfer
         private void BindControl()
         {
             BindDropdown(ddFromBA, new Class.IPMSBizArea().GetIPMSBizAreas(), "Code", "DisplayName");
-            BindDropdown(txtFromGL, Functions.GetBudgetTypes(), "ID", "DisplayName");
-            BindDropdown(txtToGL, Functions.GetBudgetTypes(), "ID", "DisplayName");
+            BindDropdown(txtFromBudgetType, Functions.GetBudgetTypes(), "ID", "DisplayName");
+            BindDropdown(txtToBudgetType, Functions.GetBudgetTypes(), "ID", "DisplayName");
         }
 
         /// <summary>
@@ -153,13 +155,13 @@ namespace Prodata.WebForm.Budget.Transfer
 
         protected void From_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CalculateBudgetSum(txtFromGL.SelectedValue, ddFromBA.SelectedValue, txtFromBudget, txtFromBalance);
+            CalculateBudgetSum(txtFromBudgetType.SelectedValue, ddFromBA.SelectedValue, txtFromBudget, txtFromBalance);
             RecalculateTotals();
         }
 
         protected void To_SelectedIndexChanged(object sender, EventArgs e)
         {
-            CalculateBudgetSum(txtToGL.SelectedValue, lblToBA.Text?.Trim(), txtToBudget, txtToBalance);
+            CalculateBudgetSum(txtToBudgetType.SelectedValue, lblToBA.Text?.Trim(), txtToBudget, txtToBalance);
             RecalculateTotals();
         }
 
@@ -242,6 +244,5 @@ namespace Prodata.WebForm.Budget.Transfer
             txtToTransfer.Text = toTransfer.ToString("N2");
             txtToAfter.Text = toAfter.ToString("N2");
         }
-
     }
 }

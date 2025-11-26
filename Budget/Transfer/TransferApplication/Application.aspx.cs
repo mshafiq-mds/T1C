@@ -186,7 +186,7 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                     var TT = db.TransfersTransaction.Where(x => x.Id == _transferId).FirstOrDefault();
                     var newBudget = new Prodata.WebForm.Models.Budget
                     { 
-                        TypeId = TT.ToGL,
+                        TypeId = TT.ToBudgetType,
                         BizAreaCode = TT.ToBA,
                         BizAreaName = new Class.IPMSBizArea().GetNameByCode(TT.ToBA ?? "") ?? "-",
                         Date = DateTime.Now,
@@ -329,8 +329,8 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                 lblAmount.Text = "RM " + transfer.FromTransfer.ToString();
                 lblReason.Text = transfer.Justification.ToString();
                  
-                string From = db.BudgetTypes.Where(u => u.Id == transfer.FromGL).Select(u => u.Name).FirstOrDefault();
-                string To = db.BudgetTypes.Where(u =>u.Id == transfer.ToGL).Select(u => u.Name).FirstOrDefault();
+                string From = db.BudgetTypes.Where(u => u.Id == transfer.FromBudgetType).Select(u => u.Name).FirstOrDefault();
+                string To = db.BudgetTypes.Where(u =>u.Id == transfer.ToBudgetType).Select(u => u.Name).FirstOrDefault();
                 string FromBA = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA) ?? "unknown";
                 string ToBA = new Class.IPMSBizArea().GetNameByCode(transfer.ToBA) ?? "unknown";
                 lblTransferFrom.Text = FromBA + "(" + transfer.FromBA + ") - " + From;

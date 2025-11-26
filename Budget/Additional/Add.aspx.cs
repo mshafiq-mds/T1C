@@ -17,7 +17,7 @@ namespace Prodata.WebForm.Budget.AddBudget
             if (!IsPostBack)
             {
                 BindBALabel();
-                BindDropdown(txtBT, Functions.GetBudgetTypes(), "ID", "DisplayName");
+                BindDropdown(txtToBudgetType, Functions.GetBudgetTypes(), "ID", "DisplayName");
 
 
                 txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("TB", true);
@@ -70,7 +70,7 @@ namespace Prodata.WebForm.Budget.AddBudget
 
                     // Additional Budget Breakdown
                     CostCentre = txtCostCentre.Text.Trim(),
-                    ToBudgetType = Guid.TryParse(txtBT.Text.Trim(), out var toBudgetGuid) ? toBudgetGuid : Guid.Empty,
+                    ToBudgetType = Guid.TryParse(txtToBudgetType.Text.Trim(), out var toBudgetGuid) ? toBudgetGuid : Guid.Empty,
                     ApprovedBudget = decimal.TryParse(txtApprovedBudget.Text, out var approved) ? approved : 0,
                     NewTotalBudget = decimal.TryParse(txtNewTotalBudget.Text, out var newTotal) ? newTotal : 0,
                     AdditionalBudget = decimal.TryParse(txtAdditionalBudget.Text, out var additional) ? additional : 0,

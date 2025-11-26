@@ -35,7 +35,8 @@ namespace Prodata.WebForm.MasterData.BudgetType
 							{
 								Code = code,
 								Name = name,
-								FormCategories = int.Parse(ddlBudgetType.SelectedValue)
+								FormCategories = int.Parse(ddlBudgetType.SelectedValue),
+								BudgetCategories = int.Parse(ddlFormType.SelectedValue)
                             };
 							db.BudgetTypes.Add(budgetType);
 							db.SaveChanges();

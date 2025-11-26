@@ -96,13 +96,13 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.Label lblEVisa;
 
         /// <summary>
-        /// lblFromGL control.
+        /// lblFromBudgetType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromGL;
+        protected global::System.Web.UI.WebControls.Label lblFromBudgetType;
 
         /// <summary>
         /// lblFromBA control.
@@ -150,13 +150,13 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.Label lblFromAfter;
 
         /// <summary>
-        /// lblToGL control.
+        /// lblToBudgetType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblToGL;
+        protected global::System.Web.UI.WebControls.Label lblToBudgetType;
 
         /// <summary>
         /// lblToBA control.

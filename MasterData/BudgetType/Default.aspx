@@ -44,13 +44,21 @@
                                                 <asp:TemplateField HeaderText="Form Categories">
                                                     <ItemTemplate>
                                                         <%# 
-                                                            Eval("FormCategories").ToString() == "1" ? "Details Budget" :
-                                                            Eval("FormCategories").ToString() == "2" ? "Others Budget" :
-                                                            Eval("FormCategories").ToString() == "3" ? "Pool Budget" : "-"
+                                                            Eval("FormCategories").ToString() == "1" ? "Details Form" :
+                                                            Eval("FormCategories").ToString() == "2" ? "Others Form" :
+                                                            Eval("FormCategories").ToString() == "3" ? "Pool Form" : "-"
                                                         %>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
-
+                                                <asp:TemplateField HeaderText="Budget Categories">
+                                                    <ItemTemplate>
+                                                        <%# 
+                                                            Eval("BudgetCategories").ToString() == "1" ? "Details Budget" :
+                                                            Eval("BudgetCategories").ToString() == "2" ? "Others Budget" :
+                                                            Eval("BudgetCategories").ToString() == "3" ? "Pool Budget" : "-"
+                                                        %>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center" />
                                                     <ItemStyle CssClass="width-80 text-center" />

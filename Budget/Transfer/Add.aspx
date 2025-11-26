@@ -241,7 +241,8 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Item</th>
+                    <th>Item</th> 
+                    <th>GL</th> 
                     <th>Budget Type </th>
                     <th style="min-width: 120px;">BA</th>
                     <th>Original Budget (RM)</th>
@@ -254,10 +255,17 @@
                 <tr>
                     <td>From Budget</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="txtFromGL" CssClass="form-control fixed-dropdown select2"
+                        <asp:TextBox ID="txtFromGLCode" runat="server" CssClass="form-control" 
+                            placeholder="Enter GL Code" MaxLength="20" />
+                        <asp:RequiredFieldValidator ID="rfvFromGLCode" runat="server" 
+                            ControlToValidate="txtFromGLCode" CssClass="text-danger" 
+                            ErrorMessage="GL required" Display="Dynamic" />
+                    </td>
+                    <td>
+                        <asp:DropDownList runat="server" ID="txtFromBudgetType" CssClass="form-control fixed-dropdown select2"
                             AutoPostBack="true" OnSelectedIndexChanged="From_SelectedIndexChanged" data-placeholder="Type"
                             DataValueField="Code" DataTextField="DisplayName" />
-                        <asp:RequiredFieldValidator ID="rfvFromGL" runat="server" ControlToValidate="txtFromGL" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:RequiredFieldValidator ID="rfvFromBudgetType" runat="server" ControlToValidate="txtFromBudgetType" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
                         <asp:DropDownList runat="server" ID="ddFromBA" CssClass="form-control fixed-dropdown select2"
@@ -305,9 +313,16 @@
                 <tr>
                     <td>To Budget</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="txtToGL" CssClass="form-control fixed-dropdown select2" AutoPostBack="true" OnSelectedIndexChanged="To_SelectedIndexChanged" 
+                        <asp:TextBox ID="txtToGLCode" runat="server" CssClass="form-control" 
+                            placeholder="Enter GL Code" MaxLength="20" />
+                        <asp:RequiredFieldValidator ID="rfvToGLCode" runat="server" 
+                            ControlToValidate="txtToGLCode" CssClass="text-danger" 
+                            ErrorMessage="GL required" Display="Dynamic" />
+                    </td>
+                    <td>
+                        <asp:DropDownList runat="server" ID="txtToBudgetType" CssClass="form-control fixed-dropdown select2" AutoPostBack="true" OnSelectedIndexChanged="To_SelectedIndexChanged" 
                                                 DataValueField="Code" DataTextField="DisplayName" data-placeholder="Type" />
-                        <asp:RequiredFieldValidator ID="rfvToGL" runat="server" ControlToValidate="txtToGL" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
+                        <asp:RequiredFieldValidator ID="rfvtxtToBudgetType" runat="server" ControlToValidate="txtToBudgetType" CssClass="text-danger" ErrorMessage="Required" Display="Dynamic" />
                     </td>
                     <td>
                         <asp:Label runat="server" ID="lblToBA"></asp:Label>

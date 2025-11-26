@@ -177,22 +177,22 @@ namespace Prodata.WebForm.Budget.AddBudget
         protected global::System.Web.UI.WebControls.TextBox txtCostCentre;
 
         /// <summary>
-        /// txtBT control.
+        /// txtToBudgetType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList txtBT;
+        protected global::System.Web.UI.WebControls.DropDownList txtToBudgetType;
 
         /// <summary>
-        /// rfvFromGL control.
+        /// rfvToBudgetType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFromGL;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvToBudgetType;
 
         /// <summary>
         /// txtApprovedBudget control.

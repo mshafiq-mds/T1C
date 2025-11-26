@@ -56,31 +56,33 @@ namespace Prodata.WebForm.Budget.Transfer
                 rdoCapex.Checked = transfer.BudgetType == "CAPEX";
 
 
-                Guid fromGLGuid = transfer.FromGL;
-                var fromGLBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == fromGLGuid)
+                Guid FromBudgetTypeGuid = transfer.FromBudgetType;
+                var FromBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == FromBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                txtFromGL.Text = fromGLBudgetType ?? "Unknown";
+                txtFromBudgetType.Text = FromBudgetType ?? "Unknown";
                 ddFromBA.Text = transfer.FromBA;
                 ddFromBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.FromBA);
                 txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
                 txtFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
                 txtFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
+                txtFromGL.Text = transfer.FromGL;
 
-                Guid toGLGuid = transfer.ToGL;
-                var toGLBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == toGLGuid)
+                Guid ToBudgetTypeGuid = transfer.ToBudgetType;
+                var ToBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == ToBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                txtToGL.Text = toGLBudgetType ?? "Unknown";
+                txtToBudgetType.Text = ToBudgetType ?? "Unknown";
                 ddToBA.Text = transfer.ToBA;
                 ddToBAName.Text = new Class.IPMSBizArea().GetNameByCode(transfer.ToBA);
                 txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
                 txtToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
                 txtToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
+                txtToGL.Text = transfer.ToGL ;
                 LblBA.Text = transfer.BA;
             }
         }

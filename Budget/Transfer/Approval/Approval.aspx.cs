@@ -67,30 +67,32 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 lblBA.Text = transfer.BA;
 
                 // From Budget
-                Guid fromGLGuid = transfer.FromGL;
-                var fromGLBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == fromGLGuid)
+                Guid FromBudgetTypeGuid = transfer.FromBudgetType;
+                var FromBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == FromBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                lblFromGL.Text = fromGLBudgetType ?? "Unknown";
+                lblFromBudgetType.Text = FromBudgetType ?? "Unknown";
                 lblFromBA.Text = transfer.FromBA;
                 lblFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 lblFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
                 lblFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
                 lblFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
+                lblFromGL.Text = transfer.FromGL;
 
                 // To Budget
-                Guid toGLGuid = transfer.ToGL;
-                var toGLBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == toGLGuid)
+                Guid ToBudgetTypeGuid = transfer.ToBudgetType;
+                var ToBudgetType = db.BudgetTypes
+                    .Where(x => x.Id == ToBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                lblToGL.Text = toGLBudgetType ?? "Unknown";
+                lblToBudgetType.Text = ToBudgetType ?? "Unknown";
                 lblToBA.Text = transfer.ToBA;
                 lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
                 lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
                 lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
+                lblToGL.Text = transfer.ToGL;
 
                 // Justification
                 litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");

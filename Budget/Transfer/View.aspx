@@ -72,7 +72,7 @@
             <tbody>
                 <tr>
                     <td>From Budget</td>
-                    <td><asp:Label ID="lblFromGL" runat="server" /></td>
+                    <td><asp:Label ID="lblFromBudgetType" runat="server" /></td>
                     <td><asp:Label ID="lblFromBA" runat="server" /></td>
                     <td><asp:Label ID="lblFromBudget" runat="server" /></td>
                     <td><asp:Label ID="lblFromBalance" runat="server" /></td>
@@ -81,7 +81,7 @@
                 </tr>
                 <tr>
                     <td>To Budget</td>
-                    <td><asp:Label ID="lblToGL" runat="server" /></td>
+                    <td><asp:Label ID="lblToBudgetType" runat="server" /></td>
                     <td><asp:Label ID="lblToBA" runat="server" /></td>
                     <td><asp:Label ID="lblToBudget" runat="server" /></td>
                     <td><asp:Label ID="lblToBalance" runat="server" /></td>
