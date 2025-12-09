@@ -76,6 +76,13 @@
                                     <asp:DropDownList ID="ddlBA" runat="server" CssClass="form-control select2" data-placeholder="BA"></asp:DropDownList>
                                     <asp:RequiredFieldValidator ID="rfvBA" runat="server" ControlToValidate="ddlBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please select BA" InitialValue=""></asp:RequiredFieldValidator>
                                 </div>
+                            </div> 
+                            <div class="form-group row">
+                                <asp:Label ID="Label1" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="txtDetails" Text="Details"></asp:Label>
+                                <div class="col-lg-10 col-sm-9">                                    
+                                    <asp:TextBox ID="txtReqName" runat="server" CssClass="form-control" placeholder="Full Name"></asp:TextBox>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtReqName" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter requester name"></asp:RequiredFieldValidator>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-8 col-sm-7">

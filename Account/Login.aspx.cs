@@ -113,42 +113,42 @@ namespace Prodata.WebForm.Account
                         {
                             var createdUser = manager.FindByName(user.UserName);
 
-                            // Assign role to the user based on iPMSRoleCode
-                            if (!string.IsNullOrEmpty(createdUser.iPMSRoleCode))
-                            {
-                                var roleCode = createdUser.iPMSRoleCode.ToUpperInvariant();
+                            //// Assign role to the user based on iPMSRoleCode
+                            //if (!string.IsNullOrEmpty(createdUser.iPMSRoleCode))
+                            //{
+                            //    var roleCode = createdUser.iPMSRoleCode.ToUpperInvariant();
 
-                                if (roleCode == "ADMIN")
-                                {
-                                    if (!manager.IsInRole(createdUser.Id, "HQ"))
-                                    {
-                                        manager.AddToRole(createdUser.Id, "HQ");
-                                    }
-                                }
-                                else
-                                {
-                                    var approverRoles = new HashSet<string>
-                                    {
-                                        "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
-                                    };
+                            //    if (roleCode == "ADMIN")
+                            //    {
+                            //        if (!manager.IsInRole(createdUser.Id, "HQ"))
+                            //        {
+                            //            manager.AddToRole(createdUser.Id, "HQ");
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        var approverRoles = new HashSet<string>
+                            //        {
+                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+                            //        };
 
-                                    if (approverRoles.Contains(roleCode))
-                                    {
-                                        if (!manager.IsInRole(createdUser.Id, "Approver"))
-                                        {
-                                            manager.AddToRole(createdUser.Id, "Approver");
-                                        }
+                            //        if (approverRoles.Contains(roleCode))
+                            //        {
+                            //            if (!manager.IsInRole(createdUser.Id, "Approver"))
+                            //            {
+                            //                manager.AddToRole(createdUser.Id, "Approver");
+                            //            }
 
-                                        if (roleCode == "KB" || roleCode == "MM")
-                                        {
-                                            if (!manager.IsInRole(createdUser.Id, "Kilang"))
-                                            {
-                                                manager.AddToRole(createdUser.Id, "Kilang");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            //            if (roleCode == "KB" || roleCode == "MM")
+                            //            {
+                            //                if (!manager.IsInRole(createdUser.Id, "Kilang"))
+                            //                {
+                            //                    manager.AddToRole(createdUser.Id, "Kilang");
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                             // **Manually login user**
                             signinManager.SignIn(createdUser, RememberMe.Checked, false);
@@ -169,42 +169,42 @@ namespace Prodata.WebForm.Account
                         var updateResult = manager.Update(existingUser);
                         if (updateResult.Succeeded)
                         {
-                            // Assign role to existing user based on iPMSRoleCode
-                            if (!string.IsNullOrEmpty(existingUser.iPMSRoleCode))
-                            {
-                                var roleCode = existingUser.iPMSRoleCode.ToUpperInvariant();
+                            //// Assign role to existing user based on iPMSRoleCode
+                            //if (!string.IsNullOrEmpty(existingUser.iPMSRoleCode))
+                            //{
+                            //    var roleCode = existingUser.iPMSRoleCode.ToUpperInvariant();
 
-                                if (roleCode == "ADMIN")
-                                {
-                                    if (!manager.IsInRole(existingUser.Id, "HQ"))
-                                    {
-                                        manager.AddToRole(existingUser.Id, "HQ");
-                                    }
-                                }
-                                else
-                                {
-                                    var approverRoles = new HashSet<string>
-                                    {
-                                        "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
-                                    };
+                            //    if (roleCode == "ADMIN")
+                            //    {
+                            //        if (!manager.IsInRole(existingUser.Id, "HQ"))
+                            //        {
+                            //            manager.AddToRole(existingUser.Id, "HQ");
+                            //        }
+                            //    }
+                            //    else
+                            //    {
+                            //        var approverRoles = new HashSet<string>
+                            //        {
+                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+                            //        };
 
-                                    if (approverRoles.Contains(roleCode))
-                                    {
-                                        if (!manager.IsInRole(existingUser.Id, "Approver"))
-                                        {
-                                            manager.AddToRole(existingUser.Id, "Approver");
-                                        }
+                            //        if (approverRoles.Contains(roleCode))
+                            //        {
+                            //            if (!manager.IsInRole(existingUser.Id, "Approver"))
+                            //            {
+                            //                manager.AddToRole(existingUser.Id, "Approver");
+                            //            }
 
-                                        if (roleCode == "KB" || roleCode == "MM")
-                                        {
-                                            if (!manager.IsInRole(existingUser.Id, "Kilang"))
-                                            {
-                                                manager.AddToRole(existingUser.Id, "Kilang");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                            //            if (roleCode == "KB" || roleCode == "MM")
+                            //            {
+                            //                if (!manager.IsInRole(existingUser.Id, "Kilang"))
+                            //                {
+                            //                    manager.AddToRole(existingUser.Id, "Kilang");
+                            //                }
+                            //            }
+                            //        }
+                            //    }
+                            //}
 
                             // **Then sign in the user**
                             signinManager.SignIn(existingUser, RememberMe.Checked, false);

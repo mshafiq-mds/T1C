@@ -58,9 +58,18 @@
             <button type="button" class="close" data-dismiss="modal">
               <span>&times;</span>
             </button>
-          </div>
+          </div> 
           <div class="modal-body">
-              <input type="text" id="allocationSearch" class="form-control mb-2" placeholder="Search allocation...">
+              <div class="form-row mb-2">
+                <div class="col">
+                  <input type="text" id="allocationSearch" class="form-control" placeholder="Search allocation...">
+                </div>
+                <div class="col-auto">
+                  <button type="button" id="btnConfirmAllocationsTop" class="btn btn-success">
+                    Confirm
+                  </button>
+                </div>
+              </div>
 
               <table class="table table-bordered table-sm">
                 <thead>
@@ -72,13 +81,12 @@
                   </tr>
                 </thead>
                 <tbody id="allocationList">
-                  <!-- Filled dynamically -->
                 </tbody>
               </table>
-            </div>
 
+            </div>
           <div class="modal-footer">
-            <button type="button" id="btnConfirmAllocations" class="btn btn-success">Confirm</button>
+            <button type="button" id="btnConfirmAllocationsBottom" class="btn btn-success">Confirm</button>
           </div>
         </div>
       </div>
@@ -113,6 +121,14 @@
                                     <asp:Label ID="lblBAText" runat="server" CssClass="form-control text-muted" Visible="false"></asp:Label>
                                     <asp:DropDownList ID="ddlBA" runat="server" CssClass="form-control select2" data-placeholder="BA"></asp:DropDownList>
                                     <asp:RequiredFieldValidator ID="rfvBA" runat="server" ControlToValidate="ddlBA" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please select BA" InitialValue=""></asp:RequiredFieldValidator>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <asp:Label ID="lblRequestorName" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="txtReqName" Text="Requester Name"></asp:Label>
+                                <div class="col-lg-6 col-sm-5">
+                                    <asp:Label ID="Label3" runat="server" CssClass="form-control text-muted" Visible="false"></asp:Label>
+                                    <asp:TextBox ID="txtReqName" runat="server" CssClass="form-control" placeholder="Full Name"></asp:TextBox>
+                                    <asp:RequiredFieldValidator ID="rfvRequestorName" runat="server" ControlToValidate="txtReqName" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please Fill Name" InitialValue=""></asp:RequiredFieldValidator>
                                 </div>
                             </div>
                             <div class="row">
@@ -255,48 +271,34 @@
                                             <thead>
                                                 <tr>
                                                     <th></th>
-                                                    <th colspan="2" class="text-center"><%= DateTime.Now.Year %> (RM/MT)</th>
-                                                    <th colspan="3" class="text-center">YTD <%= DateTime.Now.Year - 1 %> (RM/MT)</th>
+                                                    <th colspan="2" class="text-center">Current Year (RM/MT)</th>
+                                                    <th colspan="3" class="text-center">YTD Past Year (RM/MT)</th>
                                                 </tr>
                                                 <tr>
                                                     <th >
                                                          
                                                     </th>
-                                                    <th class="text-center"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-                                                        title="Attach copy of Processing Cost Report (ZFPI001A) for the previous month approved by mill management">
-                                                        Actual YTD <i class="fas fa-info-circle text-muted"></i>
+                                                    <th class="text-center">
+                                                        Actual YTD
                                                     </th>
-                                                    <th class="text-center"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-                                                        title="Attach copy of 2024 Budget approved by mill management">
-                                                        Annual Budget <i class="fas fa-info-circle text-muted"></i>
+                                                    <th class="text-center">
+                                                        Annual Budget
                                                     </th>
-                                                    <th class="text-center"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (in RM) approved by mill management">
-                                                        Actual (RM) <i class="fas fa-info-circle text-muted"></i>
+                                                    <th class="text-center">
+                                                        Actual (RM)
                                                     </th>
-                                                    <th class="text-center"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (in RM/MT) approved by mill management">
-                                                        Actual <i class="fas fa-info-circle text-muted"></i>
+                                                    <th class="text-center">
+                                                        Actual
                                                     </th>
-                                                    <th class="text-center"
-                                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-                                                        title="Attach copy of Processing Cost Report (ZFPI001A) YTD December 2023 (Budget in RM/MT) approved by mill management">
-                                                        Budget <i class="fas fa-info-circle text-muted"></i>
+                                                    <th class="text-center">
+                                                        Budget
                                                     </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td class="text-nowrap align-middle"
-                                                        data-bs-toggle="tooltip"
-                                                        data-bs-placement="top"
-                                                        data-bs-boundary="window"
-                                                        title="S&M refers to Maintenance & Repair Costs">
-                                                        S & M <i class="fas fa-info-circle text-muted"></i>
+                                                    <td class="text-nowrap align-middle" >
+                                                        S & M <%--<i class="fas fa-info-circle text-muted"></i>--%>
                                                     </td>
                                                     <td><asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
                                                     <td><asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
@@ -313,7 +315,7 @@
                                             <tr>
                                                 <th class="text-center align-middle pl-2 pr-1"
                                                     data-bs-toggle="tooltip" data-bs-placement="top"
-                                                    title="Annual Budget Balance for Maintenance & Repair 2024 (RM)">
+                                                    title="Annual Budget Balance for Maintenance & Repair Current Year (RM)">
                                                     A 
                                                     <i class="fas fa-info-circle text-muted ms-1"></i>
                                                 </th>
@@ -1110,7 +1112,7 @@
                 }
             });
         }
-        $("#btnConfirmAllocations").click(function () {
+        $("#btnConfirmAllocationsTop, #btnConfirmAllocationsBottom").click(function () {
             $("#allocationContainer").empty();
 
             $("#allocationList .chkAllocation:checked").each(function () {

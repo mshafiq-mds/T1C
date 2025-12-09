@@ -82,6 +82,7 @@ namespace Prodata.WebForm.T1C
                 string ba = !string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
+                string reqName = txtReqName.Text.Trim();
                 string details = txtDetails.Text.Trim();
                 string justificationOfNeed = txtJustificationOfNeed.Text.Trim();
                 decimal amount = !string.IsNullOrEmpty(txtAmount.Text.Trim()) ? decimal.Parse(txtAmount.Text.Trim().Replace(",", "")) : 0;
@@ -142,6 +143,7 @@ namespace Prodata.WebForm.T1C
                             form.BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba);
                             form.Date = date;
                             //form.Ref = refNo;
+                            form.FormRequesterName = reqName;
                             form.Details = details;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;
@@ -316,6 +318,7 @@ namespace Prodata.WebForm.T1C
                 string ba = !string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
+                string reqName = txtReqName.Text.Trim();
                 string details = txtDetails.Text.Trim();
                 string justificationOfNeed = txtJustificationOfNeed.Text.Trim();
                 decimal amount = !string.IsNullOrEmpty(txtAmount.Text.Trim()) ? decimal.Parse(txtAmount.Text.Trim().Replace(",", "")) : 0;
@@ -377,6 +380,7 @@ namespace Prodata.WebForm.T1C
                             form.Date = date;
                             //form.Ref = refNo;
                             form.Details = details;
+                            form.FormRequesterName = reqName;
                             form.JustificationOfNeed = justificationOfNeed;
                             form.Amount = amount;
                             form.ProcurementType = procurementType;
@@ -648,6 +652,7 @@ namespace Prodata.WebForm.T1C
                         ddlBA.SelectedValue = form.BizAreaCode;
                         txtRefNo.Text = form.Ref;
                         txtDate.Text = form.Date.HasValue ? form.Date.Value.ToString("yyyy-MM-dd") : string.Empty;
+                        txtReqName.Text = form.FormRequesterName;
                         txtDetails.Text = form.Details;
                         txtJustificationOfNeed.Text = form.JustificationOfNeed;
                         txtAmount.Text = form.Amount.HasValue ? form.Amount.Value.ToString("#,##0.00") : string.Empty;

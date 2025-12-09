@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manage.aspx.cs" Inherits="Prodata.WebForm.Administration.Role.Manage" %>
+﻿<%@ Page Title="Edit Role" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Manage.aspx.cs" Inherits="Prodata.WebForm.Administration.Role.Manage" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <div class="row">
@@ -12,7 +12,7 @@
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary" OnClick="btnSave_Click">
                             <i class="fas fa-save"></i> Save
-                        </asp:LinkButton>
+                        </asp:LinkButton> 
                     </div>
                 </div>
                 <div class="card-body">

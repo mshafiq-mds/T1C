@@ -38,6 +38,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <asp:Label runat="server" CssClass="text-bold" Text="Requester Name"></asp:Label>
+                                <div class="text-muted">
+                                    <asp:Label ID="lblReqName" runat="server"></asp:Label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <asp:Label runat="server" CssClass="text-bold" Text="Details"></asp:Label>
                                 <div class="text-muted">
                                     <asp:Label ID="lblDetails" runat="server"></asp:Label>

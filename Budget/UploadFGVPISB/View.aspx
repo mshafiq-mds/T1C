@@ -120,7 +120,8 @@
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                 <ContentTemplate>
                                     <div class="table-responsive">
-                                        <asp:GridView ID="gvBudget" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='100' AllowPaging="true" OnPageIndexChanging="gvBudget_PageIndexChanging" EmptyDataText="No record." EnableViewState="true">
+                                        <asp:GridView ID="gvBudget" AllowSorting="true" OnSorting="gvBudget_Sorting" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='100' AllowPaging="true" OnPageIndexChanging="gvBudget_PageIndexChanging" EmptyDataText="No record." EnableViewState="true">
+                                            <HeaderStyle BackColor="White" ForeColor="Black" Font-Bold="true" Font-Underline="true" />
                                             <Columns>
                                                 <asp:TemplateField HeaderText="#">
                                                     <HeaderStyle CssClass="width-30 text-center align-middle" />
@@ -129,15 +130,16 @@
                                                         <%# Container.DataItemIndex + 1 %>
                                                     </ItemTemplate>
                                                 </asp:TemplateField>
-                                                <asp:BoundField DataField="Ref" HeaderText="No. Rujukan" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="BizAreaCode" HeaderText="BA" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="BizAreaName" HeaderText="Projek" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="Details" HeaderText="Butir-butir Kerja" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="Month" HeaderText="Bulan" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-center" />
-                                                <asp:BoundField DataField="Vendor" HeaderText="Vendor" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="Wages" HeaderText="Upah (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
-                                                <asp:BoundField DataField="Purchase" HeaderText="Belian Alat Ganti (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
-                                                <asp:BoundField DataField="Amount" HeaderText="Jumlah (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
+                                                <asp:BoundField DataField="Ref" SortExpression="Ref" HeaderText="No. Rujukan" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="BizAreaCode" SortExpression="BizAreaCode" HeaderText="BA" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="BizAreaName" SortExpression="BizAreaName" HeaderText="Projek" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="Details" SortExpression="Details" HeaderText="Butir-butir Kerja" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="Month" SortExpression="Month" HeaderText="Bulan" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-center" />
+                                                <asp:BoundField DataField="Vendor" SortExpression="Vendor" HeaderText="Vendor" HeaderStyle-CssClass="align-middle" />
+                                                <asp:BoundField DataField="Wages" SortExpression="Wages" HeaderText="Upah (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
+                                                <asp:BoundField DataField="Purchase" SortExpression="Purchase" HeaderText="Belian Alat Ganti (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
+                                                <asp:BoundField DataField="Amount" SortExpression="Amount" HeaderText="Budget (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
+                                                <asp:BoundField DataField="Balance" SortExpression="Balance" HeaderText="Balance (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
                                             </Columns>
                                             <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
                                             <PagerStyle CssClass="pagination-ys" />

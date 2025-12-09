@@ -29,6 +29,12 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <asp:Label runat="server" CssClass="text-bold" Text="Requester Name"></asp:Label>
+                                <div class="text-muted">
+                                    <asp:Label ID="lblReqName" runat="server"></asp:Label>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <asp:Label runat="server" CssClass="text-bold" Text="Details"></asp:Label>
                                 <div class="text-muted">
                                     <asp:Label ID="lblDetails" runat="server"></asp:Label>
@@ -101,8 +107,8 @@
                                         <thead>
                                             <tr>
                                                 <th></th>
-                                                <th colspan="2" class="text-center"><%= DateTime.Now.Year %> (RM/MT)</th>
-                                                <th colspan="3" class="text-center">YTD <%= DateTime.Now.Year - 1 %> (RM/MT)</th>
+                                                <th colspan="2" class="text-center">Current Year (RM/MT)</th>
+                                                <th colspan="3" class="text-center">YTD Past Year (RM/MT)</th>
                                             </tr>
                                             <tr>
                                                 <th></th>

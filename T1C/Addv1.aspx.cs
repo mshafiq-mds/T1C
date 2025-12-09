@@ -29,7 +29,6 @@ namespace Prodata.WebForm.T1C
                 BindControl(Auth.User().iPMSBizAreaCode);
                 BindData();
                 BindDropdown(ddlBT, Functions.GetBudgetTypes(), "ID", "DisplayName", formgourp);
-
             }
         }
 
@@ -43,6 +42,7 @@ namespace Prodata.WebForm.T1C
                     string refNo = txtRefNo.Text.Trim();
                     DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
                     string details = txtDetails.Text.Trim();
+                    string reqName = txtReqName.Text.Trim();
                     string justificationOfNeed = txtJustificationOfNeed.Text.Trim();
                     decimal amount = !string.IsNullOrEmpty(txtAmount.Text.Trim()) ? decimal.Parse(txtAmount.Text.Trim().Replace(",", "")) : 0;
                     string procurementType = rblProcurementType.SelectedValue;
@@ -103,6 +103,7 @@ namespace Prodata.WebForm.T1C
                                     BizAreaName = new Class.IPMSBizArea().GetNameByCode(ba),
                                     Date = date,
                                     Ref = Functions.GetGeneratedRefNo("T1C", false),
+                                    FormRequesterName = reqName,
                                     Details = details,
                                     JustificationOfNeed = justificationOfNeed,
                                     Amount = amount,
@@ -252,6 +253,7 @@ namespace Prodata.WebForm.T1C
                     string ba = string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                     string refNo = txtRefNo.Text.Trim();
                     DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
+                    string reqName = txtReqName.Text.Trim();
                     string details = txtDetails.Text.Trim();
                     string justificationOfNeed = txtJustificationOfNeed.Text.Trim();
                     decimal amount = !string.IsNullOrEmpty(txtAmount.Text.Trim()) ? decimal.Parse(txtAmount.Text.Trim().Replace(",", "")) : 0;
@@ -314,6 +316,7 @@ namespace Prodata.WebForm.T1C
                                     Date = date,
                                     Ref = Functions.GetGeneratedRefNo("T1C", false), //refNo,
                                     Details = details,
+                                    FormRequesterName = reqName,
                                     JustificationOfNeed = justificationOfNeed,
                                     Amount = amount,
                                     ProcurementType = procurementType,

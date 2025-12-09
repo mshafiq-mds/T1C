@@ -132,6 +132,24 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvBA;
 
         /// <summary>
+        /// Label1 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label1;
+
+        /// <summary>
+        /// txtReqName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReqName;
+
+        /// <summary>
         /// lblRefNo control.
         /// </summary>
         /// <remarks>

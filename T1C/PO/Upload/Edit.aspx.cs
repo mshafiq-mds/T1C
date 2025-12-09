@@ -279,6 +279,7 @@ namespace Prodata.WebForm.T1C.PO.Upload
                         lblTitle.Text = form.Ref;
 
                         lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
+                        lblReqName.Text = form.FormRequesterName;
                         lblRefNo.Text = form.Ref;
                         lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
                         lblDetails.Text = form.Details;

@@ -1,6 +1,7 @@
 ﻿<%@ Page Title="User" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.Administration.User.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+ 
     <asp:HiddenField ID="hdnRecordId" runat="server" />
     <asp:Button ID="btnDeleteRecord" runat="server" OnClick="btnDeleteRecord_Click" CssClass="d-none" />
     <div class="row">
@@ -9,7 +10,7 @@
                 <div class="card-header">
                     <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                     <div class="card-tools">
-                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/Administration/User/Add">
+                        <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary btn-preload" PostBackUrl="~/Administration/User/Add">
                             <i class="fas fa-plus"></i> Add User
                         </asp:LinkButton>
                     </div>
@@ -19,6 +20,25 @@
                         <div class="col-12">
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                 <ContentTemplate>
+                                    <div class="card-tools">
+                                        <div class="input-group input-group-sm" style="width: 250px;">
+                                            <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Search (insert keyword)..." AutoPostBack="true" OnTextChanged="txtSearch_TextChanged"></asp:TextBox>
+
+                                            <div class="input-group-append">
+                                                <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-default btn-preload" OnClick="btnSearch_Click">
+                                                    <i class="fas fa-search"></i>
+                                                </asp:LinkButton>
+
+                                                <asp:LinkButton ID="btnClear" runat="server" CssClass="btn btn-secondary btn-preload" OnClick="btnClear_Click">
+                                                    <i class="fas fa-times"></i>
+                                                </asp:LinkButton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                        <div class="input-group input-group-sm" style="width: 250px;">
+                                        </div>
+
                                     <div class="table-responsive">
                                         <asp:GridView ID="gvUser" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered table-sm" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvUser_PageIndexChanging" EmptyDataText="No record.">
                                             <Columns>
@@ -39,7 +59,7 @@
                                                     <HeaderStyle CssClass="width-80 text-center" />
                                                     <ItemStyle CssClass="width-80 text-center" />
                                                     <ItemTemplate>
-                                                        <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-info btn-xs" OnClick="btnEdit_Click">
+                                                        <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-info btn-xs btn-preload" OnClick="btnEdit_Click">
                                                             <i class="fas fa-edit"></i>
                                                         </asp:LinkButton>
                                                         <asp:LinkButton ID="btnDelete" runat="server" CssClass="btn btn-danger btn-xs button-delete" data-id='<%# Eval("Id") %>' Visible='<%# Prodata.WebForm.Auth.Can(Prodata.WebForm.Auth.Id(), "admin-user-delete") %>'>
@@ -85,5 +105,6 @@
                 });
             });
         });
+         
     </script>
 </asp:Content>

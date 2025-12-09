@@ -91,6 +91,7 @@ namespace Prodata.WebForm.T1C
 
                         lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
                         lblRefNo.Text = form.Ref;
+                        lblReqName.Text = form.FormRequesterName;
                         lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
                         lblDetails.Text = form.Details;
                         lblJustificationOfNeed.Text = form.JustificationOfNeed;

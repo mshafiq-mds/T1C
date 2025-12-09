@@ -26,6 +26,7 @@ namespace Prodata.WebForm.Administration.User
             }
 		}
 
+
         protected void btnEdit_Click(object sender, EventArgs e)
         {
             GridViewRow row = (GridViewRow)((LinkButton)sender).NamingContainer;
@@ -79,6 +80,17 @@ namespace Prodata.WebForm.Administration.User
             BindData();
         }
 
+        //private void BindData()
+        //{
+        //    ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
+
+        //    var userManager = Context.GetOwinContext().GetUserManager<UserManager>();
+        //    var userList = userManager.GetUsers();
+
+        //    gvUser.DataSource = userList;
+        //    gvUser.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
+        //    gvUser.DataBind();
+        //}
         private void BindData()
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
@@ -86,9 +98,39 @@ namespace Prodata.WebForm.Administration.User
             var userManager = Context.GetOwinContext().GetUserManager<UserManager>();
             var userList = userManager.GetUsers();
 
+            // 🔍 Filter by ANY field if search text is not empty
+            if (!string.IsNullOrWhiteSpace(txtSearch.Text))
+            {
+                string keyword = txtSearch.Text.ToLower();
+
+                userList = userList.Where(x =>
+                    (x.Name != null && x.Name.ToLower().Contains(keyword)) ||
+                    (x.Username != null && x.Username.ToLower().Contains(keyword)) ||
+                    (x.Email != null && x.Email.ToLower().Contains(keyword)) ||
+                    (x.Roles != null && x.Roles.ToLower().Contains(keyword)) ||
+                    (x.IPMSRole != null && x.IPMSRole.ToLower().Contains(keyword)) ||
+                    (x.IPMSBizArea != null && x.IPMSBizArea.ToLower().Contains(keyword))
+                ).ToList();
+            }
+
             gvUser.DataSource = userList;
             gvUser.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
             gvUser.DataBind();
         }
+
+        protected void btnSearch_Click(object sender, EventArgs e)
+        {
+            BindData(); // 🔍 Trigger search
+        }
+        protected void txtSearch_TextChanged(object sender, EventArgs e)
+        {
+            BindData(); // 🔍 Live search while typing
+        }
+        protected void btnClear_Click(object sender, EventArgs e)
+        {
+            txtSearch.Text = "";
+            BindData();
+        }
+
     }
 }

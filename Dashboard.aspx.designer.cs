@@ -15,6 +15,87 @@ namespace Prodata.WebForm
     {
 
         /// <summary>
+        /// lblBA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblBA;
+
+        /// <summary>
+        /// ddBA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddBA;
+
+        /// <summary>
+        /// btnClearBA control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnClearBA;
+
+        /// <summary>
+        /// lblYear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblYear;
+
+        /// <summary>
+        /// ddYear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddYear;
+
+        /// <summary>
+        /// UpdatePanelDashboard control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel UpdatePanelDashboard;
+
+        /// <summary>
+        /// hfModalCategory control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfModalCategory;
+
+        /// <summary>
+        /// hfModalStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfModalStatus;
+
+        /// <summary>
+        /// BtnT1CSubmitted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CSubmitted;
+
+        /// <summary>
         /// LblT1CSubmitted control.
         /// </summary>
         /// <remarks>
@@ -22,6 +103,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblT1CSubmitted;
+
+        /// <summary>
+        /// BtnT1CReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CReview;
 
         /// <summary>
         /// LblT1CReview control.
@@ -33,6 +123,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblT1CReview;
 
         /// <summary>
+        /// BtnT1CResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CResubmit;
+
+        /// <summary>
         /// LblT1CResubmit control.
         /// </summary>
         /// <remarks>
@@ -40,6 +139,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblT1CResubmit;
+
+        /// <summary>
+        /// BtnT1CComplete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CComplete;
 
         /// <summary>
         /// LblT1CComplete control.
@@ -51,6 +159,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblT1CComplete;
 
         /// <summary>
+        /// BtnT1CDeleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CDeleted;
+
+        /// <summary>
         /// LblT1CDeleted control.
         /// </summary>
         /// <remarks>
@@ -58,6 +175,33 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblT1CDeleted;
+
+        /// <summary>
+        /// BtnT1CFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1CFinalized;
+
+        /// <summary>
+        /// LblT1CFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1CFinalized;
+
+        /// <summary>
+        /// BtnAddSubmitted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddSubmitted;
 
         /// <summary>
         /// LblAdditionalSubmitted control.
@@ -69,6 +213,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblAdditionalSubmitted;
 
         /// <summary>
+        /// BtnAddReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddReview;
+
+        /// <summary>
         /// LblAdditionalReview control.
         /// </summary>
         /// <remarks>
@@ -76,6 +229,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblAdditionalReview;
+
+        /// <summary>
+        /// BtnAddResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddResubmit;
 
         /// <summary>
         /// LblAdditionalResubmit control.
@@ -87,6 +249,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblAdditionalResubmit;
 
         /// <summary>
+        /// BtnAddComplete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddComplete;
+
+        /// <summary>
         /// LblAdditionalComplete control.
         /// </summary>
         /// <remarks>
@@ -94,6 +265,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblAdditionalComplete;
+
+        /// <summary>
+        /// BtnAddDeleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddDeleted;
 
         /// <summary>
         /// LblAdditionalDeleted control.
@@ -105,6 +285,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblAdditionalDeleted;
 
         /// <summary>
+        /// BtnAddFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnAddFinalized;
+
+        /// <summary>
         /// LblAdditionalFinalized control.
         /// </summary>
         /// <remarks>
@@ -112,6 +301,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblAdditionalFinalized;
+
+        /// <summary>
+        /// BtnTransSubmitted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransSubmitted;
 
         /// <summary>
         /// LblTransferSubmitted control.
@@ -123,6 +321,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblTransferSubmitted;
 
         /// <summary>
+        /// BtnTransReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransReview;
+
+        /// <summary>
         /// LblTransferReview control.
         /// </summary>
         /// <remarks>
@@ -130,6 +337,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblTransferReview;
+
+        /// <summary>
+        /// BtnTransResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransResubmit;
 
         /// <summary>
         /// LblTransferResubmit control.
@@ -141,6 +357,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblTransferResubmit;
 
         /// <summary>
+        /// BtnTransComplete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransComplete;
+
+        /// <summary>
         /// LblTransferComplete control.
         /// </summary>
         /// <remarks>
@@ -148,6 +373,15 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblTransferComplete;
+
+        /// <summary>
+        /// BtnTransDeleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransDeleted;
 
         /// <summary>
         /// LblTransferDeleted control.
@@ -159,6 +393,15 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblTransferDeleted;
 
         /// <summary>
+        /// BtnTransFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnTransFinalized;
+
+        /// <summary>
         /// LblTransferFinalized control.
         /// </summary>
         /// <remarks>
@@ -166,5 +409,41 @@ namespace Prodata.WebForm
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label LblTransferFinalized;
+
+        /// <summary>
+        /// lblModalTitle control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblModalTitle;
+
+        /// <summary>
+        /// txtSearchDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSearchDetail;
+
+        /// <summary>
+        /// btnSearchDetail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnSearchDetail;
+
+        /// <summary>
+        /// gvDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvDetails;
     }
 }

@@ -86,7 +86,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
                             var typeId = Guid.TryParse(ddlBT.SelectedValue, out var parsedTypeId) ? parsedTypeId : Guid.Empty;
                             budgetformtype = db.BudgetTypes
                                 .Where(x => x.Id == typeId)
-                                .Select(x => x.FormCategories)
+                                .Select(x => x.BudgetCategories)
                                 .FirstOrDefault();
                         }
 

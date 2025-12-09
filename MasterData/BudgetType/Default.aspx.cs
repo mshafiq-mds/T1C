@@ -74,18 +74,36 @@ namespace Prodata.WebForm.MasterData.BudgetType
             gvBudgetType.DataBind();
         }
 
+        //private List<Models.MasterData.BudgetType> GetBudgetTypes(string code = null, string name = null)
+        //{
+        //    using (var db = new AppDbContext())
+        //    {
+        //        return db.BudgetTypes
+        //            .ExcludeSoftDeleted()
+        //            .Where(b => 
+        //                (string.IsNullOrEmpty(code) || b.Code.Contains(code)) && 
+        //                (string.IsNullOrEmpty(name) || b.Name.Contains(name)))
+        //            .OrderBy(x => Convert.ToInt32(x.Code))
+        //            .ToList();
+        //    }
+        //}
         private List<Models.MasterData.BudgetType> GetBudgetTypes(string code = null, string name = null)
         {
             using (var db = new AppDbContext())
             {
-                return db.BudgetTypes
+                var list = db.BudgetTypes
                     .ExcludeSoftDeleted()
-                    .Where(b => 
-                        (string.IsNullOrEmpty(code) || b.Code.Contains(code)) && 
+                    .Where(b =>
+                        (string.IsNullOrEmpty(code) || b.Code.Contains(code)) &&
                         (string.IsNullOrEmpty(name) || b.Name.Contains(name)))
-                    .OrderBy(b => b.Code)
+                    .ToList(); // 👈 Move to memory first!
+
+                return list
+                    .OrderBy(x => int.TryParse(x.Code, out int num) ? num : int.MaxValue)
+                    .ThenBy(x => x.Code)
                     .ToList();
             }
         }
+
     }
 }

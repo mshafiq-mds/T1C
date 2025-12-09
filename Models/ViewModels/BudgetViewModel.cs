@@ -23,5 +23,7 @@ namespace Prodata.WebForm.Models.ViewModels
         public string Amount { get; set; }
         public string Vendor { get; set; }
         public string Status { get; set; }
+        public string Balance { get; set; }
+
     }
 }
