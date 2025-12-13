@@ -152,7 +152,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
                     }
 
                     // Function Emails
-                    Emails.EmailsT2ForNewRequest(form.Id, form , Auth.User().iPMSRoleCode);
+                    Emails.EmailsT2ForNewRequest(form.Id, form , Auth.User().CCMSRoleCode);
 
                     // Show success alert
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Successful Create Transaction.");
@@ -203,7 +203,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
         {
             string typebudgetCodeBekalan = "5";
             string typebudgetCodeBelian = "2";
-            string BA = Auth.User().iPMSBizAreaCode;
+            string BA = Auth.User().CCMSBizAreaCode;
 
             using (var db = new AppDbContext())
             {
@@ -278,7 +278,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
 
         private void BindBALabel()
         {
-            string ba = Auth.User().iPMSBizAreaCode;
+            string ba = Auth.User().CCMSBizAreaCode;
 
             bool isEmptyBA = string.IsNullOrWhiteSpace(ba);
 

@@ -108,8 +108,10 @@ namespace Prodata.WebForm.Administration.User
                     (x.Username != null && x.Username.ToLower().Contains(keyword)) ||
                     (x.Email != null && x.Email.ToLower().Contains(keyword)) ||
                     (x.Roles != null && x.Roles.ToLower().Contains(keyword)) ||
-                    (x.IPMSRole != null && x.IPMSRole.ToLower().Contains(keyword)) ||
-                    (x.IPMSBizArea != null && x.IPMSBizArea.ToLower().Contains(keyword))
+                    //(x.IPMSRole != null && x.IPMSRole.ToLower().Contains(keyword)) ||
+                    //(x.IPMSBizArea != null && x.IPMSBizArea.ToLower().Contains(keyword)||
+                    (x.CCMSRole != null && x.CCMSRole.ToLower().Contains(keyword))||
+                    (x.CCMSBizArea != null && x.CCMSBizArea.ToLower().Contains(keyword))
                 ).ToList();
             }
 

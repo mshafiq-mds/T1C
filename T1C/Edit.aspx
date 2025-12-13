@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Edit Budget T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.Edit" %>
+﻿<%@ Page Title="Edit Budget T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.BudgetEdit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -128,14 +128,14 @@
                                         <asp:TextBox ID="txtAmount" runat="server" CssClass="form-control input-number2" placeholder="Estimate Amount"></asp:TextBox>
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter estimate amount (RM)"></asp:RequiredFieldValidator>
-                                    <asp:CustomValidator ID="cvAmountLimit" runat="server"
+<%--                                    <asp:CustomValidator ID="cvAmountLimit" runat="server"
                                         ControlToValidate="txtAmount"
                                         OnServerValidate="cvAmountLimit_ServerValidate"
                                         ClientValidationFunction="validateAmountLimit"
                                         EnableClientScript="true"
                                         CssClass="text-danger" Display="Dynamic"
                                         ErrorMessage="Amount is outside the allowed range.">
-                                    </asp:CustomValidator>
+                                    </asp:CustomValidator>--%>
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -833,7 +833,7 @@
         }
 
         function validateAmountLimit(source, args) {
-            var role = '<%= Prodata.WebForm.Auth.User().iPMSRoleCode?.ToLower() %>';
+            var role = '<%= Prodata.WebForm.Auth.User().CCMSRoleCode?.ToLower() %>';
             var rawValue = args.Value.replace(/,/g, ''); // remove commas
             var value = parseFloat(rawValue);
 

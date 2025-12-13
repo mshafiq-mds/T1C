@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.Script.Serialization; // Required for Chart JSON
+using System.Web.Script.Serialization;
 
 namespace Prodata.WebForm
 {
     public partial class Dashboard : ProdataPage
     {
-        // Simple class to hold data for one section
+        // Helper class to hold count data
         private class DashboardCounts
         {
             public int Submitted { get; set; }
@@ -25,31 +25,23 @@ namespace Prodata.WebForm
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Add class for styling
-            Page.ClientScript.RegisterStartupScript(this.GetType(), "BodyClass",
-                "<script>document.body.classList.add('dashboard-lock');</script>");
+            Page.ClientScript.RegisterStartupScript(this.GetType(), "BodyClass", "<script>document.body.classList.add('dashboard-lock');</script>");
 
             if (!IsPostBack)
             {
-                LoadBusinessAreas(); // Fix: This method is defined below
-                LoadYears();         // Fix: This method is defined below
-                LoadDashboardData(); // Loads cards and charts
+                LoadBusinessAreas();
+                LoadYears();
+                LoadDashboardData();
             }
         }
 
-        // ==========================================================
-        // 1. DROPDOWN LOADING METHODS (Fixes your error)
-        // ==========================================================
         private void LoadBusinessAreas()
         {
             try
             {
-                var currentUserBA = Auth.User().iPMSBizAreaCode;
+                var currentUserBA = Auth.User().CCMSBizAreaCode;
                 var bizAreas = new Class.IPMSBizArea().GetIPMSBizAreas();
-
                 BindDropdown(ddBA, bizAreas, "Code", "DisplayName");
-
-                // Select user's BA by default if they have one
                 if (!string.IsNullOrEmpty(currentUserBA) && ddBA.Items.FindByValue(currentUserBA) != null)
                 {
                     ddBA.SelectedValue = currentUserBA;
@@ -65,24 +57,12 @@ namespace Prodata.WebForm
         {
             int currentYear = DateTime.Now.Year;
             var years = new List<int>();
-
-            // Range: 2 years back -> 1 year forward
-            for (int i = currentYear - 2; i <= currentYear + 1; i++)
-            {
-                years.Add(i);
-            }
-
+            for (int i = currentYear - 2; i <= currentYear + 1; i++) years.Add(i);
             ddYear.DataSource = years;
             ddYear.DataBind();
-
-            // Default to current year
-            if (ddYear.Items.FindByValue(currentYear.ToString()) != null)
-                ddYear.SelectedValue = currentYear.ToString();
+            if (ddYear.Items.FindByValue(currentYear.ToString()) != null) ddYear.SelectedValue = currentYear.ToString();
         }
 
-        // ==========================================================
-        // 2. EVENT HANDLERS (Filters & Cards)
-        // ==========================================================
         protected void btnClearBA_Click(object sender, EventArgs e)
         {
             ddBA.SelectedIndex = 0;
@@ -105,26 +85,22 @@ namespace Prodata.WebForm
             {
                 LinkButton btn = (LinkButton)sender;
                 string[] args = btn.CommandArgument.Split('|');
-
                 if (args.Length != 2) return;
 
                 string category = args[0];
                 string statusType = args[1];
 
-                // Store state for Search
                 hfModalCategory.Value = category;
                 hfModalStatus.Value = statusType;
-
-                // Clear previous search
                 txtSearchDetail.Text = string.Empty;
 
                 lblModalTitle.Text = $"{category} - {statusType} List ({ddYear.SelectedValue})";
 
-                // Load data into grid
                 BindModalGrid(category, statusType);
-
-                // Open Modal via JS
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openDetailModal();", true);
+
+                // Reload Charts to fix Canvas wipe on UpdatePanel refresh
+                LoadDashboardData();
             }
             catch (Exception ex)
             {
@@ -134,114 +110,36 @@ namespace Prodata.WebForm
 
         protected void btnSearchDetail_Click(object sender, EventArgs e)
         {
-            // Retrieve state
-            string category = hfModalCategory.Value;
-            string status = hfModalStatus.Value;
-            string keyword = txtSearchDetail.Text.Trim();
-
-            // Reload grid with search filter
-            BindModalGrid(category, status, keyword);
-
-            // Keep modal open
+            BindModalGrid(hfModalCategory.Value, hfModalStatus.Value, txtSearchDetail.Text.Trim());
             ScriptManager.RegisterStartupScript(this, this.GetType(), "Pop", "openDetailModal();", true);
+            LoadDashboardData();
         }
 
-        // ==========================================================
-        // 3. CORE LOGIC: Loading Dashboard Stats & Charts
-        // ==========================================================
-        private void LoadDashboardData()
-        {
-            string selectedBA = ddBA.SelectedValue;
-            int selectedYear = int.TryParse(ddYear.SelectedValue, out int y) ? y : DateTime.Now.Year;
-
-            using (var db = new AppDbContext())
-            {
-                try
-                {
-                    // --- A. Additional Budget ---
-                    var addBudgetQuery = db.AdditionalBudgetRequests.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) addBudgetQuery = addBudgetQuery.Where(x => x.BA == selectedBA);
-
-                    var addStats = addBudgetQuery.GroupBy(x => 1).Select(g => new DashboardCounts
-                    {
-                        Deleted = g.Count(x => x.DeletedDate != null),
-                        Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.Status == 2),
-                        Resubmit = g.Count(x => x.Status == 0),
-                        Complete = g.Count(x => x.Status == 3),
-                        Finalized = g.Count(x => x.Status == 4)
-                    }).FirstOrDefault() ?? new DashboardCounts();
-
-                    UpdateSection(addStats, LblAdditionalSubmitted, LblAdditionalReview, LblAdditionalResubmit, LblAdditionalComplete, LblAdditionalDeleted, LblAdditionalFinalized);
-
-                    // --- B. Transfers ---
-                    var transferQuery = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) transferQuery = transferQuery.Where(x => x.BA == selectedBA);
-
-                    var transStats = transferQuery.GroupBy(x => 1).Select(g => new DashboardCounts
-                    {
-                        Deleted = g.Count(x => x.DeletedDate != null),
-                        Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.status == 2),
-                        Resubmit = g.Count(x => x.status == 0),
-                        Complete = g.Count(x => x.status == 3),
-                        Finalized = g.Count(x => x.status == 4)
-                    }).FirstOrDefault() ?? new DashboardCounts();
-
-                    UpdateSection(transStats, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
-
-                    // --- C. T1C Forms ---
-                    var formQuery = db.Forms.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) formQuery = formQuery.Where(x => x.BizAreaCode == selectedBA);
-
-                    var formStats = formQuery.GroupBy(x => 1).Select(g => new DashboardCounts
-                    {
-                        Deleted = g.Count(x => x.DeletedDate != null),
-                        Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.Status == "Pending"),
-                        Resubmit = g.Count(x => x.Status == "SentBack"),
-                        Complete = g.Count(x => x.Status == "Approved"),
-                        Finalized = g.Count(x => x.Status == "Completed")
-                    }).FirstOrDefault() ?? new DashboardCounts();
-
-                    UpdateSection(formStats, LblT1CSubmitted, LblT1CReview, LblT1CResubmit, LblT1CComplete, LblT1CDeleted, LblT1CFinalized);
-
-                    // --- D. Render Charts (Serialize Data for JS) ---
-                    var t1cData = new int[] { formStats.Submitted, formStats.Review, formStats.Resubmit, formStats.Complete, formStats.Deleted, formStats.Finalized };
-                    var addData = new int[] { addStats.Submitted, addStats.Review, addStats.Resubmit, addStats.Complete, addStats.Deleted, addStats.Finalized };
-                    var transData = new int[] { transStats.Submitted, transStats.Review, transStats.Resubmit, transStats.Complete, transStats.Deleted, transStats.Finalized };
-
-                    JavaScriptSerializer js = new JavaScriptSerializer();
-
-                    // Call the JS function defined in ASPX with the data arrays
-                    string script = $"renderDashboardCharts({js.Serialize(t1cData)}, {js.Serialize(addData)}, {js.Serialize(transData)});";
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "InitCharts", script, true);
-
-                }
-                catch (Exception ex)
-                {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error loading dashboard: " + ex.Message);
-                }
-            }
-        }
-
-        // ==========================================================
-        // 4. HELPER METHODS
-        // ==========================================================
         private void BindModalGrid(string category, string statusType, string searchKeyword = "")
         {
             string selectedBA = ddBA.SelectedValue;
             int selectedYear = int.TryParse(ddYear.SelectedValue, out int y) ? y : DateTime.Now.Year;
+            var bizAreaHelper = new Class.IPMSBizArea();
+
+            List<string> targetCodes = new List<string>();
+            if (!string.IsNullOrEmpty(selectedBA))
+            {
+                targetCodes = bizAreaHelper.GetBizAreaCodes(selectedBA);
+            }
+
+            // Variable to calculate total
+            decimal totalAmount = 0;
 
             using (var db = new AppDbContext())
             {
+                // -----------------------
+                // 1. T1C Logic
+                // -----------------------
                 if (category == "T1C")
                 {
                     var query = db.Forms.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) query = query.Where(x => x.BizAreaCode == selectedBA);
-
-                    if (!string.IsNullOrEmpty(searchKeyword))
-                        query = query.Where(x => x.Ref.Contains(searchKeyword));
+                    if (targetCodes.Any()) query = query.Where(x => targetCodes.Contains(x.BizAreaCode));
+                    if (!string.IsNullOrEmpty(searchKeyword)) query = query.Where(x => x.Ref.Contains(searchKeyword));
 
                     switch (statusType)
                     {
@@ -253,21 +151,39 @@ namespace Prodata.WebForm
                         case "Finalized": query = query.Where(x => x.Status == "Completed"); break;
                     }
 
-                    gvDetails.DataSource = query.Select(x => new {
-                        RefNo = x.Ref,
-                        Date = x.CreatedDate,
-                        BA = x.BizAreaCode,
-                        Status = x.Status,
-                        Amount = x.Amount
-                    }).OrderByDescending(x => x.Date).ToList();
+                    // FIX 1: T1C 'Amount' allows nulls. We check 'Amount' existence and handle nulls.
+                    var resultList = query.OrderByDescending(x => x.CreatedDate)
+                        .Select(x => new
+                        {
+                            RefNo = x.Ref,
+                            Date = x.CreatedDate,
+                            BA = x.BizAreaCode,
+                            Status = x.Status,
+                            Amount = x.Amount // Forms table has Amount
+                        })
+                        .ToList();
+
+                    // FIX 2: Handle nullable decimal in Sum (x.Amount ?? 0)
+                    totalAmount = resultList.Sum(x => x.Amount ?? 0);
+
+                    // FIX 3: Handle nullable decimal in ToString
+                    gvDetails.DataSource = resultList.Select(x => new
+                    {
+                        x.RefNo,
+                        x.Date,
+                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        x.Status,
+                        Amount = (x.Amount ?? 0).ToString("N2")
+                    }).ToList();
                 }
+                // -----------------------
+                // 2. Additional Logic
+                // -----------------------
                 else if (category == "Additional")
                 {
                     var query = db.AdditionalBudgetRequests.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) query = query.Where(x => x.BA == selectedBA);
-
-                    if (!string.IsNullOrEmpty(searchKeyword))
-                        query = query.Where(x => x.RefNo.Contains(searchKeyword));
+                    if (targetCodes.Any()) query = query.Where(x => targetCodes.Contains(x.BA));
+                    if (!string.IsNullOrEmpty(searchKeyword)) query = query.Where(x => x.RefNo.Contains(searchKeyword));
 
                     switch (statusType)
                     {
@@ -279,20 +195,39 @@ namespace Prodata.WebForm
                         case "Finalized": query = query.Where(x => x.Status == 4); break;
                     }
 
-                    gvDetails.DataSource = query.Select(x => new {
-                        RequestNo = x.RefNo,
-                        Date = x.CreatedDate,
-                        BA = x.BA,
-                        Status = x.Status
-                    }).OrderByDescending(x => x.Date).ToList();
+                    // FIX 4: Your 'AdditionalBudgetRequests' table DOES NOT have an 'Amount' column.
+                    // I removed 'Amount = x.Amount' so it compiles. 
+                    var resultList = query.OrderByDescending(x => x.CreatedDate)
+                        .Select(x => new
+                        {
+                            RequestNo = x.RefNo,
+                            Date = x.CreatedDate,
+                            BA = x.BA,
+                            Status = x.Status
+                            // If you find the column name (e.g. TotalAmount), add it here like: RealAmount = x.TotalAmount
+                        })
+                        .ToList();
+
+                    // Defaults to 0 because column is missing
+                    totalAmount = 0;
+
+                    gvDetails.DataSource = resultList.Select(x => new
+                    {
+                        x.RequestNo,
+                        x.Date,
+                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        x.Status,
+                        Amount = "0.00" // Placeholder
+                    }).ToList();
                 }
+                // -----------------------
+                // 3. Transfer Logic
+                // -----------------------
                 else if (category == "Transfer")
                 {
                     var query = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
-                    if (!string.IsNullOrEmpty(selectedBA)) query = query.Where(x => x.BA == selectedBA);
-
-                    if (!string.IsNullOrEmpty(searchKeyword))
-                        query = query.Where(x => x.RefNo.Contains(searchKeyword));
+                    if (targetCodes.Any()) query = query.Where(x => targetCodes.Contains(x.BA));
+                    if (!string.IsNullOrEmpty(searchKeyword)) query = query.Where(x => x.RefNo.Contains(searchKeyword));
 
                     switch (statusType)
                     {
@@ -304,34 +239,119 @@ namespace Prodata.WebForm
                         case "Finalized": query = query.Where(x => x.status == 4); break;
                     }
 
-                    gvDetails.DataSource = query.Select(x => new {
-                        RefNo = x.RefNo,
-                        Date = x.CreatedDate,
-                        BA = x.BA,
-                        Status = x.status
-                    }).OrderByDescending(x => x.Date).ToList();
+                    // FIX 5: Your 'TransfersTransaction' table DOES NOT have an 'Amount' column.
+                    // I removed 'Amount = x.Amount' so it compiles.
+                    var resultList = query.OrderByDescending(x => x.CreatedDate)
+                        .Select(x => new
+                        {
+                            RefNo = x.RefNo,
+                            Date = x.CreatedDate,
+                            BA = x.BA,
+                            Status = x.status
+                        })
+                        .ToList();
+
+                    // Defaults to 0
+                    totalAmount = 0;
+
+                    gvDetails.DataSource = resultList.Select(x => new
+                    {
+                        x.RefNo,
+                        x.Date,
+                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        x.Status,
+                        Amount = "0.00" // Placeholder
+                    }).ToList();
                 }
 
+                // Update the Modal Label
+                lblModalTotal.Text = "RM" + totalAmount.ToString("N2");
                 gvDetails.DataBind();
             }
         }
 
-        private void UpdateSection(DashboardCounts stats, Label submit, Label review, Label resubmit, Label complete, Label deleted, Label finalized)
+        private void LoadDashboardData()
         {
-            submit.Text = stats.Submitted.ToString();
-            review.Text = stats.Review.ToString();
-            resubmit.Text = stats.Resubmit.ToString();
-            complete.Text = stats.Complete.ToString();
-            deleted.Text = stats.Deleted.ToString();
-            finalized.Text = stats.Finalized.ToString();
+            string selectedBA = ddBA.SelectedValue;
+            int selectedYear = int.TryParse(ddYear.SelectedValue, out int y) ? y : DateTime.Now.Year;
+
+            List<string> targetCodes = new List<string>();
+            if (!string.IsNullOrEmpty(selectedBA))
+            {
+                targetCodes = new Class.IPMSBizArea().GetBizAreaCodes(selectedBA);
+            }
+
+            using (var db = new AppDbContext())
+            {
+                try
+                {
+                    // 1. Additional
+                    var addQ = db.AdditionalBudgetRequests.Where(x => x.CreatedDate.Year == selectedYear);
+                    if (targetCodes.Any()) addQ = addQ.Where(x => targetCodes.Contains(x.BA));
+
+                    var addS = addQ.GroupBy(x => 1).Select(g => new DashboardCounts
+                    {
+                        Deleted = g.Count(x => x.DeletedDate != null),
+                        Submitted = g.Count(x => x.DeletedDate == null),
+                        Review = g.Count(x => x.Status == 2),
+                        Resubmit = g.Count(x => x.Status == 0),
+                        Complete = g.Count(x => x.Status == 3),
+                        Finalized = g.Count(x => x.Status == 4)
+                    }).FirstOrDefault() ?? new DashboardCounts();
+                    UpdateSection(addS, LblAdditionalSubmitted, LblAdditionalReview, LblAdditionalResubmit, LblAdditionalComplete, LblAdditionalDeleted, LblAdditionalFinalized);
+
+                    // 2. Transfer
+                    var trQ = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
+                    if (targetCodes.Any()) trQ = trQ.Where(x => targetCodes.Contains(x.BA));
+
+                    var trS = trQ.GroupBy(x => 1).Select(g => new DashboardCounts
+                    {
+                        Deleted = g.Count(x => x.DeletedDate != null),
+                        Submitted = g.Count(x => x.DeletedDate == null),
+                        Review = g.Count(x => x.status == 2),
+                        Resubmit = g.Count(x => x.status == 0),
+                        Complete = g.Count(x => x.status == 3),
+                        Finalized = g.Count(x => x.status == 4)
+                    }).FirstOrDefault() ?? new DashboardCounts();
+                    UpdateSection(trS, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
+
+                    // 3. T1C
+                    var fmQ = db.Forms.Where(x => x.CreatedDate.Year == selectedYear);
+                    if (targetCodes.Any()) fmQ = fmQ.Where(x => targetCodes.Contains(x.BizAreaCode));
+
+                    var fmS = fmQ.GroupBy(x => 1).Select(g => new DashboardCounts
+                    {
+                        Deleted = g.Count(x => x.DeletedDate != null),
+                        Submitted = g.Count(x => x.DeletedDate == null),
+                        Review = g.Count(x => x.Status == "Pending"),
+                        Resubmit = g.Count(x => x.Status == "SentBack"),
+                        Complete = g.Count(x => x.Status == "Approved"),
+                        Finalized = g.Count(x => x.Status == "Completed")
+                    }).FirstOrDefault() ?? new DashboardCounts();
+                    UpdateSection(fmS, LblT1CSubmitted, LblT1CReview, LblT1CResubmit, LblT1CComplete, LblT1CDeleted, LblT1CFinalized);
+
+                    // Render Charts
+                    var t1cData = new int[] { fmS.Submitted, fmS.Review, fmS.Resubmit, fmS.Complete, fmS.Deleted, fmS.Finalized };
+                    var addData = new int[] { addS.Submitted, addS.Review, addS.Resubmit, addS.Complete, addS.Deleted, addS.Finalized };
+                    var transData = new int[] { trS.Submitted, trS.Review, trS.Resubmit, trS.Complete, trS.Deleted, trS.Finalized };
+
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    string script = $"renderDashboardCharts({js.Serialize(t1cData)}, {js.Serialize(addData)}, {js.Serialize(transData)});";
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "InitCharts", script, true);
+                }
+                catch (Exception ex) { SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error: " + ex.Message); }
+            }
         }
 
-        private void BindDropdown(ListControl ddl, object dataSource, string dataValueField, string dataTextField)
+        private void UpdateSection(DashboardCounts stats, Label s, Label r, Label rs, Label c, Label d, Label f)
         {
-            ddl.DataSource = dataSource;
-            ddl.DataValueField = dataValueField;
-            ddl.DataTextField = dataTextField;
-            ddl.DataBind();
+            s.Text = stats.Submitted.ToString(); r.Text = stats.Review.ToString(); rs.Text = stats.Resubmit.ToString();
+            c.Text = stats.Complete.ToString(); d.Text = stats.Deleted.ToString(); f.Text = stats.Finalized.ToString();
+        }
+
+        private void BindDropdown(ListControl ddl, object dataSource, string val, string txt)
+        {
+            ddl.DataSource = dataSource; ddl.DataValueField = val; ddl.DataTextField = txt; ddl.DataBind();
             ddl.Items.Insert(0, new ListItem("All Business Areas", ""));
         }
     }

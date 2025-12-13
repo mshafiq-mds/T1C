@@ -139,13 +139,9 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             }
             return status;
         }
+
         private void UpdateStatusTransferTransaction(int status)
         {
-            //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -157,7 +153,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     }
 
                     model.status = status;
-
                     db.SaveChanges();
 
                     string action = hdnAction.Value?.ToLower();
@@ -168,12 +163,13 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     }
                     else if (action == "approve") //next approve  
                     {
-                        Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+                        Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().CCMSRoleCode);
                     }
 
                 }
             }
         }
+
         private void HandleApprovalAction(string status)
         {
             string action = hdnAction.Value?.ToLower();
@@ -189,7 +185,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 return;
             }
 
-            string roleCode = Auth.User().iPMSRoleCode;
+            string roleCode = Auth.User().CCMSRoleCode;
             Guid userId = Auth.User().Id;
 
             using (var db = new AppDbContext())
@@ -207,8 +203,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 int approvalStep = approvalConfig?.Order ?? 0;
                 string section = approvalConfig?.Section ?? "Unknown";
 
-                // Block if role has no approval authority and trying to approve
-                //if (status == "Approved" && approvalStep == 0)
                 if (section == "Unknown")
                 {
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This role has no approval authority.");
@@ -231,7 +225,8 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     ActionType = section,
                     ActionDate = DateTime.Now,
                     Status = status,
-                    Remarks = txtRemarks.Text?.Trim()
+                    // UPDATED: Using hidden field instead of TextBox
+                    Remarks = hdnRemarks.Value?.Trim()
                 };
 
                 db.TransferApprovalLog.Add(logEntry);
@@ -291,7 +286,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             using (var db = new AppDbContext())
             {
                 var query = db.TransferApprovalLog
-                              .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
+                            .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
 
                 var transfers = query
                     .OrderByDescending(x => x.ActionDate)

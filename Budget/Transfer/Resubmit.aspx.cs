@@ -1,11 +1,9 @@
 ﻿using FGV.Prodata.Web.UI;
-using Org.BouncyCastle.Asn1.Ocsp;
 using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -15,31 +13,33 @@ namespace Prodata.WebForm.Budget.Transfer
     public partial class Resubmit : ProdataPage
     {
         private Guid _transferId;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                // Security Check: Ensure the logged-in user matches the userId in QueryString
                 string idUserStr = Request.QueryString["userId"];
-
-                // Redirect only if userId exists and does not match the current user
                 if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
                 {
-                    Response.Redirect("~/Budget/Transfer");
+                    Response.Redirect("~/Budget/Transfer/Default");
                 }
 
+                // Parse ID and Load Data
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
                     LoadTransfer(_transferId);
-                    //BindControl();
                     LoadDocument(_transferId);
                     Loadhistory(_transferId);
                 }
                 else
                 {
-                    Response.Redirect("~/Budget/Transfer");
+                    Response.Redirect("~/Budget/Transfer/Default");
                 }
             }
         }
+
+        #region Loading Data Methods
 
         private void LoadTransfer(Guid id)
         {
@@ -48,11 +48,12 @@ namespace Prodata.WebForm.Budget.Transfer
                 var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
                 if (transfer == null)
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer not found.");
-                    Response.Redirect("~/Budget/Transfer");
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer record not found.");
+                    Response.Redirect("~/Budget/Transfer/Default");
                     return;
                 }
 
+                // Bind Header Info
                 txtRefNo.Text = transfer.RefNo;
                 txtProject.Text = transfer.Project;
                 txtDate.Text = transfer.Date.ToString("yyyy-MM-dd");
@@ -60,16 +61,20 @@ namespace Prodata.WebForm.Budget.Transfer
                 txtEVisa.Text = transfer.EVisaNo;
                 txtWorkDetails.Text = transfer.WorkDetails;
                 txtJustification.Text = transfer.Justification;
+                LblBA.Text = transfer.BA;
 
+                // Bind Radio Buttons
                 rdoOpex.Checked = transfer.BudgetType == "OPEX";
                 rdoCapex.Checked = transfer.BudgetType == "CAPEX";
 
+                // Bind From Budget Info
                 Guid FromBudgetTypeGuid = transfer.FromBudgetType;
-                var FromBudgetType = db.BudgetTypes
+                var FromBudgetTypeName = db.BudgetTypes
                     .Where(x => x.Id == FromBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                txtFromBudgetType.Text = FromBudgetType ?? "Unknown";
+
+                txtFromBudgetType.Text = FromBudgetTypeName ?? "Unknown";
                 ddFromBA.Text = transfer.FromBA;
                 txtFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
                 txtFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
@@ -77,112 +82,23 @@ namespace Prodata.WebForm.Budget.Transfer
                 txtFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
                 txtFromGL.Text = transfer.FromGL;
 
+                // Bind To Budget Info
                 Guid ToBudgetTypeGuid = transfer.ToBudgetType;
-                var ToBudgetType = db.BudgetTypes
+                var ToBudgetTypeName = db.BudgetTypes
                     .Where(x => x.Id == ToBudgetTypeGuid)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                txtToBudgetType.Text = ToBudgetType ?? "Unknown";
+
+                txtToBudgetType.Text = ToBudgetTypeName ?? "Unknown";
                 ddToBA.Text = transfer.ToBA;
                 txtToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
                 txtToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
                 txtToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
-                txtToGL.Text = transfer.ToGL ;
-                LblBA.Text = transfer.BA;
+                txtToGL.Text = transfer.ToGL;
             }
         }
 
-        protected void btnSubmit_Click(object sender, EventArgs e)
-        {
-            if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
-            {
-                using (var db = new AppDbContext())
-                {
-                    var model = db.TransfersTransaction.FirstOrDefault(x => x.Id == _transferId);
-                    if (model == null)
-                    {
-                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer not found.");
-                        return;
-                    }
-                     
-                    model.status = 2;
-
-                    model.UpdatedBy = Auth.User().Id; // Or your method to get current user
-                    model.UpdatedDate = DateTime.Now;
-
-                    db.SaveChanges();
-
-                    if (fuDocument.HasFile)
-                    {
-                        using (var binaryReader = new System.IO.BinaryReader(fuDocument.PostedFile.InputStream))
-                        {
-                            byte[] fileData = binaryReader.ReadBytes(fuDocument.PostedFile.ContentLength);
-
-                            // Check if a document already exists
-                            // Always insert a new document
-                            var newDoc = new TransferDocument
-                            {
-                                Id = Guid.NewGuid(),
-                                TransferId = _transferId,
-                                FileName = fuDocument.FileName,
-                                ContentType = fuDocument.PostedFile.ContentType,
-                                FileData = fileData,
-                                UploadedBy = Auth.Id(),
-                                UploadedDate = DateTime.Now
-                            };
-                            db.TransferDocuments.Add(newDoc);
-
-                            db.SaveChanges();
-                        }
-                    }
-
-                    string roleCode = Auth.User().iPMSRoleCode;
-                    Guid userId = Auth.User().Id;
-
-                    int currentLevelApproval = db.TransferApprovalLog
-                            .Where(w => w.BudgetTransferId == _transferId && w.StepNumber != -1)
-                            .OrderByDescending(w => w.CreatedDate)
-                            .Select(w => w.StepNumber)
-                            .FirstOrDefault();
-
-                    var logEntry = new TransferApprovalLog
-                    {
-                        BudgetTransferId = _transferId,
-                        StepNumber = currentLevelApproval,
-                        RoleName = roleCode,
-                        UserId = userId,
-                        ActionType = "Resubmit",
-                        ActionDate = DateTime.Now,
-                        Status = "Submitted",
-                        Remarks = txtResubmit.Text?.Trim()
-                    };
-
-                    db.TransferApprovalLog.Add(logEntry);
-                    db.SaveChanges();
-
-
-                    Emails.EmailsTransferBudgetForResubmit(_transferId, model, hdncurentRoleApprover.Value);
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget updated.");
-                    Response.Redirect("~/Budget/Transfer");
-                }
-            }
-        }
-
-        private void BindControl()
-        {
-            //ddFromBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            //ddFromBA.DataValueField = "Code";
-            //ddFromBA.DataTextField = "DisplayName";
-            //ddFromBA.DataBind();
-            //ddFromBA.Items.Insert(0, new ListItem("", ""));
-
-            //ddToBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
-            //ddToBA.DataValueField = "Code";
-            //ddToBA.DataTextField = "DisplayName";
-            //ddToBA.DataBind();
-            //ddToBA.Items.Insert(0, new ListItem("", ""));
-        }
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())
@@ -201,7 +117,6 @@ namespace Prodata.WebForm.Budget.Transfer
                     {
                         var panel = new Panel { CssClass = "mb-2 d-flex align-items-center" };
 
-                        // View link
                         var link = new HyperLink
                         {
                             NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=TransferDocuments",
@@ -210,7 +125,6 @@ namespace Prodata.WebForm.Budget.Transfer
                             Text = "<i class='fas fa-external-link-alt'></i> View"
                         };
 
-                        // File name
                         var fileLabel = new Label
                         {
                             Text = $"<i class='fas fa-file-alt text-success mr-2'></i> {doc.FileName}",
@@ -218,7 +132,6 @@ namespace Prodata.WebForm.Budget.Transfer
                             EnableViewState = false
                         };
 
-                        // Add View then FileName (both on left)
                         panel.Controls.Add(link);
                         panel.Controls.Add(fileLabel);
                         phDocumentList.Controls.Add(panel);
@@ -236,7 +149,7 @@ namespace Prodata.WebForm.Budget.Transfer
             using (var db = new AppDbContext())
             {
                 var query = db.TransferApprovalLog
-                              .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
+                            .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
 
                 var transfers = query
                     .OrderByDescending(x => x.ActionDate)
@@ -251,8 +164,8 @@ namespace Prodata.WebForm.Budget.Transfer
                     })
                     .ToList();
 
-                // Set first/top RoleName to curentRoleApprover
-                hdncurentRoleApprover.Value = transfers.Any() ? transfers.First().RoleName : null;
+                // Store the most recent RoleName to know who sent it back (for email purposes)
+                hdncurentRoleApprover.Value = transfers.Any() ? transfers.First().RoleName : "";
 
                 if (transfers.Any())
                 {
@@ -262,5 +175,114 @@ namespace Prodata.WebForm.Budget.Transfer
                 gvHistory.DataBind();
             }
         }
+
+        #endregion
+
+        #region Submission Logic
+
+        // This method is triggered by the hidden button (btnConfirmSubmit) 
+        // after the user clicks "Yes" in the SweetAlert
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            // 1. Server-Side Validation (Fallback)
+            if (string.IsNullOrWhiteSpace(txtResubmit.Text))
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "Remarks are required for resubmission.");
+                return;
+            }
+
+            // 2. Parse ID
+            if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
+            {
+                using (var db = new AppDbContext())
+                {
+                    var model = db.TransfersTransaction.FirstOrDefault(x => x.Id == _transferId);
+                    if (model == null)
+                    {
+                        SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Transfer record not found.");
+                        return;
+                    }
+
+                    // 3. Update Transaction Status
+                    // Status 2 = "Submitted" / "Under Review" (Depending on your workflow enum)
+                    model.status = 2;
+                    model.UpdatedBy = Auth.User().Id;
+                    model.UpdatedDate = DateTime.Now;
+
+                    db.SaveChanges();
+
+                    // 4. Handle File Upload (If user selected a new file)
+                    if (fuDocument.HasFile)
+                    {
+                        try
+                        {
+                            using (var binaryReader = new System.IO.BinaryReader(fuDocument.PostedFile.InputStream))
+                            {
+                                byte[] fileData = binaryReader.ReadBytes(fuDocument.PostedFile.ContentLength);
+
+                                var newDoc = new TransferDocument
+                                {
+                                    Id = Guid.NewGuid(),
+                                    TransferId = _transferId,
+                                    FileName = fuDocument.FileName,
+                                    ContentType = fuDocument.PostedFile.ContentType,
+                                    FileData = fileData,
+                                    UploadedBy = Auth.Id(),
+                                    UploadedDate = DateTime.Now
+                                };
+                                db.TransferDocuments.Add(newDoc);
+                                db.SaveChanges();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error uploading file: " + ex.Message);
+                            return;
+                        }
+                    }
+
+                    // 5. Log Approval History
+                    string roleCode = Auth.User().CCMSRoleCode;
+                    Guid userId = Auth.User().Id;
+
+                    // Determine the step number to return to (usually the step before it was rejected)
+                    // Or retrieve the last active step
+                    int currentLevelApproval = db.TransferApprovalLog
+                            .Where(w => w.BudgetTransferId == _transferId && w.StepNumber != -1)
+                            .OrderByDescending(w => w.CreatedDate)
+                            .Select(w => w.StepNumber)
+                            .FirstOrDefault();
+
+                    var logEntry = new TransferApprovalLog
+                    {
+                        BudgetTransferId = _transferId,
+                        StepNumber = currentLevelApproval,
+                        RoleName = roleCode,
+                        UserId = userId,
+                        ActionType = "Resubmit",
+                        ActionDate = DateTime.Now,
+                        Status = "Submitted",
+                        Remarks = txtResubmit.Text.Trim() // Capture remarks from UI
+                    };
+
+                    db.TransferApprovalLog.Add(logEntry);
+                    db.SaveChanges();
+
+                    // 6. Send Email Notification
+                    // hdncurentRoleApprover.Value was populated in LoadHistory
+                    Emails.EmailsTransferBudgetForResubmit(_transferId, model, hdncurentRoleApprover.Value);
+
+                    // 7. Success & Redirect
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget resubmitted successfully.");
+                    Response.Redirect("~/Budget/Transfer/Default");
+                }
+            }
+            else
+            {
+                SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Invalid Transaction ID.");
+            }
+        }
+
+        #endregion
     }
 }

@@ -130,7 +130,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
                     }
 
                     // Function Emails
-                    Emails.EmailsT2ForNewRequest(form.Id, form, Auth.User().iPMSRoleCode);
+                    Emails.EmailsT2ForNewRequest(form.Id, form, Auth.User().CCMSRoleCode);
 
                     // Show success alert
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Successful Create Transaction.");
@@ -185,7 +185,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
 
         private List<BudgetResult> GetBudgetsForCategory(int formCategory)
         {
-            string BA = Auth.User().iPMSBizAreaCode;
+            string BA = Auth.User().CCMSBizAreaCode;
             int currentYear = DateTime.Today.Year;
 
             using (var db = new AppDbContext())
@@ -290,7 +290,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
             {
                 CardTitle.Text = db.BudgetTypes.Where(b => b.Id == ddltypeId).Select(b => b.Name).FirstOrDefault();
 
-                string ba = Auth.User().iPMSBizAreaCode;
+                string ba = Auth.User().CCMSBizAreaCode;
                 hdnGuidBudgetType.Value = db.Budgets
                                     .Where(x => x.TypeId == ddltypeId && x.DeletedDate == null && x.BizAreaCode == ba)
                                     .Select(x => x.Id)
@@ -304,7 +304,7 @@ namespace Prodata.WebForm.T1C.PoolBudget
 
         private void BindBALabel()
         {
-            string ba = Auth.User().iPMSBizAreaCode;
+            string ba = Auth.User().CCMSBizAreaCode;
 
             bool isEmptyBA = string.IsNullOrWhiteSpace(ba);
 

@@ -24,13 +24,13 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnSubmit1 control.
+        /// btnConfirmSubmit control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnSubmit1;
+        protected global::System.Web.UI.WebControls.Button btnConfirmSubmit;
 
         /// <summary>
         /// LblBA control.
@@ -258,15 +258,6 @@ namespace Prodata.WebForm.Budget.Transfer
         protected global::System.Web.UI.WebControls.TextBox txtResubmit;
 
         /// <summary>
-        /// rfvtxtResubmit control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvtxtResubmit;
-
-        /// <summary>
         /// fuDocument control.
         /// </summary>
         /// <remarks>
@@ -274,15 +265,6 @@ namespace Prodata.WebForm.Budget.Transfer
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.FileUpload fuDocument;
-
-        /// <summary>
-        /// rfvFile control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFile;
 
         /// <summary>
         /// hdncurentRoleApprover control.

@@ -1,6 +1,52 @@
 ﻿<%@ Page Title="T1C Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.T1C.Approval.Edit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+    
+    <%-- 1. ADDED: CSS Styles for Printing --%>
+    <style>
+        @media print {
+            /* Hide buttons, tools, modals, and preloader */
+            .no-print, .card-tools, .btn, .modal, .page-preloader {
+                display: none !important;
+            }
+
+            /* Hide Master Page elements (Sidebar, Navbar, Footer) */
+            /* Note: Adjust class names if your MasterPage uses different ones */
+            .main-sidebar, .main-header, .main-footer, .breadcrumb {
+                display: none !important;
+            }
+            .content-wrapper {
+                margin-left: 0 !important;
+                background-color: white !important;
+            }
+
+            /* Force collapsed cards to expand */
+            .collapsed-card .card-body {
+                display: block !important;
+            }
+
+            /* Visual Cleanup */
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .card-header {
+                border-bottom: 2px solid #000 !important;
+            }
+            
+            /* Ensure tables have borders */
+            .table-bordered th, .table-bordered td {
+                border: 1px solid #000 !important;
+            }
+
+            /* Ensure full width */
+            .col-md-9, .col-md-3, .col-md-12 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+
     <asp:HiddenField ID="hdnFormId" runat="server" />
     <asp:HiddenField ID="hdnRemark" runat="server" />
 
@@ -14,6 +60,12 @@
                 <div class="card-header card-header-sticky">
                     <h3 class="card-title d-none d-sm-inline"><%: Page.Title %></h3>
                     <div class="card-tools">
+                        
+                        <%-- 2. ADDED: Print Button --%>
+                        <button type="button" class="btn btn-default mr-1" onclick="window.print();">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/Approval/Default" CausesValidation="false">
                         <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton>
@@ -177,7 +229,6 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-12">
-                                            <!-- Picture -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Picture"></asp:Label>
                                                 <div class="col-lg-9">
@@ -189,7 +240,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Machine Repair History -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Machine Repair History"></asp:Label>
                                                 <div class="col-lg-9">
@@ -201,7 +251,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Job Specification -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Job Specification"></asp:Label>
                                                 <div class="col-lg-9">
@@ -213,7 +262,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Engineer Estimate Price -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Engineer's Estimate Price"></asp:Label>
                                                 <div class="col-lg-9">
@@ -225,7 +273,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Dec Cost Report Current Year -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Current Year)"></asp:Label>
                                                 <div class="col-lg-9">
@@ -237,7 +284,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Dec Cost Report Last Year -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Dec Cost Report (Last Year)"></asp:Label>
                                                 <div class="col-lg-9">
@@ -249,7 +295,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Cost Report Last Month -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Cost Report (Last Month)"></asp:Label>
                                                 <div class="col-lg-9">
@@ -261,7 +306,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Drawing/Sketching -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Drawing/Sketching"></asp:Label>
                                                 <div class="col-lg-9">
@@ -273,7 +317,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Quotation -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Quotation"></asp:Label>
                                                 <div class="col-lg-9">
@@ -285,7 +328,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Damage Investigation Report -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Damage Investigation Report"></asp:Label>
                                                 <div class="col-lg-9">
@@ -297,7 +339,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Vendor Registration Record -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Vendor Registration Record"></asp:Label>
                                                 <div class="col-lg-9">
@@ -309,7 +350,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Budget Transfer/Add Approval -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Budget Transfer/Add Approval"></asp:Label>
                                                 <div class="col-lg-9">
@@ -321,7 +361,6 @@
                                             </div>
                                             <hr class="mt-0" />
 
-                                            <!-- Other Supporting Document -->
                                             <div class="form-group row">
                                                 <asp:Label runat="server" CssClass="col-lg-3 col-form-label" Text="Other Supporting Document"></asp:Label>
                                                 <div class="col-lg-9">

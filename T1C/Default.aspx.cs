@@ -114,7 +114,7 @@ namespace Prodata.WebForm.T1C
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
-            var bizAreaCode = Auth.User().iPMSBizAreaCode;
+            var bizAreaCode = Auth.User().CCMSBizAreaCode;
 
             var form = new Class.Form();
             var formList = form.GetForms(year: year, bizAreaCode: bizAreaCode, refNo: refNo, startDate: startDate, endDate: endDate, amountMin: minAmount, amountMax: maxAmount);

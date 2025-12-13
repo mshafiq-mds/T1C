@@ -95,7 +95,7 @@ namespace Prodata.WebForm.Helpers
                     if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
                     {
                         // This approver is next in line
-                        return string.Equals(user.iPMSRoleCode, limit.ApproverCode, StringComparison.OrdinalIgnoreCase);
+                        return string.Equals(user.CCMSRoleCode, limit.ApproverCode, StringComparison.OrdinalIgnoreCase);
                     }
                 }
 

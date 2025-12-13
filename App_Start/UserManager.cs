@@ -90,8 +90,10 @@ namespace Prodata.WebForm
                                      join r in db.Roles on ur.RoleId equals r.Id
                                      orderby r.Name
                                      select r.Name).ToList(),
-                            u.iPMSRoleCode,
-                            u.iPMSBizAreaCode
+                            //u.iPMSRoleCode,
+                            //u.iPMSBizAreaCode,
+                            u.CCMSRoleCode,
+                            u.CCMSBizAreaCode
                         };
 
             if (!string.IsNullOrEmpty(filter))
@@ -109,13 +111,13 @@ namespace Prodata.WebForm
 
             // Step 3: Get unique role codes and load role names in one SQL call
             var roleCodes = userData
-                .Select(u => u.iPMSRoleCode)
+                .Select(u => u.CCMSRoleCode)
                 .Where(code => !string.IsNullOrEmpty(code))
                 .Distinct()
                 .ToList();
 
             var bizAreaCodes = userData
-                .Select(u => u.iPMSBizAreaCode)
+                .Select(u => u.CCMSBizAreaCode)
                 .Where(code => !string.IsNullOrEmpty(code))
                 .Distinct()
                 .ToList();
@@ -192,11 +194,17 @@ namespace Prodata.WebForm
                 Username = q.Username,
                 Email = q.Email,
                 Roles = string.Join(", ", q.Roles),
-                IPMSRole = !string.IsNullOrEmpty(q.iPMSRoleCode) && ipmsRoleDict.TryGetValue(q.iPMSRoleCode, out var roleName)
-                    ? q.iPMSRoleCode + " - " + roleName
+                CCMSRole = !string.IsNullOrEmpty(q.CCMSRoleCode) && ipmsRoleDict.TryGetValue(q.CCMSRoleCode, out var roleName)
+                    ? q.CCMSRoleCode + " - " + roleName
                     : string.Empty,
-                IPMSBizArea = !string.IsNullOrEmpty(q.iPMSBizAreaCode) && ipmsBizAreaDict.TryGetValue(q.iPMSBizAreaCode, out var areaName)
-                    ? q.iPMSBizAreaCode + " - " + areaName
+                //IPMSRole = !string.IsNullOrEmpty(q.iPMSRoleCode) && ipmsRoleDict.TryGetValue(q.iPMSRoleCode, out var iroleName)
+                //    ? q.iPMSRoleCode + " - " + iroleName
+                //    : string.Empty,
+                //IPMSBizArea = !string.IsNullOrEmpty(q.CCMSBizAreaCode) && ipmsBizAreaDict.TryGetValue(q.CCMSBizAreaCode, out var areaName)
+                //    ? q.CCMSBizAreaCode + " - " + areaName
+                //    : string.Empty
+                CCMSBizArea = !string.IsNullOrEmpty(q.CCMSBizAreaCode) && ipmsBizAreaDict.TryGetValue(q.CCMSBizAreaCode, out var areaName)
+                    ? q.CCMSBizAreaCode + " - " + areaName
                     : string.Empty
             })
             .Distinct()

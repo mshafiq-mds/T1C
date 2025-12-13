@@ -13,7 +13,7 @@ namespace Prodata.WebForm.Class
         {
             return $@"
                 <p>Dear {user.Name},</p>
-                <p>As a CCMS user with the role <strong>{user.iPMSRoleCode}</strong>, please view the details below:</p>
+                <p>As a CCMS user with the role <strong>{user.CCMSRoleCode}</strong>, please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>
@@ -41,7 +41,7 @@ namespace Prodata.WebForm.Class
         {
             return $@"
                 <p>Dear {user.Name},</p>
-                <p>As a CCMS user with the role <strong>{user.iPMSRoleCode}</strong>, please view the details below:</p>
+                <p>As a CCMS user with the role <strong>{user.CCMSRoleCode}</strong>, please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>
@@ -79,7 +79,7 @@ namespace Prodata.WebForm.Class
 
             return $@"
                 <p>Dear {user.Name},</p>
-                <p>As a CCMS user with the role <strong>{user.iPMSRoleCode}</strong>, please view the details below:</p>
+                <p>As a CCMS user with the role <strong>{user.CCMSRoleCode}</strong>, please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>
@@ -117,7 +117,7 @@ namespace Prodata.WebForm.Class
 
             return $@"
                 <p>Dear {user.Name},</p>
-                <p>As a CCMS user with the role <strong>{user.iPMSRoleCode}</strong>, please view the details below:</p>
+                <p>As a CCMS user with the role <strong>{user.CCMSRoleCode}</strong>, please view the details below:</p>
 
                 <table style='border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;'>
                     <tr style='background-color: #f2f2f2;'>

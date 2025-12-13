@@ -55,7 +55,8 @@ namespace Prodata.WebForm.Class
                                 f.B,
                                 f.C,
                                 f.D,
-                                f.Status
+                                f.Status,
+                                f.NextApprover
                             };
 
                 if (entityId.HasValue)
@@ -125,13 +126,14 @@ namespace Prodata.WebForm.Class
                     C = q.C.HasValue ? q.C.Value.ToString("#,##0.00") : string.Empty,
                     D = q.D.HasValue ? q.D.Value.ToString("#,##0.00") : string.Empty,
                     Status = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status), //q.Status,
+                    NextApprover = q.NextApprover, 
                     IsEditable = (q.Status.Equals("draft", StringComparison.OrdinalIgnoreCase) || q.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase)),
                     IsPendingUserAction = Prodata.WebForm.Helpers.FormHelper.IsFormPendingUserAction(q.Id, Prodata.WebForm.Auth.User()?.Id)
                 }).ToList();
             }
         }
 
-        public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string ipmsRoleCode = null, List<string> ipmsBizAreaCodes = null)
+        public List<Models.ViewModels.FormListViewModel> GetFormsForApproval(string CCMSRoleCode = null, List<string> CCMSBizAreaCodes = null)
         {
             using (var db = new AppDbContext())
             {
@@ -151,7 +153,7 @@ namespace Prodata.WebForm.Class
                 // Step 2: Applicable approval limits
                 var approvalLimits = db.ApprovalLimits
                     .Where(al => al.ApproverType.ToLower() == "ipms_role" &&
-                                 (ipmsRoleCode == null || al.ApproverCode.ToLower() == ipmsRoleCode.ToLower()))
+                                 (CCMSRoleCode == null || al.ApproverCode.ToLower() == CCMSRoleCode.ToLower()))
                     .ToList();
 
                 // Step 3: Forms and their type names
@@ -179,7 +181,7 @@ namespace Prodata.WebForm.Class
                    where al.Order == nextOrder &&
                          f.Amount >= al.AmountMin &&
                          (al.AmountMax == null || f.Amount <= al.AmountMax) &&
-                         (ipmsBizAreaCodes == null || !ipmsBizAreaCodes.Any() || ipmsBizAreaCodes.Contains(f.BizAreaCode))// &&
+                         (CCMSBizAreaCodes == null || !CCMSBizAreaCodes.Any() || CCMSBizAreaCodes.Contains(f.BizAreaCode))// &&
                                                                                                                           //!new[] { "Draft", "SentBack", "Approved", "Rejected" }.Contains(f.Status)
                    orderby f.Date
                    select new Models.ViewModels.FormListViewModel
@@ -324,7 +326,7 @@ namespace Prodata.WebForm.Class
                 var query2 = query.OrderByDescending(q => q.Ref).ToList();
 
                 var user = Auth.User();
-                var iPMSRoleCode = user.iPMSRoleCode;
+                var CCMSRoleCode = user.CCMSRoleCode;
                 var userName = user.Name;
 
                 // Projection to ViewModel
@@ -354,11 +356,11 @@ namespace Prodata.WebForm.Class
                         ActualAmount = q.ActualAmount.HasValue ? q.ActualAmount.Value.ToString("#,##0.00") : string.Empty,
 
                         IsEditable = (!isDeleted && q.Status == "Pending" &&
-                                      (iPMSRoleCode == "MM" || iPMSRoleCode == "AM" || iPMSRoleCode == "KB" ||
+                                      (CCMSRoleCode == "MM" || CCMSRoleCode == "AM" || CCMSRoleCode == "KB" ||
                                        userName.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))),
 
                         IsPendingUserAction = (!isDeleted && q.Status == "Pending" &&
-                                               (iPMSRoleCode == "MM" || iPMSRoleCode == "AM" ||
+                                               (CCMSRoleCode == "MM" || CCMSRoleCode == "AM" ||
                                                 userName.Equals("Superadmin", StringComparison.OrdinalIgnoreCase)))
                     };
                 }).ToList();
@@ -447,7 +449,7 @@ namespace Prodata.WebForm.Class
         //                var query2 = query.OrderByDescending(q => q.Ref).ToList();
         //                var Name = Auth.User().Name;
         //                var Id = Auth.User().Id;
-        //                var iPMSRoleCode = Auth.User().iPMSRoleCode;
+        //                var CCMSRoleCode = Auth.User().CCMSRoleCode;
         //                var Roles = Auth.User().Roles;
         //                // Projection to ViewModel
         //                return query2.Select(q => new Models.ViewModels.FormsProcurementListViewModel
@@ -466,8 +468,8 @@ namespace Prodata.WebForm.Class
         //                    ProcurementType = q.ProcurementType,
         //                    Status = q.Status != null ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status) : string.Empty,
         //                    ActualAmount = q.ActualAmount.HasValue ? q.ActualAmount.Value.ToString("#,##0.00") : string.Empty,
-        //                    IsEditable = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false,
-        //                    IsPendingUserAction = (q.Status == "Pending" && (Auth.User().iPMSRoleCode == "MM" || Auth.User().iPMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false
+        //                    IsEditable = (q.Status == "Pending" && (Auth.User().CCMSRoleCode == "MM" || Auth.User().CCMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false,
+        //                    IsPendingUserAction = (q.Status == "Pending" && (Auth.User().CCMSRoleCode == "MM" || Auth.User().CCMSRoleCode == "AM" || Auth.User().Name.Equals("Superadmin", StringComparison.OrdinalIgnoreCase))) ? true : false
         //                }).ToList();
         //            }
         //        }

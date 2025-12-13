@@ -2,7 +2,6 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:Panel runat="server" CssClass="card p-4 shadow-sm rounded">
 
-        <!-- Header Bar -->
         <div class="card-header card-header-sticky">
             <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
             <div class="card-tools">
@@ -18,7 +17,6 @@
             </div>
         </div>
 
-        <!-- Transfer Info Section -->
         <div class="row mt-4">
             <div class="col-md-6 mb-3">
                 <label class="fw-bold">Reference No:</label>
@@ -50,7 +48,6 @@
             </div>
         </div>
 
-        <!-- Budget Table -->
         <h4 class="mt-4">Budget Transfer Details</h4>
         <table class="table table-striped table-bordered table-hover">
             <thead class="table-primary text-center">
@@ -89,25 +86,19 @@
             </tbody>
         </table>
 
-        <!-- Justification -->
         <h4 class="mt-4">Justification</h4>
         <div class="border rounded p-3 bg-light">
             <asp:Literal ID="litJustification" runat="server" Mode="Encode" />
         </div>
 
-        <!-- Uploaded Documents -->
         <h4 class="mt-4">Uploaded Document</h4>
         <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group" Visible="false">
             <asp:PlaceHolder ID="phDocumentList" runat="server" />
         </asp:Panel>
 
-        <h4 class="mt-4">Remarks</h4>
-        <asp:TextBox runat="server" ID="txtRemarks" CssClass="form-control" TextMode="MultiLine" Rows="10" />
-        <asp:RequiredFieldValidator ID="rfvtxtRemarks" runat="server" ControlToValidate="txtRemarks" CssClass="text-danger" ErrorMessage="Required Remarks" Display="Dynamic" />
-
-
-        <!-- Hidden fields and buttons for sweet alert postback -->
         <asp:HiddenField ID="hdnAction" runat="server" />
+        <asp:HiddenField ID="hdnRemarks" runat="server" /> 
+        
         <asp:Button ID="btnRevisionConfirmed" runat="server" OnClick="btnSave_Click" Style="display:none;" />
         <asp:Button ID="btnApproveConfirmed" runat="server" OnClick="btnSubmit_Click" Style="display:none;" />
         <asp:HiddenField ID="hdnTransferId" runat="server" />
@@ -134,45 +125,71 @@
 
     </asp:Panel>
 
-    <!-- SweetAlert2 Confirmation Scripts -->
-    
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript">
         $(document).ready(function () {
 
-            // Request Revision
+            // Request Revision Logic
             $(".btn-revision").click(function (e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Request Resubmit?',
-                    text: "Do you want to ask the requester to revise or reupload the document?",
+                    text: "Please provide remarks for the revision request.",
                     icon: 'warning',
+                    input: 'textarea', // Add textarea input
+                    inputPlaceholder: 'Enter your remarks here...',
+                    inputAttributes: {
+                        'aria-label': 'Type your remarks here'
+                    },
                     showCancelButton: true,
-                    confirmButtonColor: '#007bff',
+                    confirmButtonColor: '#ffc107', // Warning color
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, request it'
+                    confirmButtonText: 'Yes, request revision',
+                    preConfirm: (remarks) => {
+                        if (!remarks) {
+                            Swal.showValidationMessage('Remarks are required for revision requests');
+                        }
+                        return remarks;
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Store value in HiddenField
+                        $('#<%= hdnRemarks.ClientID %>').val(result.value);
+                        // Set Action
                         $('#<%= hdnAction.ClientID %>').val('resubmit');
+                        // Trigger Server Click
                         $('#<%= btnRevisionConfirmed.ClientID %>').click();
                     }
                 });
             });
 
-            // Approve Transfer
+            // Approve Transfer Logic
             $(".btn-approve").click(function (e) {
                 e.preventDefault();
                 Swal.fire({
                     title: 'Approve Transfer?',
-                    text: "Are you sure you want to approve this budget transfer?",
+                    text: "Please provide remarks (optional) and confirm approval.",
                     icon: 'success',
+                    input: 'textarea', // Add textarea input
+                    inputPlaceholder: 'Enter remarks here...',
                     showCancelButton: true,
-                    confirmButtonColor: '#28a745',
+                    confirmButtonColor: '#28a745', // Success color
                     cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, approve it'
+                    confirmButtonText: 'Yes, approve it',
+                    preConfirm: (remarks) => {
+                         // Remove this block if remarks are optional for approval
+                        if (!remarks) {
+                             Swal.showValidationMessage('Remarks are required');
+                        }
+                        return remarks;
+                    }
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // Store value in HiddenField
+                        $('#<%= hdnRemarks.ClientID %>').val(result.value);
+                        // Set Action
                         $('#<%= hdnAction.ClientID %>').val('approve');
+                        // Trigger Server Click
                         $('#<%= btnApproveConfirmed.ClientID %>').click();
                     }
                 });

@@ -27,8 +27,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
 
         private void BindTransfers(string statusFilter = "EditableOnly")
         {
-            string ba = Auth.User().iPMSBizAreaCode;
-            string userRole = Auth.User().iPMSRoleCode;
+            string ba = Auth.User().CCMSBizAreaCode;
+            string userRole = Auth.User().CCMSRoleCode;
 
             List<string> accessibleBizAreas = !string.IsNullOrEmpty(ba)
                 ? new Class.IPMSBizArea().GetBizAreaCodes(ba)

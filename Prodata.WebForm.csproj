@@ -2348,6 +2348,7 @@
     <Content Include="Images\certificate-in-cost-control-management-training-course.jpg" />
     <Content Include="Images\Felda_Global_Ventures_Logo.png" />
     <Content Include="Images\fgv-logo.ico" />
+    <Content Include="Images\LoginBackground.mp4" />
     <Content Include="Images\user-alt-solid-darkgray.svg" />
     <Content Include="Images\user-circle-solid-darkgray.svg" />
     <Content Include="MasterData\AdditionalBudgetApprover\CogsAdd.aspx" />
@@ -2752,6 +2753,8 @@
     <Content Include="T1C\PoolBudget\Approval\Edit.aspx" />
     <Content Include="T1C\PoolBudget\Default.aspx" />
     <Content Include="T1C\PoolBudget\View.aspx" />
+    <Content Include="T1C\PO\Review\Default.aspx" />
+    <Content Include="T1C\PO\Review\Review.aspx" />
     <Content Include="T1C\PO\Upload\Default.aspx" />
     <Content Include="T1C\PO\Upload\Edit.aspx" />
     <Content Include="T1C\View.aspx" />
@@ -3441,6 +3444,20 @@
     </Compile>
     <Compile Include="T1C\PoolBudget\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PO\Review\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PO\Review\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\PO\Review\Review.aspx.cs">
+      <DependentUpon>Review.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\PO\Review\Review.aspx.designer.cs">
+      <DependentUpon>Review.aspx</DependentUpon>
     </Compile>
     <Compile Include="T1C\PO\Upload\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

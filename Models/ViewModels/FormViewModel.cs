@@ -30,6 +30,7 @@ namespace Prodata.WebForm.Models.ViewModels
         public string C { get; set; }
         public string D { get; set; }
         public string Status { get; set; }
+        public string NextApprover { get; set; }
 
         public bool IsEditable { get; set; }
         public bool IsPendingUserAction { get; set; }

@@ -133,9 +133,11 @@ namespace Prodata.WebForm.Class
             List<string> nextApproverCodes = GetNextApproverCodesForTransT1CNewRequest(amount, roleCode, out var db);
             if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
 
+            SaveNextApprover(id,nextApproverCodes, db);
+
             // First try direct match on BizArea
             List<User> userRole = db.Users
-                .Where(x => nextApproverCodes.Contains(x.iPMSRoleCode) && x.iPMSBizAreaCode == Fo.BizAreaCode)
+                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && x.CCMSBizAreaCode == Fo.BizAreaCode)
                 .ToList();
 
             // Fallback: Try zone-level using helper
@@ -189,8 +191,8 @@ namespace Prodata.WebForm.Class
             {
                     // First try direct match on BizArea
                 List<User> userRole = db.Users
-                    .Where(x => (x.iPMSRoleCode == "MM" || x.iPMSRoleCode == "AM" || x.iPMSRoleCode == "AMM")
-                                && x.iPMSBizAreaCode == FoP.BizAreaCode)
+                    .Where(x => (x.CCMSRoleCode == "MM" || x.CCMSRoleCode == "AM" || x.CCMSRoleCode == "AMM")
+                                && x.CCMSBizAreaCode == FoP.BizAreaCode)
                     .ToList();
 
                 if (!userRole.Any()) return; // Still no users, exit
@@ -215,7 +217,7 @@ namespace Prodata.WebForm.Class
         {
             string nextApproverCode = GetNextTransferApproverCode(TT.FromTransfer ?? 0, roleCode, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
-
+            SaveNextApproverTransfer(id, new List<string> { nextApproverCode }, db);
             List<User> userRole = GetUsersDetails(db, nextApproverCode, TT.BA); 
             string actionName = "";
             string fullUrl = "";
@@ -262,7 +264,7 @@ namespace Prodata.WebForm.Class
                     .Where(x => x.Id == eligibleID)
                     .FirstOrDefault();
 
-                return user?.iPMSRoleCode;
+                return user?.CCMSRoleCode;
             }
             else // verify approver to next approver
             {
@@ -288,10 +290,11 @@ namespace Prodata.WebForm.Class
 
             List<string> nextApproverCodes = GetNextApproverCodesForTransferBudgetForNewRequest(amount, roleCode, out var db);
             if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
+            SaveNextApproverTransfer(id, nextApproverCodes, db);
 
             // First try direct match on BizArea
             List<User> userRole = db.Users
-                .Where(x => nextApproverCodes.Contains(x.iPMSRoleCode) && x.iPMSBizAreaCode == TT.BA)
+                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && x.CCMSBizAreaCode == TT.BA)
                 .ToList();
 
             // Fallback: Try zone-level using helper
@@ -350,10 +353,11 @@ namespace Prodata.WebForm.Class
 
             List<string> nextApproverCodes = GetNextApproverCodesForAdditionalBudgetForNewRequest(amount, roleCode, type, out var db);
             if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
+            SaveNextApproverAdditional(id, nextApproverCodes, db);
 
             // First try direct match on BizArea
             List<User> userRole = db.Users
-                .Where(x => nextApproverCodes.Contains(x.iPMSRoleCode) && x.iPMSBizAreaCode == ABR.BA)
+                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && x.CCMSBizAreaCode == ABR.BA)
                 .ToList();
 
             // Fallback: Try zone-level using helper
@@ -423,6 +427,7 @@ namespace Prodata.WebForm.Class
             decimal amount = ABR.AdditionalBudget ?? 0;
 
             var db = new AppDbContext();
+            SaveNextApproverAdditional(id, new List<string> { roleCode }, db);
             List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA); 
             string actionName = "Additional Budget Request";
 
@@ -441,6 +446,8 @@ namespace Prodata.WebForm.Class
             decimal amount = Fo.Amount ?? 0;
 
             var db = new AppDbContext();
+            SaveNextApprover(id, new List<string> { roleCode }, db);
+
             List<User> userRole = GetUsersDetails(db, roleCode, Fo.BizAreaCode);
             string actionName = "Transfer Budget Request";
 
@@ -459,6 +466,7 @@ namespace Prodata.WebForm.Class
             decimal amount = ABR.FromTransfer ?? 0;
 
             var db = new AppDbContext();
+            SaveNextApproverTransfer(id, new List<string> { roleCode }, db);
             List<User> userRole = GetUsersDetails(db, roleCode, ABR.BA); 
             string actionName = "Transfer Budget Request";
 
@@ -512,7 +520,7 @@ namespace Prodata.WebForm.Class
                 .Where(x => x.Id == eligibleID)
                 .FirstOrDefault();
 
-            return user?.iPMSRoleCode; 
+            return user?.CCMSRoleCode; 
         }
         #endregion
 
@@ -527,6 +535,7 @@ namespace Prodata.WebForm.Class
                 nextApproverCode = GetNextT1CApproverCode(Fo.Amount ?? 0, "", out db, id);
                 if (string.IsNullOrEmpty(nextApproverCode)) return;
             }
+            SaveNextApprover(id, new List<string> { nextApproverCode }, db);
 
             List<User> userRole = GetUsersDetails(db, nextApproverCode, Fo.BizAreaCode); 
             string actionName = "";
@@ -574,7 +583,7 @@ namespace Prodata.WebForm.Class
                     .Where(x => x.Id == eligibleID)
                     .FirstOrDefault();
 
-                return user?.iPMSRoleCode;
+                return user?.CCMSRoleCode;
             }
             else // verify approver to next approver
             {
@@ -602,7 +611,7 @@ namespace Prodata.WebForm.Class
 
             string nextApproverCode = GetNextApproverCodeForAdditionalBudget(amount, roleCode, type, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
-
+            SaveNextApproverAdditional(id, new List<string> { nextApproverCode }, db);
             List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA); 
             string actionName = "Additional Budget Request";
 
@@ -650,7 +659,7 @@ namespace Prodata.WebForm.Class
                     .Where(x => x.Id == eligibleID)
                     .FirstOrDefault();
 
-                return user?.iPMSRoleCode;
+                return user?.CCMSRoleCode;
             }
             else
             {
@@ -684,18 +693,59 @@ namespace Prodata.WebForm.Class
 
         #region Function 
 
+        public static void SaveNextApprover(Guid formId, List<string> nextApproverCodes, AppDbContext db)
+        {
+            string nextApproverString = string.Join(",", nextApproverCodes);
+
+            // 3. Retrieve the specific form you are working on
+            // (Assuming you have the 'formId' available in this context)
+            var currentForm = db.Forms.FirstOrDefault(f => f.Id == formId);
+
+            if (currentForm != null)
+            {
+                // 4. Update the field
+                currentForm.NextApprover = nextApproverString;
+
+                // 5. Save changes to the database
+                db.SaveChanges();
+            }
+        }
+        public static void SaveNextApproverTransfer(Guid formId, List<string> nextApproverCodes, AppDbContext db)
+        {
+            string nextApproverString = string.Join(",", nextApproverCodes);
+            var currentForm = db.TransfersTransaction.FirstOrDefault(f => f.Id == formId);
+            if (currentForm != null)
+            {
+                // Ensure 'NextApprover' column exists in TransfersTransaction table!
+                currentForm.NextApprover = nextApproverString;
+                db.SaveChanges();
+            }
+        }
+
+        // 3. ✅ NEW: Overload for Additional Budget
+        public static void SaveNextApproverAdditional(Guid formId, List<string> nextApproverCodes, AppDbContext db)
+        {
+            string nextApproverString = string.Join(",", nextApproverCodes);
+            var currentForm = db.AdditionalBudgetRequests.FirstOrDefault(f => f.Id == formId);
+            if (currentForm != null)
+            {
+                // Ensure 'NextApprover' column exists in AdditionalBudgetRequests table!
+                currentForm.NextApprover = nextApproverString;
+                db.SaveChanges();
+            }
+        }
         private static List<User> GetUsersDetails(AppDbContext db, string ApproverCode, string bizAreaCode)
         {
             string zoneCode = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(bizAreaCode);
-            var users = db.Users.Where(x => x.iPMSRoleCode == ApproverCode).ToList();
+            var users = db.Users.Where(x => x.CCMSRoleCode == ApproverCode).ToList();
 
             var filtered = !string.IsNullOrEmpty(zoneCode)
-                ? users.Where(x => x.iPMSBizAreaCode == zoneCode).ToList()
+                ? users.Where(x => x.CCMSBizAreaCode == zoneCode).ToList()
                 : new List<User>();
 
             return filtered.Any()
                 ? filtered
-                : users.Where(x => x.iPMSBizAreaCode == bizAreaCode).ToList();
+                : users.Where(x => x.CCMSBizAreaCode == bizAreaCode).ToList();
         }
 
         //public static void SendFunctionEmail(string email, string subject, string body)
@@ -824,24 +874,24 @@ namespace Prodata.WebForm.Class
 //                    string accessibleBizAreas = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(TT.BA);
 
 //                    userRole = db.Users
-//                        .Where(x => x.iPMSRoleCode == nextApproverCode)
+//                        .Where(x => x.CCMSRoleCode == nextApproverCode)
 //                        .ToList();
 
 //                    if (!string.IsNullOrEmpty(accessibleBizAreas))
 //                    {
 //                        var filtered = userRole
-//                            .Where(x => x.iPMSBizAreaCode == accessibleBizAreas)
+//                            .Where(x => x.CCMSBizAreaCode == accessibleBizAreas)
 //                            .ToList();
 
 //                        // Fallback if result is empty
 //                        userRole = filtered.Any()
 //                            ? filtered
-//                            : userRole.Where(x => x.iPMSBizAreaCode == TT.BA).ToList();
+//                            : userRole.Where(x => x.CCMSBizAreaCode == TT.BA).ToList();
 //                    }
 //                    else
 //                    {
 //                        userRole = userRole
-//                            .Where(x => x.iPMSBizAreaCode == TT.BA)
+//                            .Where(x => x.CCMSBizAreaCode == TT.BA)
 //                            .ToList();
 //                    }
 //                }
@@ -1007,24 +1057,24 @@ namespace Prodata.WebForm.Class
 //                string accessibleBizAreas = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(ABR.BA);
 
 //                userRole = db.Users
-//                    .Where(x => x.iPMSRoleCode == nextApproverCode)
+//                    .Where(x => x.CCMSRoleCode == nextApproverCode)
 //                    .ToList();
 
 //                if (!string.IsNullOrEmpty(accessibleBizAreas))
 //                {
 //                    var filtered = userRole
-//                        .Where(x => x.iPMSBizAreaCode == accessibleBizAreas)
+//                        .Where(x => x.CCMSBizAreaCode == accessibleBizAreas)
 //                        .ToList();
 
 //                    // Fallback if result is empty
 //                    userRole = filtered.Any()
 //                        ? filtered
-//                        : userRole.Where(x => x.iPMSBizAreaCode == ABR.BA).ToList();
+//                        : userRole.Where(x => x.CCMSBizAreaCode == ABR.BA).ToList();
 //                }
 //                else
 //                {
 //                    userRole = userRole
-//                        .Where(x => x.iPMSBizAreaCode == ABR.BA)
+//                        .Where(x => x.CCMSBizAreaCode == ABR.BA)
 //                        .ToList();
 //                }
 //            }

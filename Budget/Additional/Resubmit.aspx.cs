@@ -126,7 +126,7 @@ namespace Prodata.WebForm.Budget.Additional
                         }
                     }
 
-                    string roleCode = Auth.User().iPMSRoleCode;
+                    string roleCode = Auth.User().CCMSRoleCode;
                     Guid userId = Auth.User().Id;
 
                     int currentLevelApproval = db.AdditionalBudgetLog

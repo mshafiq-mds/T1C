@@ -74,7 +74,7 @@ namespace Prodata.WebForm.T1C.Approval
                         ObjectType = "Form",
                         ActionById = Auth.User().Id,
                         ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
+                        ActionByCode = Auth.User().CCMSRoleCode,
                         ActionByName = Auth.User().Name,
                         Action = "Approved",
                         Remark = remark,
@@ -88,7 +88,7 @@ namespace Prodata.WebForm.T1C.Approval
                         db.Entry(form).State = System.Data.Entity.EntityState.Modified;
                         db.SaveChanges();
                     }
-                    Class.Emails.EmailsT1CForApprover(form.Id, form, Auth.User().iPMSRoleCode);
+                    Class.Emails.EmailsT1CForApprover(form.Id, form, Auth.User().CCMSRoleCode);
 
                 }
             }
@@ -125,7 +125,7 @@ namespace Prodata.WebForm.T1C.Approval
                         ObjectType = "Form",
                         ActionById = Auth.User().Id,
                         ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
+                        ActionByCode = Auth.User().CCMSRoleCode,
                         ActionByName = Auth.User().Name,
                         Action = "Rejected",
                         Remark = remark,
@@ -170,7 +170,7 @@ namespace Prodata.WebForm.T1C.Approval
                         ObjectType = "Form",
                         ActionById = Auth.User().Id,
                         ActionByType = "User",
-                        ActionByCode = Auth.User().iPMSRoleCode,
+                        ActionByCode = Auth.User().CCMSRoleCode,
                         ActionByName = Auth.User().Name,
                         Action = "Sent Back",
                         Remark = remark,

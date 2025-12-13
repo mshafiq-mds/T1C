@@ -186,6 +186,42 @@ namespace Prodata.WebForm.Administration.User
         protected global::System.Web.UI.WebControls.DropDownList ddlIPMSBizArea;
 
         /// <summary>
+        /// lblCCMSRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCCMSRole;
+
+        /// <summary>
+        /// ddlCCMSRole control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCCMSRole;
+
+        /// <summary>
+        /// lblCCMSBizArea control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCCMSBizArea;
+
+        /// <summary>
+        /// ddlCCMSBizArea control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCCMSBizArea;
+
+        /// <summary>
         /// cblRoles control.
         /// </summary>
         /// <remarks>

@@ -112,7 +112,7 @@ namespace Prodata.WebForm.Budget.AddBudget
                         db.SaveChanges();
                     }
                 }
-                Emails.EmailsAdditionalBudgetForNewRequest(newId, model, Auth.User().iPMSRoleCode);
+                Emails.EmailsAdditionalBudgetForNewRequest(newId, model, Auth.User().CCMSRoleCode);
             }
 
             SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Additional Budget Requested.");
@@ -120,7 +120,7 @@ namespace Prodata.WebForm.Budget.AddBudget
         }
         private void BindBALabel()
         {
-            string ba = Auth.User().iPMSBizAreaCode;
+            string ba = Auth.User().CCMSBizAreaCode;
 
             bool isEmptyBA = string.IsNullOrWhiteSpace(ba);
 
@@ -131,7 +131,7 @@ namespace Prodata.WebForm.Budget.AddBudget
             {
                 LblBA.Text = ba;
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
-                //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().iPMSBizAreaCode);
+                //LblBAName.Text = new Class.IPMSBizArea().GetIPMSBizAreaNameByCode(Auth.User().CCMSBizAreaCode);
             }
         }
     }

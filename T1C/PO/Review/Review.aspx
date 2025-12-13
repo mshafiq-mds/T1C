@@ -1,9 +1,11 @@
-﻿<%@ Page Title="T1C" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.T1C.View" %>
+﻿<%@ Page Title="PO Review" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Review.aspx.cs" Inherits="Prodata.WebForm.T1C.PO.Review.Review" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
-        /* Existing Preloader CSS */
+        /* --- PRELOADER STYLES --- */
         .page-preloader {
             position: fixed;
             z-index: 99999;
@@ -26,19 +28,19 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* --- MEDIA PRINT CSS --- */
+        /* --- PRINT SPECIFIC STYLES --- */
         @media print {
-            /* Hide page wrappers and navigation */
+            /* 1. Hide everything by default (Sidebar, Navbar, Buttons) */
             body * {
                 visibility: hidden;
             }
-
-            /* Show only the print container */
+            
+            /* 2. Unhide the specific print container and its contents */
             #printContainer, #printContainer * {
                 visibility: visible;
             }
 
-            /* Position the print container */
+            /* 3. Position the print container at the top left of the paper */
             #printContainer {
                 position: absolute;
                 left: 0;
@@ -47,12 +49,12 @@
                 background-color: white;
             }
 
-            /* Hide buttons, tools, and specific 'no-print' sections */
-            .card-tools, .btn, .no-print {
+            /* 4. Hide Buttons, Tools, and specific 'no-print' elements within the container */
+            .card-tools, .no-print, .btn {
                 display: none !important;
             }
 
-            /* Clean up Card Styling */
+            /* 5. Clean up Card Styling for Print (Remove shadows/borders) */
             .card {
                 border: none !important;
                 box-shadow: none !important;
@@ -67,13 +69,8 @@
                 font-weight: bold;
                 font-size: 18pt;
             }
-            
-            /* Force expand collapsible cards */
-            .card-body {
-                display: block !important;
-            }
 
-            /* Show Logo Header */
+            /* 6. Show the Logo (It is d-none on screen) */
             .print-logo-header {
                 display: block !important;
                 text-align: center;
@@ -81,30 +78,33 @@
                 border-bottom: 3px solid #333;
                 padding-bottom: 20px;
             }
-
-            /* Full width columns */
+            
+            /* 7. Adjust columns for print width */
             .col-md-9, .col-md-3, .col-md-6, .col-md-12 {
                 flex: 0 0 100%;
                 max-width: 100%;
             }
-
-            /* Grid Borders */
-            .table-bordered th, .table-bordered td {
-                border: 1px solid #000 !important;
-            }
-
+            
+            /* 8. Ensure background colors (like badges) print */
             -webkit-print-color-adjust: exact; 
             print-color-adjust: exact;
         }
     </style>
 
+    <div id="pagePreloader" class="page-preloader" style="display:none;">
+        <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" alt="Loading..." height="200" width="200" />
+        <p class="mt-3 text-white">Processing...</p>
+    </div>
+
     <asp:HiddenField ID="hdnFormId" runat="server" />
+    <asp:HiddenField ID="hdnRemark" runat="server" />
+    <asp:Button ID="btnApproveConfirm" runat="server" CssClass="d-none" OnClick="btnReviewed_Click" />
 
     <div id="printContainer">
-
+        
         <div class="print-logo-header d-none">
             <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" alt="FGV Logo" style="height: 80px;" />
-            <h2 class="mt-3">T1C Budget Details</h2>
+            <h2 class="mt-3">Purchase Order Review</h2>
             <p>Generated on: <%= DateTime.Now.ToString("dd/MM/yyyy HH:mm") %></p>
         </div>
 
@@ -116,18 +116,20 @@
                             <asp:Label ID="lblTitle" runat="server"></asp:Label>
                         </h3>
                         <div class="card-tools">
-                            <button type="button" class="btn btn-default mr-1" onclick="window.print();">
+                            <button type="button" class="btn btn-default mr-1" onclick="window.print(); return false;">
                                 <i class="fas fa-print"></i> Print
                             </button>
 
-                            <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/Default" CausesValidation="false">
+                            <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/PO/Review/Default" CausesValidation="false">
                                 <i class="fas fa-angle-double-left"></i> Back
                             </asp:LinkButton>
-                            <asp:LinkButton ID="btnEdit" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnEdit_Click" CausesValidation="false">
-                                <i class="fas fa-edit"></i> Edit
-                            </asp:LinkButton>
+                            
+                            <button id="btnReviewTrigger" runat="server" type="button" class="btn btn-primary" onclick="showApproveModal(); return false;">
+                                <i class="fas fa-lock"></i> Reviewed
+                            </button>
                         </div>
                     </div>
+                    
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-9 border-right">
@@ -148,18 +150,19 @@
                                     <div class="text-muted"><asp:Label ID="lblJustificationOfNeed" runat="server"></asp:Label></div>
                                 </div>
                                 <div class="form-group">
-                                    <asp:Label runat="server" CssClass="text-bold" Text="Allocations"></asp:Label>
+                                    <asp:Label runat="server" CssClass="text-bold" Text="Allocations (Original)"></asp:Label>
                                     <div class="text-muted"><asp:Label ID="lblAllocation" runat="server"></asp:Label></div>
                                 </div>
                                 <div class="form-group">
                                     <asp:Label runat="server" CssClass="text-bold" Text="Contractors"></asp:Label>
                                     <div class="text-muted"><asp:Label ID="lblVendor" runat="server"></asp:Label></div>
                                 </div>
-                                <div class="form-group" id="divJustificationDirectNegotiation" runat="server">
+                                <div class="form-group" id="divJustificationDirectNegotiation" runat="server" visible="false">
                                     <asp:Label runat="server" CssClass="text-bold" Text="Justification (Direct Negotiation)"></asp:Label>
                                     <div class="text-muted"><asp:Label ID="lblJustificationDirectAward" runat="server"></asp:Label></div>
                                 </div>
                             </div>
+                            
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <asp:Label runat="server" CssClass="text-bold" Text="Reference No."></asp:Label>
@@ -172,6 +175,10 @@
                                 <div class="form-group">
                                     <asp:Label runat="server" CssClass="text-bold" Text="Estimate Amount"></asp:Label>
                                     <div class="text-warning text-bold"><asp:Label ID="lblAmount" runat="server"></asp:Label></div>
+                                </div>
+                                <div class="form-group">
+                                    <asp:Label runat="server" CssClass="text-bold" Text="Actual Amount"></asp:Label>
+                                    <div class="text-success text-bold"><asp:Label ID="lblActualAmountView" runat="server" Text="-"></asp:Label></div>
                                 </div>
                                 <div class="form-group">
                                     <asp:Label runat="server" CssClass="text-bold" Text="Quotation Method"></asp:Label>
@@ -237,11 +244,85 @@
                             </div>
                         </div>
 
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card card-outline card-primary">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Financials & Allocations</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Actual Amount</label>
+                                                    <div class="form-control-plaintext font-weight-bold text-success" style="font-size: 1.2em;">
+                                                        <asp:Label ID="lblActualAmount" runat="server" Text="-"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Estimate Amount</label>
+                                                    <div class="form-control-plaintext font-weight-bold text-warning" style="font-size: 1.2em;">
+                                                        <asp:Label ID="lblEstimateAmount" runat="server" Text="-"></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr />
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label>Allocation Breakdown</label>
+                                                <asp:Repeater ID="rptAllocationView" runat="server">
+                                                    <ItemTemplate>
+                                                        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                                                            <div>
+                                                                <span class="text-bold"><%# Eval("Ref") %></span>
+                                                                <span class="text-muted mx-2">-</span>
+                                                                <span class="text-muted"><%# Eval("Details") %></span>
+                                                            </div>
+                                                            <div class="font-weight-bold">
+                                                                RM <%# Eval("AllocatedAmount", "{0:N2}") %>
+                                                            </div>
+                                                        </div>
+                                                    </ItemTemplate>
+                                                    <FooterTemplate>
+                                                        <asp:Label ID="lblEmpty" runat="server" Visible='<%# rptAllocationView.Items.Count == 0 %>' Text="No allocations made." CssClass="text-muted font-italic"></asp:Label>
+                                                    </FooterTemplate>
+                                                </asp:Repeater>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <div class="card card-success">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Uploaded PO</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <asp:Label runat="server" Text="Purchase Order File: " CssClass="font-weight-bold mr-2"></asp:Label>
+                                            
+                                            <asp:Panel ID="pnlPOView" runat="server" Visible="false" CssClass="d-inline">
+                                                <asp:HyperLink ID="lnkPO" runat="server" Target="_blank" CssClass="btn btn-outline-primary btn-sm"></asp:HyperLink>
+                                            </asp:Panel>
+                                            
+                                            <asp:Label ID="lblPONotUploaded" runat="server" Text="No PO uploaded yet." CssClass="text-muted font-italic" Visible="false"></asp:Label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="row mt-3 no-print">
                             <div class="col-md-12">
                                 <div class="card card-secondary collapsed-card">
                                     <div class="card-header" data-card-widget="collapse" style="cursor:pointer;">
-                                        <h3 class="card-title">Documents</h3>
+                                        <h3 class="card-title">Supporting Documents</h3>
                                         <div class="card-tools">
                                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-plus"></i></button>
                                         </div>
@@ -265,7 +346,7 @@
                             </div>
                         </div>
 
-                        <div class="row mt-3">
+                        <div class="row mt-3 no-print">
                             <div class="col-md-12">
                                 <div class="card card-secondary collapsed-card">
                                     <div class="card-header" data-card-widget="collapse" style="cursor:pointer;">
@@ -298,4 +379,39 @@
                 </div>
             </div>
         </div>
-    </div> </asp:Content>
+        
+    </div> <script type="text/javascript">
+        function showApproveModal() {
+            Swal.fire({
+                title: 'Confirm Review',
+                text: "Please enter a remark for this review action. \n\n(This action will lock the PO for editing)",
+
+                // --- USE NATIVE INFO ANIMATION WITH LOCK ICON ---
+                icon: 'info', 
+                iconHtml: '<i class="fas fa-lock"></i>', 
+                // ---------------------------------
+
+                input: 'textarea',
+                inputPlaceholder: 'Enter your remark here... (Required)',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Confirm Review',
+                preConfirm: (remark) => {
+                    if (!remark || !remark.trim()) {
+                        Swal.showValidationMessage('Please enter a remark to proceed.');
+                        return false;
+                    }
+                    return remark;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('<%= hdnRemark.ClientID %>').value = result.value;
+                    $("#pagePreloader").fadeIn(200);
+                    document.getElementById('<%= btnApproveConfirm.ClientID %>').click();
+                }
+            });
+               }
+    </script>
+
+</asp:Content>

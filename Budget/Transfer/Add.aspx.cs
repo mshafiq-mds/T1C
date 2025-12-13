@@ -48,7 +48,7 @@ namespace Prodata.WebForm.Budget.Transfer
 
                 var model = new TransfersTransaction
                 {
-                    BA = Auth.User().iPMSBizAreaCode,
+                    BA = Auth.User().CCMSBizAreaCode,
                     Id = newId,
                     RefNo = refNo,
                     Project = txtProject.Text.Trim(),
@@ -109,7 +109,7 @@ namespace Prodata.WebForm.Budget.Transfer
                         db.SaveChanges();
                     }
                 }
-                Emails.EmailsReqTransferBudgetForNewRequest(newId, model, Auth.User().iPMSRoleCode);
+                Emails.EmailsReqTransferBudgetForNewRequest(newId, model, Auth.User().CCMSRoleCode);
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget added.");
                 Response.Redirect("~/Budget/Transfer");
@@ -118,7 +118,7 @@ namespace Prodata.WebForm.Budget.Transfer
 
         private void BindBALabel()
         {
-            string ba = Auth.User().iPMSBizAreaCode;
+            string ba = Auth.User().CCMSBizAreaCode;
 
             bool isEmptyBA = string.IsNullOrWhiteSpace(ba);
 

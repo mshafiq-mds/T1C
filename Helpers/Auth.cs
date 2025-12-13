@@ -45,13 +45,13 @@ namespace Prodata.WebForm
             return false;
         }
 
-        public static List<string> IPMSBizAreaCodes()
+        public static List<string> CCMSBizAreaCodes()
         {
             var ipmsBizArea = new Class.IPMSBizArea();
 
             if (User() != null && !User().IsSuperadmin())
             {
-                return new Class.IPMSBizArea().GetBizAreaCodes(User().iPMSBizAreaCode);
+                return new Class.IPMSBizArea().GetBizAreaCodes(User().CCMSBizAreaCode);
             }
             return new List<string>();
         }

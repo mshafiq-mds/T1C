@@ -90,18 +90,21 @@
             });
         });
         function beforeSubmit() {
+            // 1. Run your custom math validation (Calculated fields)
+            if (!validateBeforeSubmit()) {
+                return false; // Stop if math is wrong (Negative balance)
+            }
 
-            // Disable all buttons to prevent multiple clicks 
-            //$("button, .btn").prop("disabled", true);
-            //$("button, a.btn").addClass("disabled").attr("aria-disabled", "true");
+            // 2. Run ASP.NET Standard Validators (RequiredFieldValidators)
+            // This checks all your <asp:RequiredFieldValidator> controls
+            if (typeof (Page_ClientValidate) == 'function') {
+                if (!Page_ClientValidate()) {
+                    return false; // Stop if any required field is empty
+                }
+            }
 
-            // Show the page-specific preloader
+            // 3. If everything is valid, show the preloader and allow Postback
             $("#pagePreloader").fadeIn(200);
-
-            // Run your existing collectData() if defined
-            validateBeforeSubmit();
-
-            // Continue with ASP.NET postback
             return true;
         }
     </script>

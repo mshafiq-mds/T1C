@@ -90,7 +90,7 @@ namespace Prodata.WebForm.Class
         public static AdditionalCumulativeLimits GetEligibleCumulativeLimit(AppDbContext db, List<AdditionalCumulativeLimits> limits, decimal? requestedAmount, int year)
         {
             decimal amount = requestedAmount ?? 0m;
-            decimal used = GetEligibleCumulativeBalance(db, Auth.User().iPMSRoleCode, year);
+            decimal used = GetEligibleCumulativeBalance(db, Auth.User().CCMSRoleCode, year);
 
             return limits
                 .Where(l =>

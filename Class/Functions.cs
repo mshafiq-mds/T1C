@@ -17,12 +17,12 @@ namespace Prodata.WebForm.Class
             using (var context = new AppDbContext())
             {
 
-                if (string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode))
+                if (string.IsNullOrEmpty(Auth.User().CCMSBizAreaCode))
                 {
-                    Auth.User().iPMSBizAreaCode = ConfigurationManager.AppSettings["SuperadminBA"];
+                    Auth.User().CCMSBizAreaCode = ConfigurationManager.AppSettings["SuperadminBA"];
                 }
                 var refTypeParam = new SqlParameter("@RefType", refType);
-                var bizAreaParam = new SqlParameter("@BizArea", Auth.User().iPMSBizAreaCode);
+                var bizAreaParam = new SqlParameter("@BizArea", Auth.User().CCMSBizAreaCode);
                 var isPreviewParam = new SqlParameter("@IsPreview", isPreview ? 1 : 0);
 
                 var outputParam = new SqlParameter

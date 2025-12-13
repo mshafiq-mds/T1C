@@ -101,6 +101,18 @@
                                                             <asp:DropDownList ID="ddlIPMSBizArea" runat="server" CssClass="form-control select2" data-placeholder="iPMS Biz Area"></asp:DropDownList>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group row">
+                                                        <asp:Label ID="lblCCMSRole" runat="server" AssociatedControlID="ddlCCMSRole" CssClass="col-md-4 col-form-label text-md-right" Text="CCMS Role"></asp:Label>
+                                                        <div class="col-md-8">
+                                                            <asp:DropDownList ID="ddlCCMSRole" runat="server" CssClass="form-control select2" data-placeholder="CCMS Role"></asp:DropDownList>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <asp:Label ID="lblCCMSBizArea" runat="server" AssociatedControlID="ddlCCMSBizArea" CssClass="col-md-4 col-form-label text-md-right" Text="CCMS Biz Area"></asp:Label>
+                                                        <div class="col-md-8">
+                                                            <asp:DropDownList ID="ddlCCMSBizArea" runat="server" CssClass="form-control select2" data-placeholder="CCMS Biz Area"></asp:DropDownList>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

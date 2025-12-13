@@ -25,14 +25,14 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
         }
         private void BindTransfers(string statusFilter = "EditableOnly")
         {
-            string ba = Auth.User().iPMSBizAreaCode;
-            string userRole = Auth.User().iPMSRoleCode;
+            string ba = Auth.User().CCMSBizAreaCode;
+            string userRole = Auth.User().CCMSRoleCode;
 
             // Handle null gracefully: null ba = access all, null role = no approval limit filter
             List<string> accessibleBizAreas = !string.IsNullOrEmpty(ba)
                 ? new Class.IPMSBizArea().GetBizAreaCodes(ba)
                 : new List<string>(); // Empty list means access all later
-            //List<string> accessibleBizAreas = Auth.IPMSBizAreaCodes();
+            //List<string> accessibleBizAreas = Auth.CCMSBizAreaCodes();
 
             using (var db = new AppDbContext())
             {

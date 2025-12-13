@@ -63,7 +63,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
         private bool HandleApprovalAction(Guid transferId, decimal esCost)
         {
-            string roleCode = Auth.User().iPMSRoleCode;
+            string roleCode = Auth.User().CCMSRoleCode;
             Guid userId = Auth.User().Id;
 
             using (var db = new AppDbContext())

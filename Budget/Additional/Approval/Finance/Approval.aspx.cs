@@ -113,7 +113,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                     }
                     else if (action == "approve") //next approve 
                     {
-                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().iPMSRoleCode);
+                        Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().CCMSRoleCode);
                     }
                 }
             }
@@ -133,7 +133,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                 return;
             }
 
-            string roleCode = Auth.User().iPMSRoleCode;
+            string roleCode = Auth.User().CCMSRoleCode;
             Guid userId = Auth.User().Id;
 
             using (var db = new AppDbContext())

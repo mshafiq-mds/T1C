@@ -4,11 +4,10 @@ using Owin;
 using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.Auth;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Web;
 using System.Web.UI;
+using System.Configuration; // Needed for ConfigurationManager
 
 namespace Prodata.WebForm.Account
 {
@@ -17,35 +16,27 @@ namespace Prodata.WebForm.Account
         protected void Page_Load(object sender, EventArgs e)
         {
             Page.Title = "Login";
-
-            //RegisterHyperLink.NavigateUrl = "Register";
-            // Enable this once you have account confirmation enabled for password reset functionality
-            //ForgotPasswordHyperLink.NavigateUrl = "Forgot";
-            //OpenAuthLogin.ReturnUrl = Request.QueryString["ReturnUrl"];
             var returnUrl = HttpUtility.UrlEncode(Request.QueryString["ReturnUrl"]);
-            //if (!String.IsNullOrEmpty(returnUrl))
-            //{
-            //    RegisterHyperLink.NavigateUrl += "?ReturnUrl=" + returnUrl;
-            //}
         }
 
         protected void LogIn(object sender, EventArgs e)
         {
             if (IsValid)
             {
-                // Validate the user password
                 var manager = Context.GetOwinContext().GetUserManager<UserManager>();
                 var signinManager = Context.GetOwinContext().GetUserManager<SignInManager>();
                 var user = new User();
 
                 string username = Username.Text.Trim();
+                // Note: Encryptor2 is used for iPMS check, but Identity usually handles its own hashing internally.
                 string password = Encryptor2.Encode(Password.Text.Trim());
-                bool userExistsInIPMS = false; // Flag to track if user exists
+                bool userExistsInIPMS = false;
 
+                // --- SUPERADMIN LOGIC ---
                 if (username.Equals("superadmin", StringComparison.OrdinalIgnoreCase))
                 {
-                    // This doen't count login failures towards account lockout
-                    // To enable password failures to trigger lockout, change to shouldLockout: true
+                    // This relies on the 'AspNetUsers' table in the DB defined in 'DefaultConnection'.
+                    // Ensure the 'superadmin' user exists in your PROD database!
                     var result = signinManager.PasswordSignIn(Username.Text, Password.Text, RememberMe.Checked, shouldLockout: false);
 
                     switch (result)
@@ -56,22 +47,17 @@ namespace Prodata.WebForm.Account
                         case SignInStatus.LockedOut:
                             Response.Redirect("~/Account/Lockout");
                             break;
-                        case SignInStatus.RequiresVerification:
-                            Response.Redirect(String.Format("/Account/TwoFactorAuthenticationSignIn?ReturnUrl={0}&RememberMe={1}",
-                                                            Request.QueryString["ReturnUrl"],
-                                                            RememberMe.Checked),
-                                              true);
-                            break;
                         case SignInStatus.Failure:
                         default:
-                            FailureText.Text = "Invalid login attempt";
+                            FailureText.Text = "Invalid login attempt. (Check if superadmin exists in DB)";
                             ErrorMessage.Visible = true;
                             break;
                     }
                 }
+                // --- STANDARD USER LOGIC ---
                 else
                 {
-                    // Login from iPMS database
+                    // 1. Validate against External iPMS Database
                     using (var con = new SqlConn().GetSqlConnection("iPMSConnection"))
                     {
                         con.Open();
@@ -82,7 +68,7 @@ namespace Prodata.WebForm.Account
 
                         using (SqlDataReader rd = cmd.ExecuteReader())
                         {
-                            if (rd.Read()) // If user is found in iPMS
+                            if (rd.Read())
                             {
                                 userExistsInIPMS = true;
                                 user = new User
@@ -96,61 +82,25 @@ namespace Prodata.WebForm.Account
                             }
                         }
                     }
-                    // **If user does not exist in iPMS, return an error**
+
                     if (!userExistsInIPMS)
                     {
                         FailureText.Text = "Invalid login attempt";
                         ErrorMessage.Visible = true;
-                        return; // Stop execution
+                        return;
                     }
 
-                    // **Check if User Exists in t1c**
+                    // 2. Sync with Local Identity Database
                     var existingUser = manager.FindByName(user.UserName);
-                    if (existingUser == null) // User doesn't exist, create in t1c
+
+                    if (existingUser == null)
                     {
+                        // Create new local user
                         var result = manager.Create(user);
                         if (result.Succeeded)
                         {
                             var createdUser = manager.FindByName(user.UserName);
-
-                            //// Assign role to the user based on iPMSRoleCode
-                            //if (!string.IsNullOrEmpty(createdUser.iPMSRoleCode))
-                            //{
-                            //    var roleCode = createdUser.iPMSRoleCode.ToUpperInvariant();
-
-                            //    if (roleCode == "ADMIN")
-                            //    {
-                            //        if (!manager.IsInRole(createdUser.Id, "HQ"))
-                            //        {
-                            //            manager.AddToRole(createdUser.Id, "HQ");
-                            //        }
-                            //    }
-                            //    else
-                            //    {
-                            //        var approverRoles = new HashSet<string>
-                            //        {
-                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
-                            //        };
-
-                            //        if (approverRoles.Contains(roleCode))
-                            //        {
-                            //            if (!manager.IsInRole(createdUser.Id, "Approver"))
-                            //            {
-                            //                manager.AddToRole(createdUser.Id, "Approver");
-                            //            }
-
-                            //            if (roleCode == "KB" || roleCode == "MM")
-                            //            {
-                            //                if (!manager.IsInRole(createdUser.Id, "Kilang"))
-                            //                {
-                            //                    manager.AddToRole(createdUser.Id, "Kilang");
-                            //                }
-                            //            }
-                            //        }
-                            //    }
-                            //}
-
-                            // **Manually login user**
+                            // Sign in immediately
                             signinManager.SignIn(createdUser, RememberMe.Checked, false);
                         }
                         else
@@ -161,84 +111,302 @@ namespace Prodata.WebForm.Account
                     }
                     else
                     {
-                        // **User already exists, update their Name and iPMSRoleCode from iPMS**
+                        // Update existing local user
                         existingUser.Name = user.Name;
                         existingUser.iPMSRoleCode = user.iPMSRoleCode;
                         existingUser.iPMSBizAreaCode = user.iPMSBizAreaCode;
 
+                        if (string.IsNullOrEmpty(existingUser.CCMSRoleCode))
+                        {
+                            existingUser.CCMSRoleCode = user.iPMSRoleCode;
+                        }
+
                         var updateResult = manager.Update(existingUser);
+
                         if (updateResult.Succeeded)
                         {
-                            //// Assign role to existing user based on iPMSRoleCode
-                            //if (!string.IsNullOrEmpty(existingUser.iPMSRoleCode))
-                            //{
-                            //    var roleCode = existingUser.iPMSRoleCode.ToUpperInvariant();
+                            // === FIXED LOGIC HERE ===
+                            // Previously, this block prevented login if the DB was "CCMS" (Production).
+                            // Now we allow login for both Test and Prod environments.
 
-                            //    if (roleCode == "ADMIN")
-                            //    {
-                            //        if (!manager.IsInRole(existingUser.Id, "HQ"))
-                            //        {
-                            //            manager.AddToRole(existingUser.Id, "HQ");
-                            //        }
-                            //    }
-                            //    else
-                            //    {
-                            //        var approverRoles = new HashSet<string>
-                            //        {
-                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
-                            //        };
-
-                            //        if (approverRoles.Contains(roleCode))
-                            //        {
-                            //            if (!manager.IsInRole(existingUser.Id, "Approver"))
-                            //            {
-                            //                manager.AddToRole(existingUser.Id, "Approver");
-                            //            }
-
-                            //            if (roleCode == "KB" || roleCode == "MM")
-                            //            {
-                            //                if (!manager.IsInRole(existingUser.Id, "Kilang"))
-                            //                {
-                            //                    manager.AddToRole(existingUser.Id, "Kilang");
-                            //                }
-                            //            }
-                            //        }
-                            //    }
-                            //}
-
-                            // **Then sign in the user**
-                            signinManager.SignIn(existingUser, RememberMe.Checked, false);
-                        }
-                        else
-                        {
-                            //FailureText.Text = "Failed to update user info.";
-                            //ErrorMessage.Visible = true;
-                            //return;
-
-                            // Get connection string
                             var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
                             string databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
 
-                            if (databaseName.Equals("CCMS_TEST", StringComparison.OrdinalIgnoreCase))
+                            // Allow login if it is Test OR Prod
+                            bool isTestDB = databaseName.Equals("CCMS_TEST", StringComparison.OrdinalIgnoreCase);
+                            bool isProdDB = databaseName.Equals("CCMS", StringComparison.OrdinalIgnoreCase);
+
+                            if (isTestDB || isProdDB)
                             {
-                                // ✅ In TEST DB → Allow sign-in
+                                // ✅ Success: Sign in the user
                                 signinManager.SignIn(existingUser, RememberMe.Checked, false);
                             }
-                            else if (databaseName.Equals("CCMS", StringComparison.OrdinalIgnoreCase))
+                            else
                             {
-                                // ❌ In PROD DB → Block with error message
-                                FailureText.Text = "Failed to update user info.";
-                                ErrorMessage.Visible = true;
-                                return;
+                                // Optional: Handle unknown database names if necessary, or just default to sign-in
+                                signinManager.SignIn(existingUser, RememberMe.Checked, false);
                             }
+                        }
+                        else
+                        {
+                            // Join all errors into a single string to see why it failed
+                            string errorDetails = string.Join(", ", updateResult.Errors);
+
+                            FailureText.Text = "Failed to update user info. Reason: " + errorDetails;
+                            ErrorMessage.Visible = true;
                         }
                     }
                 }
-
-                // Manually login user
-                //var user = manager.FindByName(Username.Text.Trim());
-                //signinManager.SignIn(user, RememberMe.Checked, false);
             }
         }
     }
 }
+//using Microsoft.AspNet.Identity;
+//using Microsoft.AspNet.Identity.Owin;
+//using Owin;
+//using Prodata.WebForm.Models;
+//using Prodata.WebForm.Models.Auth;
+//using System;
+//using System.Collections.Generic;
+//using System.Configuration;
+//using System.Data.SqlClient;
+//using System.Web;
+//using System.Web.UI;
+
+//namespace Prodata.WebForm.Account
+//{
+//    public partial class Login : Page
+//    {
+//        protected void Page_Load(object sender, EventArgs e)
+//        {
+//            Page.Title = "Login";
+
+//            //RegisterHyperLink.NavigateUrl = "Register";
+//            // Enable this once you have account confirmation enabled for password reset functionality
+//            //ForgotPasswordHyperLink.NavigateUrl = "Forgot";
+//            //OpenAuthLogin.ReturnUrl = Request.QueryString["ReturnUrl"];
+//            var returnUrl = HttpUtility.UrlEncode(Request.QueryString["ReturnUrl"]);
+//            //if (!String.IsNullOrEmpty(returnUrl))
+//            //{
+//            //    RegisterHyperLink.NavigateUrl += "?ReturnUrl=" + returnUrl;
+//            //}
+//        }
+
+//        protected void LogIn(object sender, EventArgs e)
+//        {
+//            if (IsValid)
+//            {
+//                // Validate the user password
+//                var manager = Context.GetOwinContext().GetUserManager<UserManager>();
+//                var signinManager = Context.GetOwinContext().GetUserManager<SignInManager>();
+//                var user = new User();
+
+//                string username = Username.Text.Trim();
+//                string password = Encryptor2.Encode(Password.Text.Trim());
+//                bool userExistsInIPMS = false; // Flag to track if user exists
+
+//                if (username.Equals("superadmin", StringComparison.OrdinalIgnoreCase))
+//                {
+//                    // This doen't count login failures towards account lockout
+//                    // To enable password failures to trigger lockout, change to shouldLockout: true
+//                    var result = signinManager.PasswordSignIn(Username.Text, Password.Text, RememberMe.Checked, shouldLockout: false);
+
+//                    switch (result)
+//                    {
+//                        case SignInStatus.Success:
+//                            IdentityHelper.RedirectToReturnUrl(Request.QueryString["ReturnUrl"], Response);
+//                            break;
+//                        case SignInStatus.LockedOut:
+//                            Response.Redirect("~/Account/Lockout");
+//                            break;
+//                        case SignInStatus.RequiresVerification:
+//                            Response.Redirect(String.Format("/Account/TwoFactorAuthenticationSignIn?ReturnUrl={0}&RememberMe={1}",
+//                                                            Request.QueryString["ReturnUrl"],
+//                                                            RememberMe.Checked),
+//                                              true);
+//                            break;
+//                        case SignInStatus.Failure:
+//                        default:
+//                            FailureText.Text = "Invalid login attempt";
+//                            ErrorMessage.Visible = true;
+//                            break;
+//                    }
+//                }
+//                else
+//                {
+//                    // Login from iPMS database
+//                    using (var con = new SqlConn().GetSqlConnection("iPMSConnection"))
+//                    {
+//                        con.Open();
+//                        string sql = "execute SP_ValidateUserLogin @userName, @password;";
+//                        SqlCommand cmd = new SqlCommand(sql, con);
+//                        cmd.Parameters.AddWithValue("@userName", username);
+//                        cmd.Parameters.AddWithValue("@password", password);
+
+//                        using (SqlDataReader rd = cmd.ExecuteReader())
+//                        {
+//                            if (rd.Read()) // If user is found in iPMS
+//                            {
+//                                userExistsInIPMS = true;
+//                                user = new User
+//                                {
+//                                    Name = Convert.ToString(rd["FullName"]),
+//                                    UserName = Convert.ToString(rd["UserName"]),
+//                                    Email = Convert.ToString(rd["UserName"]) + "@example.com",
+//                                    iPMSRoleCode = Convert.ToString(rd["RoleCode"]),
+//                                    iPMSBizAreaCode = Convert.ToString(rd["BizAreaCode"]),
+//                                };
+//                            }
+//                        }
+//                    }
+//                    // **If user does not exist in iPMS, return an error**
+//                    if (!userExistsInIPMS)
+//                    {
+//                        FailureText.Text = "Invalid login attempt";
+//                        ErrorMessage.Visible = true;
+//                        return; // Stop execution
+//                    }
+
+//                    // **Check if User Exists in t1c**
+//                    var existingUser = manager.FindByName(user.UserName);
+//                    if (existingUser == null) // User doesn't exist, create in t1c
+//                    {
+//                        var result = manager.Create(user);
+//                        if (result.Succeeded)
+//                        {
+//                            var createdUser = manager.FindByName(user.UserName);
+
+//                            //// Assign role to the user based on CCMSRoleCode
+//                            //if (!string.IsNullOrEmpty(createdUser.CCMSRoleCode))
+//                            //{
+//                            //    var roleCode = createdUser.CCMSRoleCode.ToUpperInvariant();
+
+//                            //    if (roleCode == "ADMIN")
+//                            //    {
+//                            //        if (!manager.IsInRole(createdUser.Id, "HQ"))
+//                            //        {
+//                            //            manager.AddToRole(createdUser.Id, "HQ");
+//                            //        }
+//                            //    }
+//                            //    else
+//                            //    {
+//                            //        var approverRoles = new HashSet<string>
+//                            //        {
+//                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+//                            //        };
+
+//                            //        if (approverRoles.Contains(roleCode))
+//                            //        {
+//                            //            if (!manager.IsInRole(createdUser.Id, "Approver"))
+//                            //            {
+//                            //                manager.AddToRole(createdUser.Id, "Approver");
+//                            //            }
+
+//                            //            if (roleCode == "KB" || roleCode == "MM")
+//                            //            {
+//                            //                if (!manager.IsInRole(createdUser.Id, "Kilang"))
+//                            //                {
+//                            //                    manager.AddToRole(createdUser.Id, "Kilang");
+//                            //                }
+//                            //            }
+//                            //        }
+//                            //    }
+//                            //}
+
+//                            // **Manually login user**
+//                            signinManager.SignIn(createdUser, RememberMe.Checked, false);
+//                        }
+//                        else
+//                        {
+//                            FailureText.Text = "User creation failed.";
+//                            ErrorMessage.Visible = true;
+//                        }
+//                    }
+//                    else
+//                    {
+//                        // **User already exists, update their Name and CCMSRoleCode from iPMS**
+//                        existingUser.Name = user.Name;
+//                        existingUser.iPMSRoleCode = user.iPMSRoleCode;
+//                        existingUser.iPMSBizAreaCode = user.iPMSBizAreaCode;
+//                        // Check if the role is null or an empty string ""
+//                        if (string.IsNullOrEmpty(existingUser.CCMSRoleCode))
+//                        {
+//                            existingUser.CCMSRoleCode = user.iPMSRoleCode;
+//                        } 
+
+//                        var updateResult = manager.Update(existingUser);
+//                        if (updateResult.Succeeded)
+//                        {
+//                            //// Assign role to existing user based on CCMSRoleCode
+//                            //if (!string.IsNullOrEmpty(existingUser.CCMSRoleCode))
+//                            //{
+//                            //    var roleCode = existingUser.CCMSRoleCode.ToUpperInvariant();
+
+//                            //    if (roleCode == "ADMIN")
+//                            //    {
+//                            //        if (!manager.IsInRole(existingUser.Id, "HQ"))
+//                            //        {
+//                            //            manager.AddToRole(existingUser.Id, "HQ");
+//                            //        }
+//                            //    }
+//                            //    else
+//                            //    {
+//                            //        var approverRoles = new HashSet<string>
+//                            //        {
+//                            //            "AM", "MM", "DRC", "RC", "KZ", "HPMBP", "UKK", "VP", "CEO"
+//                            //        };
+
+//                            //        if (approverRoles.Contains(roleCode))
+//                            //        {
+//                            //            if (!manager.IsInRole(existingUser.Id, "Approver"))
+//                            //            {
+//                            //                manager.AddToRole(existingUser.Id, "Approver");
+//                            //            }
+
+//                            //            if (roleCode == "KB" || roleCode == "MM")
+//                            //            {
+//                            //                if (!manager.IsInRole(existingUser.Id, "Kilang"))
+//                            //                {
+//                            //                    manager.AddToRole(existingUser.Id, "Kilang");
+//                            //                }
+//                            //            }
+//                            //        }
+//                            //    }
+//                            //}
+
+//                            // **Then sign in the user**
+//                            signinManager.SignIn(existingUser, RememberMe.Checked, false);
+//                        }
+//                        else
+//                        {
+//                            //FailureText.Text = "Failed to update user info.";
+//                            //ErrorMessage.Visible = true;
+//                            //return;
+
+//                            // Get connection string
+//                            var connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+//                            string databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
+
+//                            if (databaseName.Equals("CCMS_TEST", StringComparison.OrdinalIgnoreCase))
+//                            {
+//                                // ✅ In TEST DB → Allow sign-in
+//                                signinManager.SignIn(existingUser, RememberMe.Checked, false);
+//                            }
+//                            else if (databaseName.Equals("CCMS", StringComparison.OrdinalIgnoreCase))
+//                            {
+//                                // ❌ In PROD DB → Block with error message
+//                                FailureText.Text = "Failed to update user info.";
+//                                ErrorMessage.Visible = true;
+//                                return;
+//                            }
+//                        }
+//                    }
+//                }
+
+//                // Manually login user
+//                //var user = manager.FindByName(Username.Text.Trim());
+//                //signinManager.SignIn(user, RememberMe.Checked, false);
+//            }
+//        }
+//    }
+//}

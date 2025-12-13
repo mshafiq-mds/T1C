@@ -974,7 +974,7 @@
         }
 
        <%-- function validateAmountLimit(source, args) {
-            var role = '<%= Prodata.WebForm.Auth.User().iPMSRoleCode?.ToLower() %>';
+            var role = '<%= Prodata.WebForm.Auth.User().CCMSRoleCode?.ToLower() %>';
             var rawValue = args.Value.replace(/,/g, ''); // remove commas
             var value = parseFloat(rawValue);
 

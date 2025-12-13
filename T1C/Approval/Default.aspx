@@ -1,93 +1,179 @@
 ﻿<%@ Page Title="T1C Approval" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.Approval.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card card-outline">
-                <div class="card-header">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <asp:DropDownList ID="ddlStatus" runat="server" CssClass="form-control select2" AutoPostBack="true" OnSelectedIndexChanged="ddlStatus_SelectedIndexChanged" CausesValidation="false" data-placeholder="All Status">
-                                <asp:ListItem Text="" Value="" />
-                                <asp:ListItem Text="Pending My Action" Value="pending-my-action" Selected="True" />
-                                <asp:ListItem Text="Pending" Value="Pending" />
-                                <asp:ListItem Text="Approved" Value="Approved" />
-                                <asp:ListItem Text="Rejected" Value="Rejected" />
-                                <asp:ListItem Text="Sent Back" Value="SentBack" />
-                                <asp:ListItem Text="Draft" Value="Draft" />
-                            </asp:DropDownList>
+    
+    <style>
+        @media print {
+            /* Hide everything that has the class 'no-print' */
+            .no-print {
+                display: none !important;
+            }
+
+            /* Hide standard page elements */
+            body * {
+                visibility: hidden;
+            }
+
+            /* Show the specific print container and its contents */
+            #printArea, #printArea * {
+                visibility: visible;
+            }
+
+            /* Position the print area at the top left */
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+
+            /* Force display the logo header */
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+
+            /* Clean up table styling for paper */
+            .table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+            .table th, .table td {
+                border: 1px solid #000 !important;
+                padding: 5px !important;
+            }
+            
+            /* Hide the Action column specifically in the grid */
+            .action-column {
+                display: none !important;
+            }
+
+            /* Ensure badges print with color */
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact;
+        }
+    </style>
+
+    <div id="printArea">
+
+        <div class="print-header d-none">
+            <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" alt="FGV Logo" style="height: 80px;" />
+            <h3 class="mt-2">Approval List</h3>
+            <p>Generated on: <%= DateTime.Now.ToString("dd/MM/yyyy HH:mm") %></p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-outline">
+                    
+                    <div class="card-header no-print">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <asp:DropDownList ID="ddlStatus" runat="server" CssClass="form-control select2" AutoPostBack="true" OnSelectedIndexChanged="ddlStatus_SelectedIndexChanged" CausesValidation="false" data-placeholder="All Status">
+                                    <asp:ListItem Text="" Value="" />
+                                    <asp:ListItem Text="Pending My Action" Value="pending-my-action" Selected="True" />
+                                    <asp:ListItem Text="Pending" Value="Pending" />
+                                    <asp:ListItem Text="Approved" Value="Approved" />
+                                    <asp:ListItem Text="Rejected" Value="Rejected" />
+                                    <asp:ListItem Text="Sent Back" Value="SentBack" />
+                                    <asp:ListItem Text="Draft" Value="Draft" />
+                                </asp:DropDownList>
+                            </div>
+                            
+                            <div class="col-md-9 text-right">
+                                <button type="button" class="btn btn-default" onclick="window.print();">
+                                    <i class="fas fa-print"></i> Print
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12">
-                            <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-                                <ContentTemplate>
-                                    <div class="table-responsive">
-                                        <asp:GridView ID="gvData" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvData_PageIndexChanging" EmptyDataText="No record.">
-                                            <Columns>
-                                                <asp:TemplateField HeaderText="#">
-                                                    <HeaderStyle CssClass="width-30 text-center" />
-                                                    <ItemStyle CssClass="width-30 text-center" />
-                                                    <ItemTemplate>
-                                                        <%# Container.DataItemIndex + 1 %>
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                                <asp:BoundField DataField="BizAreaDisplayName" HeaderText="BA" HeaderStyle-CssClass="align-middle" />
-                                                <asp:BoundField DataField="Ref" HeaderText="Reference No" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
-                                                <asp:BoundField DataField="Date" HeaderText="Date" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Details" HeaderText="Details" HeaderStyle-CssClass="align-middle text-nowrap" />
-                                                <asp:BoundField DataField="Amount" HeaderText="Amount (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
-                                                <asp:TemplateField HeaderText="Status">
-                                                    <HeaderStyle CssClass="width-120 text-center align-middle" />
-                                                    <ItemStyle CssClass="width-120 text-center" />
-                                                    <ItemTemplate>
-                                                        <asp:Label runat="server"
-                                                            CssClass='<%#
-                                                                (bool)Eval("IsPendingUserAction") ? "badge badge-primary badge-pill" :
-                                                                Eval("Status") != null ? (
-                                                                    Eval("Status").ToString().ToLower() == "approved" ? "badge badge-success badge-pill" :
-                                                                    Eval("Status").ToString().ToLower() == "pending" ? "badge badge-warning badge-pill" :
-                                                                    Eval("Status").ToString().ToLower() == "rejected" ? "badge badge-danger badge-pill" :
-                                                                    Eval("Status").ToString().ToLower() == "draft" ? "badge badge-info badge-pill" :
-                                                                    "badge badge-secondary badge-pill"
-                                                                ) : "badge badge-secondary badge-pill"
-                                                            %>'
-                                                            Text='<%# 
-                                                                (bool)Eval("IsPendingUserAction") ? "Pending My Action" :
-                                                                Eval("Status") != null && Eval("Status").ToString().Equals("SentBack", StringComparison.OrdinalIgnoreCase) ? "Sent Back" :
-                                                                Eval("Status")
-                                                            %>'>
-                                                        </asp:Label>
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                                <asp:TemplateField HeaderText="Action">
-                                                    <HeaderStyle CssClass="width-80 text-center align-middle" />
-                                                    <ItemStyle CssClass="width-80 text-center" />
-                                                    <ItemTemplate>
-                                                        <asp:LinkButton runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/Approval/Edit?Id={Eval("Id")}" %>'>
-                                                            <i class="fas fa-eye"></i>
-                                                        </asp:LinkButton>
-                                                        <asp:LinkButton runat="server"
-                                                            CssClass='<%# (bool)Eval("IsPendingUserAction") ? "btn btn-outline-secondary btn-xs" : "btn btn-outline-secondary btn-xs disabled" %>'
-                                                            PostBackUrl='<%# (bool)Eval("IsPendingUserAction") ? $"~/T1C/Approval/Edit?Id={Eval("Id")}" : "#" %>'
-                                                            OnClientClick='<%# !(bool)Eval("IsPendingUserAction") ? "return false;" : "" %>'>
-                                                            <i class="fas fa-edit"></i>
-                                                        </asp:LinkButton>
-                                                    </ItemTemplate>
-                                                </asp:TemplateField>
-                                            </Columns>
-                                            <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
-                                            <PagerStyle CssClass="pagination-ys" />
-                                        </asp:GridView>
-                                    </div>
-                                </ContentTemplate>
-                            </asp:UpdatePanel>
+
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <asp:UpdatePanel ID="UpdatePanel1" runat="server">
+                                    <ContentTemplate>
+                                        <div class="table-responsive">
+                                            <asp:GridView ID="gvData" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvData_PageIndexChanging" EmptyDataText="No record.">
+                                                <Columns>
+                                                    <asp:TemplateField HeaderText="#">
+                                                        <HeaderStyle CssClass="width-30 text-center" />
+                                                        <ItemStyle CssClass="width-30 text-center" />
+                                                        <ItemTemplate>
+                                                            <%# Container.DataItemIndex + 1 %>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                    <asp:BoundField DataField="BizAreaDisplayName" HeaderText="BA" HeaderStyle-CssClass="align-middle" />
+                                                    <asp:BoundField DataField="Ref" HeaderText="Reference No" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-nowrap" />
+                                                    <asp:BoundField DataField="Date" HeaderText="Date" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                    <asp:BoundField DataField="Details" HeaderText="Details" HeaderStyle-CssClass="align-middle text-nowrap" />
+                                                    <asp:BoundField DataField="Amount" HeaderText="Amount (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
+                                                    <asp:TemplateField HeaderText="Next Approver">
+                                                        <HeaderStyle CssClass="align-middle text-nowrap text-center" />
+                                                        <ItemStyle CssClass="text-center" />
+                                                        <ItemTemplate>
+                                                            <%# Eval("Status") != null && Eval("Status").ToString().Equals("Completed", StringComparison.OrdinalIgnoreCase) 
+                                                                ? "<span class='text-success font-weight-bold'>Complete</span>" 
+                                                                : Eval("NextApprover") %>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                    <asp:TemplateField HeaderText="Status">
+                                                        <HeaderStyle CssClass="width-120 text-center align-middle" />
+                                                        <ItemStyle CssClass="width-120 text-center" />
+                                                        <ItemTemplate>
+                                                            <asp:Label runat="server"
+                                                                CssClass='<%#
+                                                                    (bool)Eval("IsPendingUserAction") ? "badge badge-primary badge-pill" :
+                                                                    Eval("Status") != null ? (
+                                                                        Eval("Status").ToString().ToLower() == "completed" ? "badge badge-dark badge-pill" :
+                                                                        Eval("Status").ToString().ToLower() == "approved" ? "badge badge-success badge-pill" :
+                                                                        Eval("Status").ToString().ToLower() == "pending" ? "badge badge-warning badge-pill" :
+                                                                        Eval("Status").ToString().ToLower() == "rejected" ? "badge badge-danger badge-pill" :
+                                                                        Eval("Status").ToString().ToLower() == "draft" ? "badge badge-info badge-pill" :
+                                                                        Eval("Status").ToString().ToLower() == "sentback" ? "badge badge-secondary badge-pill" :
+                                                                        "badge badge-secondary badge-pill"
+                                                                    ) : "badge badge-secondary badge-pill"
+                                                                %>'
+                                                                Text='<%# 
+                                                                    (bool)Eval("IsPendingUserAction") ? "Pending My Action" :
+                                                                    Eval("Status") != null && Eval("Status").ToString().Equals("SentBack", StringComparison.OrdinalIgnoreCase) ? "Sent Back" :
+                                                                    Eval("Status")
+                                                                %>'>
+                                                            </asp:Label>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                    
+                                                    <%-- 6. Added 'action-column' class to hide this column in print --%>
+                                                    <asp:TemplateField HeaderText="Action">
+                                                        <HeaderStyle CssClass="width-80 text-center align-middle action-column" />
+                                                        <ItemStyle CssClass="width-80 text-center action-column" />
+                                                        <ItemTemplate>
+                                                            <asp:LinkButton runat="server" CssClass="btn btn-outline-info btn-xs" PostBackUrl='<%# $"~/T1C/Approval/Edit?Id={Eval("Id")}" %>'>
+                                                                <i class="fas fa-eye"></i>
+                                                            </asp:LinkButton>
+                                                            <asp:LinkButton runat="server"
+                                                                CssClass='<%# (bool)Eval("IsPendingUserAction") ? "btn btn-outline-secondary btn-xs" : "btn btn-outline-secondary btn-xs disabled" %>'
+                                                                PostBackUrl='<%# (bool)Eval("IsPendingUserAction") ? $"~/T1C/Approval/Edit?Id={Eval("Id")}" : "#" %>'
+                                                                OnClientClick='<%# !(bool)Eval("IsPendingUserAction") ? "return false;" : "" %>'>
+                                                                <i class="fas fa-edit"></i>
+                                                            </asp:LinkButton>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
+                                                </Columns>
+                                                <%-- Added no-print to pagination --%>
+                                                <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
+                                                <PagerStyle CssClass="pagination-ys no-print" />
+                                            </asp:GridView>
+                                        </div>
+                                    </ContentTemplate>
+                                </asp:UpdatePanel>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</asp:Content>
+    </div> </asp:Content>

@@ -49,7 +49,9 @@ namespace Prodata.WebForm.Administration.User
 				string username = txtUsername.Text.Trim().ToLower();
 				string password = !string.IsNullOrEmpty(txtPassword.Text.Trim()) ? txtPassword.Text.Trim() : string.Empty;
                 string ipmsRole = ddlIPMSRole.SelectedValue;
+                string ccmsRole = ddlCCMSRole.SelectedValue;
 				string ipmsBizArea = ddlIPMSBizArea.SelectedValue;
+				string ccmsBizArea = ddlCCMSBizArea.SelectedValue;
 
                 if (!userManager.UserExists(guidUserId, username, email))
 				{
@@ -85,6 +87,8 @@ namespace Prodata.WebForm.Administration.User
 									user.Email = email;
 									user.UserName = username;
 									user.iPMSRoleCode = ipmsRole;
+									user.CCMSRoleCode = ccmsRole;
+									user.CCMSBizAreaCode = ccmsBizArea;
 									user.iPMSBizAreaCode = ipmsBizArea;
 
                                     var result = userManager.Update(user);
@@ -156,11 +160,23 @@ namespace Prodata.WebForm.Administration.User
             ddlIPMSRole.DataBind();
             ddlIPMSRole.Items.Insert(0, new ListItem("", ""));
 
-			ddlIPMSBizArea.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
+            ddlCCMSRole.DataSource = new Class.IPMSRole().GetIPMSRoles();
+            ddlCCMSRole.DataValueField = "Code";
+            ddlCCMSRole.DataTextField = "DisplayName";
+            ddlCCMSRole.DataBind();
+            ddlCCMSRole.Items.Insert(0, new ListItem("", ""));
+
+            ddlIPMSBizArea.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
             ddlIPMSBizArea.DataValueField = "Code";
             ddlIPMSBizArea.DataTextField = "DisplayName";
             ddlIPMSBizArea.DataBind();
             ddlIPMSBizArea.Items.Insert(0, new ListItem("", ""));
+
+            ddlCCMSBizArea.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
+            ddlCCMSBizArea.DataValueField = "Code";
+            ddlCCMSBizArea.DataTextField = "DisplayName";
+            ddlCCMSBizArea.DataBind();
+            ddlCCMSBizArea.Items.Insert(0, new ListItem("", ""));
         }
 
 		private void BindData(string userId = null)
@@ -177,7 +193,9 @@ namespace Prodata.WebForm.Administration.User
 				txtEmail.Text = user.Email;
 				txtUsername.Text = user.UserName;
 				ddlIPMSRole.SelectedValue = user.iPMSRoleCode;
+				ddlCCMSRole.SelectedValue = user.CCMSRoleCode;
 				ddlIPMSBizArea.SelectedValue = user.iPMSBizAreaCode;
+				ddlCCMSBizArea.SelectedValue = user.CCMSBizAreaCode;
 
                 if (user.IsSuperadmin())
 					txtUsername.Attributes.Add("readonly", "readonly");
@@ -187,6 +205,8 @@ namespace Prodata.WebForm.Administration.User
                     txtUsername.Attributes.Add("readonly", "readonly");
 					txtPassword.Attributes.Add("readonly", "readonly");
 					txtConfirmPassword.Attributes.Add("readonly", "readonly");
+					ddlIPMSBizArea.Attributes.Add("readonly", "readonly");
+					ddlIPMSRole.Attributes.Add("readonly", "readonly");
                 }
 
 				for (int i = 0; i < cblRoles.Items.Count; i++)

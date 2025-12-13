@@ -258,24 +258,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         protected global::System.Web.UI.WebControls.PlaceHolder phDocumentList;
 
         /// <summary>
-        /// txtRemarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRemarks;
-
-        /// <summary>
-        /// rfvtxtRemarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvtxtRemarks;
-
-        /// <summary>
         /// hdnAction control.
         /// </summary>
         /// <remarks>
@@ -283,6 +265,15 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.HiddenField hdnAction;
+
+        /// <summary>
+        /// hdnRemarks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnRemarks;
 
         /// <summary>
         /// btnRevisionConfirmed control.

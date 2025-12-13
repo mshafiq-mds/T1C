@@ -13,7 +13,9 @@ namespace Prodata.WebForm.Models.ViewModels
 		public string Email { get; set; }
 		public string Roles { get; set; }
 		public string IPMSRole { get; set; }
+		public string CCMSRole { get; set; }
 		public string IPMSBizArea { get; set; }
+		public string CCMSBizArea { get; set; }
     }
 
 	public class UserAccessViewModel

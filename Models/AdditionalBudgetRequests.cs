@@ -59,6 +59,7 @@ namespace Prodata.WebForm.Models
         // Tracking
         [MaxLength(50)]
         public string BA { get; set; }
+        public string NextApprover { get; set; }
 
         public int? Status { get; set; }
 
@@ -76,5 +77,6 @@ namespace Prodata.WebForm.Models
         public DateTime? DeletedDate { get; set; }
 
         public Guid? ToBudgetType { get; set; }
+        
     }
 }

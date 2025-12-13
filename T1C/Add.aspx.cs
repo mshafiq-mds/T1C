@@ -21,7 +21,7 @@ namespace Prodata.WebForm.T1C
         {
             if (!IsPostBack)
             {
-                BindControl(Auth.User().iPMSBizAreaCode);
+                BindControl(Auth.User().CCMSBizAreaCode);
                 BindData();
             }
         }
@@ -32,7 +32,7 @@ namespace Prodata.WebForm.T1C
             {
                 bool isSuccess = false;
                 string formId = string.Empty;
-                string ba = string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
+                string ba = string.IsNullOrEmpty(Auth.User().CCMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
                 string details = txtDetails.Text.Trim();
@@ -242,7 +242,7 @@ namespace Prodata.WebForm.T1C
             {
                 bool isSuccess = false;
                 string formId = string.Empty;
-                string ba = string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
+                string ba = string.IsNullOrEmpty(Auth.User().CCMSBizAreaCode) ? ddlBA.SelectedValue : lblBAText.Text.Trim().Split(new string[] { " - " }, StringSplitOptions.None)[0];
                 string refNo = txtRefNo.Text.Trim();
                 DateTime? date = !string.IsNullOrEmpty(txtDate.Text.Trim()) ? DateTime.Parse(txtDate.Text.Trim()) : (DateTime?)null;
                 string details = txtDetails.Text.Trim();
@@ -428,7 +428,7 @@ namespace Prodata.WebForm.T1C
                                 ObjectType = "Form",
                                 ActionById = Auth.User().Id,
                                 ActionByType = "User",
-                                ActionByCode = Auth.User().iPMSRoleCode,
+                                ActionByCode = Auth.User().CCMSRoleCode,
                                 ActionByName = Auth.User().Name,
                                 Action = "Submitted",
                                 Section = "Applicant"
@@ -439,7 +439,7 @@ namespace Prodata.WebForm.T1C
                             isSuccess = true;
 
 
-                            Emails.EmailsT1CForNewRequest(form.Id, form, Auth.User().iPMSRoleCode);
+                            Emails.EmailsT1CForNewRequest(form.Id, form, Auth.User().CCMSRoleCode);
                         }
                         catch (Exception ex)
                         {
@@ -494,7 +494,7 @@ namespace Prodata.WebForm.T1C
 
         protected void cvAmountLimit_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            string roleCode = Auth.User().iPMSRoleCode;
+            string roleCode = Auth.User().CCMSRoleCode;
             decimal amount;
 
             // Remove commas before parsing
@@ -523,10 +523,10 @@ namespace Prodata.WebForm.T1C
         [WebMethod]
         public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
         {
-            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
+            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().CCMSBizAreaCode);
         }
 
-        private void BindControl(string ipmsBizAreaCode)
+        private void BindControl(string CCMSBizAreaCode)
         {
             ddlBA.DataSource = new Class.IPMSBizArea().GetIPMSBizAreas();
             ddlBA.DataValueField = "Code";
@@ -534,7 +534,7 @@ namespace Prodata.WebForm.T1C
             ddlBA.DataBind();
             ddlBA.Items.Insert(0, new ListItem("", ""));
 
-            var budgets = new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: ipmsBizAreaCode);
+            var budgets = new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: CCMSBizAreaCode);
             ddlAllocation.DataSource = budgets;
             ddlAllocation.DataValueField = "Id";
             ddlAllocation.DataTextField = "DisplayName";
@@ -554,13 +554,13 @@ namespace Prodata.WebForm.T1C
 
         private void BindData()
         {
-            if (!string.IsNullOrEmpty(Auth.User().iPMSBizAreaCode))
+            if (!string.IsNullOrEmpty(Auth.User().CCMSBizAreaCode))
             {
                 lblBAText.Visible = true;
                 ddlBA.Visible = false;
                 rfvBA.Visible = false;
 
-                string baCode = Auth.User().iPMSBizAreaCode;
+                string baCode = Auth.User().CCMSBizAreaCode;
                 string baName = new Class.IPMSBizArea().GetNameByCode(baCode);
                 lblBAText.Text = baCode + " - " + baName;
             }

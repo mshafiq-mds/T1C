@@ -14,6 +14,125 @@
 
     <style>
         body.login-page {
+            background: #d2d6de; 
+            overflow: hidden; 
+        }
+
+        /* FIXED: Simplified Video Background (Removes Shaking) */
+        .video-background {
+            position: fixed;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
+            object-fit: cover; /* Ensures video fills screen perfectly */
+            z-index: -100;
+        }
+
+        /* Dark overlay to make the login box pop */
+        .video-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: -99;
+        }
+
+        /* --- LOGIN CARD STYLES --- */
+        .login-box {
+            width: 400px;
+            margin: 8% auto; 
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Stronger shadow for depth */
+            border: none;
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 40px 35px;
+            background-color: #ffffff;
+            text-align: center;
+        }
+
+        .login-logo-container img {
+            max-width: 160px;
+            margin-bottom: 20px;
+        }
+
+        .system-title {
+            color: #343a40;
+            font-weight: 700;
+            font-size: 1.4rem;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        /* UPDATED: Your specific style request */
+        .system-subtitle {
+            color: #343a40;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-top: 5px;
+            margin-bottom: 25px;
+        }
+
+    </style>
+</head>
+<body class="hold-transition login-page">
+    
+    <video autoplay muted loop playsinline class="video-background" poster="<%= ResolveUrl("~/Images/Background.png") %>">
+        <source src='<%= ResolveUrl("~/Images/LoginBackground.mp4") %>' type="video/mp4">
+        Your browser does not support HTML5 video.
+    </video>
+    
+    <div class="video-overlay"></div> 
+
+    <form id="form1" runat="server">
+        <asp:ScriptManager runat="server" />
+
+        <div class="login-box">
+            <div class="card">
+                <div class="card-body login-card-body">
+                    
+                    <div class="login-logo-container">
+                        <img src='<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>' alt="FGV Logo" />
+                        <div>
+                            <div class="system-title">
+                                <%= System.Configuration.ConfigurationManager.AppSettings["AppFullName"] %>
+                            </div>
+                            <div class="system-subtitle">
+                                <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <%--<p class="login-box-msg text-muted">Sign in to start your session</p>--%>
+                    <asp:ContentPlaceHolder ID="LoginContent" runat="server" />
+
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+<%--<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="SiteLogin.Master.cs" Inherits="Prodata.WebForm.SiteLogin" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><%: Page.Title %> | <%= System.Configuration.ConfigurationManager.AppSettings["AppName"] %></title>
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" rel="stylesheet" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" runat="server" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/plugins/icheck-bootstrap/icheck-bootstrap.min.css" rel="stylesheet" runat="server" />
+    <link href="~/App_Themes/AdminLTE-3.2.0/dist/css/adminlte.min.css" rel="stylesheet" runat="server" />
+
+    <style>
+        body.login-page {
             background: url('<%= ResolveUrl("~/Images/Background.png") %>') no-repeat center center fixed;
             background-size: cover;
         }
@@ -59,4 +178,4 @@
         </div>
     </form>
 </body>
-</html>
+</html>--%>

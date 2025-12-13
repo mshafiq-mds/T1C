@@ -52,9 +52,11 @@
                                                 <asp:BoundField DataField="Name" HeaderText="Name" />
                                                 <asp:BoundField DataField="Username" HeaderText="Username" />
                                                 <asp:BoundField DataField="Email" HeaderText="Email" />
-                                                <asp:BoundField DataField="Roles" HeaderText="Roles" />
-                                                <asp:BoundField DataField="IPMSRole" HeaderText="iPMS Role" />
-                                                <asp:BoundField DataField="IPMSBizArea" HeaderText="iPMS Biz Area" />
+                                                <asp:BoundField DataField="Roles" HeaderText="Menu Roles" />
+                                                <%--<asp:BoundField DataField="IPMSRole" HeaderText="iPMS Role" />--%>
+                                                <asp:BoundField DataField="CCMSRole" HeaderText="CCMS Role" />
+                                                <%--<asp:BoundField DataField="IPMSBizArea" HeaderText="iPMS Biz Area" />--%>
+                                                <asp:BoundField DataField="CCMSBizArea" HeaderText="CCMS Biz Area" />
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center" />
                                                     <ItemStyle CssClass="width-80 text-center" />

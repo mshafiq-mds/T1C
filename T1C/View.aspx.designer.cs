@@ -168,15 +168,6 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.Label lblStatus;
 
         /// <summary>
-        /// tblDataKos control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlTable tblDataKos;
-
-        /// <summary>
         /// lblCurrentYearActualYTD control.
         /// </summary>
         /// <remarks>
@@ -607,15 +598,6 @@ namespace Prodata.WebForm.T1C
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblOtherSupportingDocumentDash;
-
-        /// <summary>
-        /// UpdatePanel1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.UpdatePanel UpdatePanel1;
 
         /// <summary>
         /// gvAuditTrails control.

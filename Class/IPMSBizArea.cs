@@ -244,26 +244,57 @@ namespace Prodata.WebForm.Class
 
             string connectionString = ConfigurationManager.ConnectionStrings["iPMSConnection"].ConnectionString;
 
+            // LOGIC EXPLANATION:
+            // 1. We use LEFT JOIN Wilayah so we can check the Zone Code.
+            // 2. We use distinct to avoid duplicates.
+            // 3. The WHERE clause checks your 3 hierarchies:
+            //    - If input matches a Zone -> Get all MILLs in that Zone (Your script logic)
+            //    - If input matches a Wilayah -> Get all MILLs in that Wilayah
+            //    - If input is a direct Unit Code -> Get just that Unit
+
             string query = @"
         SELECT DISTINCT B.code AS BizAreaCode
-        FROM iPMS.dbo.[User] U
-        JOIN iPMS.dbo.BizArea B ON B.type = 'MILL'
-        JOIN iPMS.dbo.Wilayah W ON B.kod_wilayah = W.kod_wilayah
-        WHERE U.BizAreaCode = @BizAreaCode
-          AND W.zone_code = U.BizAreaCode";
+        FROM iPMS.dbo.BizArea B
+        LEFT JOIN iPMS.dbo.Wilayah W ON B.kod_wilayah = W.kod_wilayah
+        WHERE 
+            -- Scenario 1: Input is a Zone Code (e.g. '001') -> Get MILLs
+            (W.zone_code = @BizAreaCode AND B.type = 'MILL')
+
+            OR 
+
+            -- Scenario 2: Input is a Wilayah Code (e.g. '010') -> Get MILLs
+            (B.kod_wilayah = @BizAreaCode AND B.type = 'MILL')
+
+            OR 
+
+            -- Scenario 3: Input is a Specific Unit Code (e.g. '4060' or '800') -> Get that specific code
+            (B.code = @BizAreaCode)
+    ";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@BizAreaCode", bizAreaCode);
+                // Handle nulls just in case
+                command.Parameters.AddWithValue("@BizAreaCode", bizAreaCode ?? (object)DBNull.Value);
 
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
+                try
                 {
-                    while (reader.Read())
+                    connection.Open();
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        bizAreaCodes.Add(reader["BizAreaCode"].ToString());
+                        while (reader.Read())
+                        {
+                            if (reader["BizAreaCode"] != DBNull.Value)
+                            {
+                                bizAreaCodes.Add(reader["BizAreaCode"].ToString());
+                            }
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // Ideally, log this error
+                    Console.WriteLine(ex.Message);
                 }
             }
 

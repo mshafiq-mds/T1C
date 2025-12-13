@@ -49,8 +49,8 @@ namespace Prodata.WebForm.Administration.User
 									Name = name,
 									Email = email,
 									UserName = username,
-                                    iPMSRoleCode = ipmsRole,
-                                    iPMSBizAreaCode = ipmsBizArea
+                                    CCMSRoleCode = ipmsRole,
+                                    CCMSBizAreaCode = ipmsBizArea
                                 };
 								var result = userManager.Create(user, password);
 								if (result.Succeeded)

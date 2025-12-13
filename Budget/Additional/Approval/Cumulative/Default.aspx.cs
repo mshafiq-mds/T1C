@@ -31,7 +31,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
             lblUsed.Attributes["title"] = "Amount used in current year";
             lblcumulative.Attributes["title"] = "Current user cumulative amount";
 
-            string role = Auth.User().iPMSRoleCode;
+            string role = Auth.User().CCMSRoleCode;
 
             using (var db = new AppDbContext())
             {
@@ -48,8 +48,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
         private void BindTransfers(string statusFilter = "EditableOnly")
         {
-            string ba = Auth.User().iPMSBizAreaCode;
-            string userRole = Auth.User().iPMSRoleCode;
+            string ba = Auth.User().CCMSBizAreaCode;
+            string userRole = Auth.User().CCMSRoleCode;
 
             List<string> accessibleBizAreas = !string.IsNullOrEmpty(ba)
                 ? new Class.IPMSBizArea().GetBizAreaCodes(ba)

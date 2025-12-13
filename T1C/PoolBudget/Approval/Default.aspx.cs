@@ -14,27 +14,27 @@ namespace Prodata.WebForm.T1C.PoolBudget.Approval
         {
             if (!IsPostBack)
             {
-                BindData(Auth.IPMSBizAreaCodes());
+                BindData(Auth.CCMSBizAreaCodes());
             }
         }
 
         protected void ddlStatus_SelectedIndexChanged(object sender, EventArgs e)
         {
-            BindData(Auth.IPMSBizAreaCodes());
+            BindData(Auth.CCMSBizAreaCodes());
         }
 
         protected void gvData_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             ViewState["pageIndex"] = e.NewPageIndex.ToString();
-            BindData(Auth.IPMSBizAreaCodes());
+            BindData(Auth.CCMSBizAreaCodes());
         }
 
-        private void BindData(List<string> ipmsBizAreaCodes = null)
+        private void BindData(List<string> CCMSBizAreaCodes = null)
         {
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
             // Get all forms
-            var data = new Class.Form().GetFormsProcurement(bizAreaCodes: ipmsBizAreaCodes);
+            var data = new Class.Form().GetFormsProcurement(bizAreaCodes: CCMSBizAreaCodes);
 
             // Get selected status
             var selectedStatus = ddlStatus.SelectedValue;

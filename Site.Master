@@ -184,7 +184,7 @@
                                 <%= Prodata.WebForm.Auth.User().Name %>
                             </span>
                             <span class="d-none d-md-inline">
-                                (<%= Prodata.WebForm.Auth.User().iPMSRoleCode %>)
+                                (<%= Prodata.WebForm.Auth.User().CCMSRoleCode %>)
                             </span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">

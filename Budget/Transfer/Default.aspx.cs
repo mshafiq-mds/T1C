@@ -26,7 +26,7 @@ namespace Prodata.WebForm.Budget.Transfer
         }
         private void BindTransfers(string statusFilter = "")
         {
-            string ba = Auth.User().iPMSBizAreaCode;
+            string ba = Auth.User().CCMSBizAreaCode;
 
             using (var db = new AppDbContext())
             {
@@ -71,7 +71,7 @@ namespace Prodata.WebForm.Budget.Transfer
             {
                 Guid id = Guid.Parse(hdnDeleteId.Value);
                 Guid userId = Auth.Id();
-                string roleCode = Auth.User().iPMSRoleCode;
+                string roleCode = Auth.User().CCMSRoleCode;
                 string remarks = hdnDeleteRemarks.Value;
 
                 using (var db = new AppDbContext())

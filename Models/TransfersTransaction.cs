@@ -46,5 +46,6 @@ namespace Prodata.WebForm.Models
         public DateTime? DeletedDate { get; set; }
         public int? status { get; set; }
         public string BA { get; set; }
+        public string NextApprover { get; set; }
     }
 }

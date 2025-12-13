@@ -31,7 +31,10 @@ namespace Prodata.WebForm.Models.Auth
         public string iPMSRoleCode { get; set; }
 
         [StringLength(20)]
-        public string iPMSBizArea1Code { get; set; }
+        public string iPMSBizAreaCode { get; set; }
+
+        [StringLength(20)]
+        public string CCMSBizAreaCode { get; set; }
         public string CCMSRoleCode { get; set; }
         
     }

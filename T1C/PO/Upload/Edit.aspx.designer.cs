@@ -11,7 +11,7 @@ namespace Prodata.WebForm.T1C.PO.Upload
 {
 
 
-    public partial class Edit
+    public partial class UploadPO
     {
 
         /// <summary>

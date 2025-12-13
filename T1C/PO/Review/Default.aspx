@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Upload PO" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PO.Upload.Default" %>
+﻿<%@ Page Title="PO Review List" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.T1C.PO.Review.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -63,7 +63,7 @@
 
         <div class="print-header d-none">
             <img src="<%= ResolveUrl("~/Images/Felda_Global_Ventures_Logo.png") %>" alt="FGV Logo" style="height: 80px;" />
-            <h3 class="mt-2">Upload PO List</h3>
+            <h3 class="mt-2">PO Review List</h3>
             <p>Generated on: <%= DateTime.Now.ToString("dd/MM/yyyy HH:mm") %></p>
         </div>
 
@@ -77,7 +77,7 @@
                                 <asp:DropDownList ID="ddlStatus" runat="server" CssClass="form-control select2" AutoPostBack="true" OnSelectedIndexChanged="ddlStatus_SelectedIndexChanged" CausesValidation="false" data-placeholder="All Status">
                                     <asp:ListItem Text="" Value="" />
                                     <asp:ListItem Text="Approved" Value="Approved" />
-                                    <asp:ListItem Text="Completed" Value="Completed" />
+                                    <asp:ListItem Text="Completed" Value="Completed" Selected="True"/>
                                 </asp:DropDownList>
                             </div>
                             
@@ -109,6 +109,15 @@
                                                     <asp:BoundField DataField="Date" HeaderText="Date" HeaderStyle-CssClass="align-middle text-nowrap" />
                                                     <asp:BoundField DataField="Details" HeaderText="Details" HeaderStyle-CssClass="align-middle text-nowrap" />
                                                     <asp:BoundField DataField="Amount" HeaderText="Amount (RM)" HeaderStyle-CssClass="align-middle text-nowrap" ItemStyle-CssClass="text-right" />
+                                                    <asp:TemplateField HeaderText="Next Approver">
+                                                        <HeaderStyle CssClass="align-middle text-nowrap text-center" />
+                                                        <ItemStyle CssClass="text-center" />
+                                                        <ItemTemplate>
+                                                            <%# Eval("Status") != null && Eval("Status").ToString().Equals("Completed", StringComparison.OrdinalIgnoreCase) 
+                                                                ? "<span class='text-success font-weight-bold'>Complete</span>" 
+                                                                : Eval("NextApprover") %>
+                                                        </ItemTemplate>
+                                                    </asp:TemplateField>
                                                     <asp:TemplateField HeaderText="Status">
                                                         <HeaderStyle CssClass="width-120 text-center align-middle" />
                                                         <ItemStyle CssClass="width-120 text-center" />
@@ -126,7 +135,11 @@
                                                                         "badge badge-secondary badge-pill"
                                                                     ) : "badge badge-secondary badge-pill"
                                                                 %>'
-                                                                Text='<%# Eval("Status") %>'>
+                                                                Text='<%# 
+                                                                    (bool)Eval("IsPendingUserAction") ? "Pending My Action" :
+                                                                    Eval("Status") != null && Eval("Status").ToString().Equals("SentBack", StringComparison.OrdinalIgnoreCase) ? "Sent Back" :
+                                                                    Eval("Status")
+                                                                %>'>
                                                             </asp:Label>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
@@ -147,9 +160,9 @@
                                                         <ItemStyle CssClass="width-80 text-center action-column" />
                                                         <ItemTemplate>
                                                             <asp:LinkButton runat="server"
-                                                                CssClass='<%# Eval("Status").ToString().ToLower() == "approved" ? "btn btn-outline-secondary btn-xs" : "btn btn-outline-info btn-xs" %>'
-                                                                PostBackUrl='<%# $"~/T1C/PO/Upload/Edit?Id={Eval("Id")}" %>'>
-                                                                <i class='<%# Eval("Status").ToString().ToLower() == "approved" ? "fas fa-edit" : "fas fa-eye" %>'></i>
+                                                                CssClass='<%# Eval("Status").ToString().ToLower() == "completed" ? "btn btn-outline-secondary btn-xs" : "btn btn-outline-info btn-xs" %>'
+                                                                PostBackUrl='<%# $"~/T1C/PO/Review/Review?Id={Eval("Id")}" %>'>
+                                                                <i class='<%# Eval("Status").ToString().ToLower() == "completed" ? "fas fa-edit" : "fas fa-eye" %>'></i>
                                                             </asp:LinkButton>
                                                         </ItemTemplate>
                                                     </asp:TemplateField>
