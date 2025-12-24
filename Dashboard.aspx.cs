@@ -127,7 +127,6 @@ namespace Prodata.WebForm
                 targetCodes = bizAreaHelper.GetBizAreaCodes(selectedBA);
             }
 
-            // Variable to calculate total
             decimal totalAmount = 0;
 
             using (var db = new AppDbContext())
@@ -144,29 +143,18 @@ namespace Prodata.WebForm
                     switch (statusType)
                     {
                         case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
-                        case "Review": query = query.Where(x => x.Status == "Pending"); break;
-                        case "Resubmit": query = query.Where(x => x.Status == "SentBack"); break;
-                        case "Complete": query = query.Where(x => x.Status == "Approved"); break;
-                        case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
-                        case "Finalized": query = query.Where(x => x.Status == "Completed"); break;
+                        case "Under Review": query = query.Where(x => x.Status == "Pending" && x.DeletedDate == null); break;
+                        case "Resubmit": query = query.Where(x => x.Status == "SentBack" && x.DeletedDate == null); break;
+                        case "Approved": query = query.Where(x => x.Status == "Approved" && x.DeletedDate == null); break;
+                        case "Deleted": query = query.Where(x => x.DeletedDate != null || x.Status == "Rejected"); break;
+                        case "Completed": query = query.Where(x => x.Status == "Completed" && x.DeletedDate == null); break;
                     }
 
-                    // FIX 1: T1C 'Amount' allows nulls. We check 'Amount' existence and handle nulls.
                     var resultList = query.OrderByDescending(x => x.CreatedDate)
-                        .Select(x => new
-                        {
-                            RefNo = x.Ref,
-                            Date = x.CreatedDate,
-                            BA = x.BizAreaCode,
-                            Status = x.Status,
-                            Amount = x.Amount // Forms table has Amount
-                        })
-                        .ToList();
+                        .Select(x => new { RefNo = x.Ref, Date = x.CreatedDate, BA = x.BizAreaCode, Status = x.Status, Amount = x.Amount }).ToList();
 
-                    // FIX 2: Handle nullable decimal in Sum (x.Amount ?? 0)
                     totalAmount = resultList.Sum(x => x.Amount ?? 0);
 
-                    // FIX 3: Handle nullable decimal in ToString
                     gvDetails.DataSource = resultList.Select(x => new
                     {
                         x.RefNo,
@@ -177,7 +165,41 @@ namespace Prodata.WebForm
                     }).ToList();
                 }
                 // -----------------------
-                // 2. Additional Logic
+                // 2. T1C Others Logic
+                // -----------------------
+                else if (category == "T1COthers")
+                {
+                    var query = db.FormsProcurement.Where(x => x.CreatedDate.Year == selectedYear);
+                    if (targetCodes.Any()) query = query.Where(x => targetCodes.Contains(x.BizAreaCode));
+                    if (!string.IsNullOrEmpty(searchKeyword)) query = query.Where(x => x.Ref.Contains(searchKeyword));
+
+                    switch (statusType)
+                    {
+                        case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
+                        case "Under Review": query = query.Where(x => x.Status == "Pending" && x.DeletedDate == null); break;
+                        case "Resubmit": query = query.Where(x => x.Status == "SentBack" && x.DeletedDate == null); break;
+                        case "Approved": query = query.Where(x => x.Status == "Approved" && x.DeletedDate == null); break;
+                        case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
+                        // Standby code for Completed
+                        case "Completed": query = query.Where(x => x.Status == "Completed" && x.DeletedDate == null); break;
+                    }
+
+                    var resultList = query.OrderByDescending(x => x.CreatedDate)
+                        .Select(x => new { RefNo = x.Ref, Date = x.CreatedDate, BA = x.BizAreaCode, Status = x.Status, Amount = x.Amount }).ToList();
+
+                    totalAmount = resultList.Sum(x => x.Amount ?? 0);
+
+                    gvDetails.DataSource = resultList.Select(x => new
+                    {
+                        x.RefNo,
+                        x.Date,
+                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        x.Status,
+                        Amount = (x.Amount ?? 0).ToString("N2")
+                    }).ToList();
+                }
+                // -----------------------
+                // 3. Additional Logic
                 // -----------------------
                 else if (category == "Additional")
                 {
@@ -188,40 +210,29 @@ namespace Prodata.WebForm
                     switch (statusType)
                     {
                         case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
-                        case "Review": query = query.Where(x => x.Status == 2); break;
-                        case "Resubmit": query = query.Where(x => x.Status == 0); break;
-                        case "Complete": query = query.Where(x => x.Status == 3); break;
+                        case "Under Review": query = query.Where(x => x.Status == 2 && x.DeletedDate == null); break;
+                        case "Resubmit": query = query.Where(x => x.Status == 0 && x.DeletedDate == null); break;
+                        case "Approved": query = query.Where(x => x.Status == 3 && x.DeletedDate == null); break;
                         case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
-                        case "Finalized": query = query.Where(x => x.Status == 4); break;
+                        case "Completed": query = query.Where(x => x.Status == 4 && x.DeletedDate == null); break;
                     }
 
-                    // FIX 4: Your 'AdditionalBudgetRequests' table DOES NOT have an 'Amount' column.
-                    // I removed 'Amount = x.Amount' so it compiles. 
                     var resultList = query.OrderByDescending(x => x.CreatedDate)
-                        .Select(x => new
-                        {
-                            RequestNo = x.RefNo,
-                            Date = x.CreatedDate,
-                            BA = x.BA,
-                            Status = x.Status
-                            // If you find the column name (e.g. TotalAmount), add it here like: RealAmount = x.TotalAmount
-                        })
-                        .ToList();
+                        .Select(x => new { RequestNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.Status }).ToList();
 
-                    // Defaults to 0 because column is missing
                     totalAmount = 0;
 
                     gvDetails.DataSource = resultList.Select(x => new
                     {
-                        x.RequestNo,
+                        RefNo = x.RequestNo,
                         x.Date,
                         BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
-                        x.Status,
-                        Amount = "0.00" // Placeholder
+                        Status = x.Status.ToString(),
+                        Amount = "0.00"
                     }).ToList();
                 }
                 // -----------------------
-                // 3. Transfer Logic
+                // 4. Transfer Logic
                 // -----------------------
                 else if (category == "Transfer")
                 {
@@ -232,26 +243,16 @@ namespace Prodata.WebForm
                     switch (statusType)
                     {
                         case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
-                        case "Review": query = query.Where(x => x.status == 2); break;
-                        case "Resubmit": query = query.Where(x => x.status == 0); break;
-                        case "Complete": query = query.Where(x => x.status == 3); break;
+                        case "Under Review": query = query.Where(x => x.status == 2 && x.DeletedDate == null); break;
+                        case "Resubmit": query = query.Where(x => x.status == 0 && x.DeletedDate == null); break;
+                        case "Approved": query = query.Where(x => x.status == 3 && x.DeletedDate == null); break;
                         case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
-                        case "Finalized": query = query.Where(x => x.status == 4); break;
+                        case "Completed": query = query.Where(x => x.status == 4 && x.DeletedDate == null); break;
                     }
 
-                    // FIX 5: Your 'TransfersTransaction' table DOES NOT have an 'Amount' column.
-                    // I removed 'Amount = x.Amount' so it compiles.
                     var resultList = query.OrderByDescending(x => x.CreatedDate)
-                        .Select(x => new
-                        {
-                            RefNo = x.RefNo,
-                            Date = x.CreatedDate,
-                            BA = x.BA,
-                            Status = x.status
-                        })
-                        .ToList();
+                        .Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status }).ToList();
 
-                    // Defaults to 0
                     totalAmount = 0;
 
                     gvDetails.DataSource = resultList.Select(x => new
@@ -259,12 +260,11 @@ namespace Prodata.WebForm
                         x.RefNo,
                         x.Date,
                         BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
-                        x.Status,
-                        Amount = "0.00" // Placeholder
+                        Status = x.Status.ToString(),
+                        Amount = "0.00"
                     }).ToList();
                 }
 
-                // Update the Modal Label
                 lblModalTotal.Text = "RM" + totalAmount.ToString("N2");
                 gvDetails.DataBind();
             }
@@ -293,10 +293,10 @@ namespace Prodata.WebForm
                     {
                         Deleted = g.Count(x => x.DeletedDate != null),
                         Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.Status == 2),
-                        Resubmit = g.Count(x => x.Status == 0),
-                        Complete = g.Count(x => x.Status == 3),
-                        Finalized = g.Count(x => x.Status == 4)
+                        Review = g.Count(x => x.Status == 2 && x.DeletedDate == null),
+                        Resubmit = g.Count(x => x.Status == 0 && x.DeletedDate == null),
+                        Complete = g.Count(x => x.Status == 3 && x.DeletedDate == null),
+                        Finalized = g.Count(x => x.Status == 4 && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
                     UpdateSection(addS, LblAdditionalSubmitted, LblAdditionalReview, LblAdditionalResubmit, LblAdditionalComplete, LblAdditionalDeleted, LblAdditionalFinalized);
 
@@ -308,35 +308,53 @@ namespace Prodata.WebForm
                     {
                         Deleted = g.Count(x => x.DeletedDate != null),
                         Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.status == 2),
-                        Resubmit = g.Count(x => x.status == 0),
-                        Complete = g.Count(x => x.status == 3),
-                        Finalized = g.Count(x => x.status == 4)
+                        Review = g.Count(x => x.status == 2 && x.DeletedDate == null),
+                        Resubmit = g.Count(x => x.status == 0 && x.DeletedDate == null),
+                        Complete = g.Count(x => x.status == 3 && x.DeletedDate == null),
+                        Finalized = g.Count(x => x.status == 4 && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
                     UpdateSection(trS, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
 
-                    // 3. T1C
+                    // 3. T1C (Forms)
                     var fmQ = db.Forms.Where(x => x.CreatedDate.Year == selectedYear);
                     if (targetCodes.Any()) fmQ = fmQ.Where(x => targetCodes.Contains(x.BizAreaCode));
 
                     var fmS = fmQ.GroupBy(x => 1).Select(g => new DashboardCounts
                     {
-                        Deleted = g.Count(x => x.DeletedDate != null),
+                        Deleted = g.Count(x => x.DeletedDate != null || x.Status == "Rejected"),
                         Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.Status == "Pending"),
-                        Resubmit = g.Count(x => x.Status == "SentBack"),
-                        Complete = g.Count(x => x.Status == "Approved"),
-                        Finalized = g.Count(x => x.Status == "Completed")
+                        Review = g.Count(x => x.Status == "Pending" && x.DeletedDate == null),
+                        Resubmit = g.Count(x => x.Status == "SentBack" && x.DeletedDate == null),
+                        Complete = g.Count(x => x.Status == "Approved" && x.DeletedDate == null),
+                        Finalized = g.Count(x => x.Status == "Completed" && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
                     UpdateSection(fmS, LblT1CSubmitted, LblT1CReview, LblT1CResubmit, LblT1CComplete, LblT1CDeleted, LblT1CFinalized);
 
+                    // 4. T1C Others (FormsProcurement)
+                    var fmoQ = db.FormsProcurement.Where(x => x.CreatedDate.Year == selectedYear);
+                    if (targetCodes.Any()) fmoQ = fmoQ.Where(x => targetCodes.Contains(x.BizAreaCode));
+
+                    var fmoS = fmoQ.GroupBy(x => 1).Select(g => new DashboardCounts
+                    {
+                        Deleted = g.Count(x => x.DeletedDate != null),
+                        Submitted = g.Count(x => x.DeletedDate == null),
+                        Review = g.Count(x => x.Status == "Pending" && x.DeletedDate == null),
+                        Resubmit = g.Count(x => x.Status == "SentBack" && x.DeletedDate == null),
+                        Complete = g.Count(x => x.Status == "Approved" && x.DeletedDate == null),
+                        // STANDBY CODE: This will calculate 0 for now as "Completed" doesn't exist
+                        Finalized = g.Count(x => x.Status == "Completed" && x.DeletedDate == null)
+                    }).FirstOrDefault() ?? new DashboardCounts();
+
+                    UpdateSection(fmoS, LblT1COthersSubmitted, LblT1COthersReview, LblT1COthersResubmit, LblT1COthersComplete, LblT1COthersDeleted, LblT1COthersFinalized);
+
                     // Render Charts
                     var t1cData = new int[] { fmS.Submitted, fmS.Review, fmS.Resubmit, fmS.Complete, fmS.Deleted, fmS.Finalized };
+                    var t1cOthersData = new int[] { fmoS.Submitted, fmoS.Review, fmoS.Resubmit, fmoS.Complete, fmoS.Deleted, fmoS.Finalized };
                     var addData = new int[] { addS.Submitted, addS.Review, addS.Resubmit, addS.Complete, addS.Deleted, addS.Finalized };
                     var transData = new int[] { trS.Submitted, trS.Review, trS.Resubmit, trS.Complete, trS.Deleted, trS.Finalized };
 
                     JavaScriptSerializer js = new JavaScriptSerializer();
-                    string script = $"renderDashboardCharts({js.Serialize(t1cData)}, {js.Serialize(addData)}, {js.Serialize(transData)});";
+                    string script = $"renderDashboardCharts({js.Serialize(t1cData)}, {js.Serialize(t1cOthersData)}, {js.Serialize(addData)}, {js.Serialize(transData)});";
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "InitCharts", script, true);
                 }
                 catch (Exception ex) { SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error: " + ex.Message); }

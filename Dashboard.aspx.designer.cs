@@ -195,6 +195,114 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.Label LblT1CDeleted;
 
         /// <summary>
+        /// BtnT1COthersSubmitted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersSubmitted;
+
+        /// <summary>
+        /// LblT1COthersSubmitted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersSubmitted;
+
+        /// <summary>
+        /// BtnT1COthersReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersReview;
+
+        /// <summary>
+        /// LblT1COthersReview control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersReview;
+
+        /// <summary>
+        /// BtnT1COthersResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersResubmit;
+
+        /// <summary>
+        /// LblT1COthersResubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersResubmit;
+
+        /// <summary>
+        /// BtnT1COthersComplete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersComplete;
+
+        /// <summary>
+        /// LblT1COthersComplete control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersComplete;
+
+        /// <summary>
+        /// BtnT1COthersFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersFinalized;
+
+        /// <summary>
+        /// LblT1COthersFinalized control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersFinalized;
+
+        /// <summary>
+        /// BtnT1COthersDeleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton BtnT1COthersDeleted;
+
+        /// <summary>
+        /// LblT1COthersDeleted control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label LblT1COthersDeleted;
+
+        /// <summary>
         /// BtnAddSubmitted control.
         /// </summary>
         /// <remarks>

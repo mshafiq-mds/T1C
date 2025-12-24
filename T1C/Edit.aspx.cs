@@ -538,6 +538,9 @@ namespace Prodata.WebForm.T1C
 
                             trans.Commit();
                             isSuccess = true;
+
+                            Emails.EmailsT1CForNewRequest(form.Id, form, Auth.User().CCMSRoleCode);
+
                         }
                         catch (Exception ex)
                         {

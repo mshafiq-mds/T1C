@@ -24,6 +24,15 @@ namespace Prodata.WebForm.T1C.PO.Upload
         protected global::System.Web.UI.WebControls.HiddenField hdnFormId;
 
         /// <summary>
+        /// hdnAllocationData control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnAllocationData;
+
+        /// <summary>
         /// lblTitle control.
         /// </summary>
         /// <remarks>
@@ -357,31 +366,22 @@ namespace Prodata.WebForm.T1C.PO.Upload
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl allocationDropdownSection;
 
         /// <summary>
-        /// ddlAllocation control.
+        /// rptOverrunAllocations control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlAllocation;
+        protected global::System.Web.UI.WebControls.Repeater rptOverrunAllocations;
 
         /// <summary>
-        /// txtAllocationAmount control.
+        /// lblDynamicError control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAllocationAmount;
-
-        /// <summary>
-        /// allocationBalance control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl allocationBalance;
+        protected global::System.Web.UI.WebControls.Label lblDynamicError;
 
         /// <summary>
         /// pnlPictureView control.

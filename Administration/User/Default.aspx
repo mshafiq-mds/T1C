@@ -56,7 +56,12 @@
                                                 <%--<asp:BoundField DataField="IPMSRole" HeaderText="iPMS Role" />--%>
                                                 <asp:BoundField DataField="CCMSRole" HeaderText="CCMS Role" />
                                                 <%--<asp:BoundField DataField="IPMSBizArea" HeaderText="iPMS Biz Area" />--%>
-                                                <asp:BoundField DataField="CCMSBizArea" HeaderText="CCMS Biz Area" />
+                                                <%--<asp:BoundField DataField="CCMSBizArea" HeaderText="CCMS Biz Area" />--%>
+                                                <asp:TemplateField HeaderText="CCMS Biz Area">
+                                                    <ItemTemplate>
+                                                        <%# (bool?)Eval("UserHQ") == true ? "<span class='badge badge-primary'>HQ</span>" : Eval("CCMSBizArea") %>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
                                                 <asp:TemplateField HeaderText="Action">
                                                     <HeaderStyle CssClass="width-80 text-center" />
                                                     <ItemStyle CssClass="width-80 text-center" />

@@ -194,13 +194,14 @@ namespace Prodata.WebForm.T1C.PO.Review
                     // B. Bind the Repeater
                     // This query fetches budgets and calculates the sum of 'Approved' transactions 
                     // from this Form to that Budget.
+                    // 1. Savings Query: Explicitly use the ViewModel
                     var budgetAllocations = db.FormBudgets
                         .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
-                        .Select(fb => new
+                        .Select(fb => new BudgetAllocationViewModel
                         {
-                            fb.BudgetId,
-                            fb.Budget.Ref,
-                            fb.Budget.Details,
+                            BudgetId = fb.BudgetId,
+                            Ref = fb.Budget.Ref,
+                            Details = fb.Budget.Details,
                             AllocatedAmount = db.Transactions
                                 .Where(t =>
                                     t.FromId == fb.FormId &&
@@ -212,15 +213,40 @@ namespace Prodata.WebForm.T1C.PO.Review
                                 )
                                 .Sum(t => (decimal?)t.Amount) ?? 0
                         })
-                        .Where(x => x.AllocatedAmount > 0) // Only show items that have an allocation
+                        .Where(x => x.AllocatedAmount > 0)
                         .ToList();
 
+                    // 2. Overrun Query: Now budgetAllocations is a List<BudgetAllocationViewModel>
+                    if (budgetAllocations.Count == 0)
+                    {
+                        budgetAllocations = (from t in db.Transactions
+                                             join b in db.Budgets on t.FromId equals b.Id
+                                             where t.ToId == form.Id
+                                                && t.Status == "PO Overrun Allocation"
+                                                && t.DeletedDate == null
+                                             select new BudgetAllocationViewModel
+                                             {
+                                                 BudgetId = t.FromId,
+                                                 Ref = b.Ref,       // Now pulling from the joined Budgets table
+                                                 Details = b.Details, // Now pulling from the joined Budgets table
+                                                 AllocatedAmount = t.Amount ?? 0
+                                             }).ToList();
+                    }
+
+                    // Bind to UI
                     rptAllocationView.DataSource = budgetAllocations;
                     rptAllocationView.DataBind();
                 }
             }
         }
 
+        public class BudgetAllocationViewModel
+        {
+            public Guid? BudgetId { get; set; }
+            public string Ref { get; set; }
+            public string Details { get; set; }
+            public decimal AllocatedAmount { get; set; }
+        }
         private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Label dashLabel)
         {
             using (var db = new AppDbContext())

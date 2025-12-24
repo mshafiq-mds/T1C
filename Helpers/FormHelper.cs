@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity;
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
@@ -50,6 +51,59 @@ namespace Prodata.WebForm.Helpers
             return form.Status.Equals("sentback", StringComparison.OrdinalIgnoreCase);
         }
 
+        //public static bool IsFormPendingUserAction(Guid formId, Guid? userId = null)
+        //{
+        //    using (var db = new AppDbContext())
+        //    {
+        //        var user = userId.HasValue ? db.Users.Find(userId.Value) : Auth.User();
+        //        if (user == null) return false;
+
+        //        var form = db.Forms.Find(formId);
+        //        if (form == null) return false;
+
+        //        var approvalLimits = db.ApprovalLimits.ExcludeSoftDeleted()
+        //            .Where(al => al.AmountMin <= form.Amount && form.Amount <= al.AmountMax)
+        //            .OrderBy(al => al.Order)
+        //            .ToList();
+
+        //        if (!approvalLimits.Any()) return false;
+
+        //        var approvals = db.Approvals
+        //            .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+        //            .OrderBy(a => a.CreatedDate)
+        //            .ToList();
+
+        //        if (!approvals.Any()) return false;
+
+
+        //        // Step 1: Find the last "Submitted"
+        //        var lastSubmittedIndex = approvals.FindLastIndex(a => a.Action.Equals("Submitted", StringComparison.OrdinalIgnoreCase));
+        //        if (lastSubmittedIndex == -1)
+        //            return false;
+
+        //        // Step 2: Find approvals made AFTER the last submission
+        //        var approvalsAfterLastSubmit = approvals
+        //            .Skip(lastSubmittedIndex + 1)
+        //            .Where(a => a.Action.Equals("Approved", StringComparison.OrdinalIgnoreCase))
+        //            .ToList();
+
+        //        var approvedCodes = approvalsAfterLastSubmit
+        //            .Select(a => a.ActionByCode)
+        //            .ToList();
+
+        //        // Step 3: Find the next approver in the sequence who hasn't approved since last submit
+        //        foreach (var limit in approvalLimits)
+        //        {
+        //            if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
+        //            {
+        //                // This approver is next in line
+        //                return string.Equals(user.CCMSRoleCode, limit.ApproverCode, StringComparison.OrdinalIgnoreCase);
+        //            }
+        //        }
+
+        //        return false;
+        //    }
+        //}
         public static bool IsFormPendingUserAction(Guid formId, Guid? userId = null)
         {
             using (var db = new AppDbContext())
@@ -79,17 +133,24 @@ namespace Prodata.WebForm.Helpers
                 if (lastSubmittedIndex == -1)
                     return false;
 
-                // Step 2: Find approvals made AFTER the last submission
-                var approvalsAfterLastSubmit = approvals
+                // Step 2: Get ALL actions that happened AFTER the last submission
+                var actionsAfterSubmit = approvals
                     .Skip(lastSubmittedIndex + 1)
-                    .Where(a => a.Action.Equals("Approved", StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
-                var approvedCodes = approvalsAfterLastSubmit
+                // [NEW CHECK] If any action is "Rejected", the approval flow stops.
+                if (actionsAfterSubmit.Any(a => a.Action.Equals("Rejected", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+
+                // Step 3: Filter for the "Approved" codes to continue the sequence check
+                var approvedCodes = actionsAfterSubmit
+                    .Where(a => a.Action.Equals("Approved", StringComparison.OrdinalIgnoreCase))
                     .Select(a => a.ActionByCode)
                     .ToList();
 
-                // Step 3: Find the next approver in the sequence who hasn't approved since last submit
+                // Step 4: Find the next approver in the sequence
                 foreach (var limit in approvalLimits)
                 {
                     if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
@@ -102,8 +163,6 @@ namespace Prodata.WebForm.Helpers
                 return false;
             }
         }
-
-
         public static bool IsFormPendingUserAction(this Models.Form form)
         {
             return IsFormPendingUserAction(form.Id);

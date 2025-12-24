@@ -1,1006 +1,831 @@
 ﻿using CustomGuid.AspNet.Identity;
+
 using FGV.Prodata.App;
+
 using FGV.Prodata.Web.UI;
+
 using Prodata.WebForm.Helpers;
+
 using Prodata.WebForm.Models;
+
 using System;
+
 using System.Collections.Generic;
+
 using System.Data.Entity;
-using System.Globalization;
+
 using System.IO;
+
 using System.Linq;
-using System.Net.Mail;
-using System.Web;
-using System.Web.Services;
+
 using System.Web.UI;
+
 using System.Web.UI.WebControls;
 
+using Newtonsoft.Json;
+
+
+
 namespace Prodata.WebForm.T1C.PO.Upload
+
 {
+
     public partial class UploadPO : ProdataPage
+
     {
+
+        public string BudgetsJson { get; set; }
+
+
+
+        public class AllocationItem
+
+        {
+
+            public Guid BudgetId { get; set; }
+
+            public decimal Amount { get; set; }
+
+        }
+
+
+
         protected void Page_Load(object sender, EventArgs e)
-{
-    if (!IsPostBack)
-            {
-                if (Request.QueryString["Id"] != null)
-                {
-                    string id = Request.QueryString["Id"].ToString();
-                    Guid guid;
-                    if (Guid.TryParse(id, out guid))
-                    {
-                        hdnFormId.Value = id;
-                        BindData(id);
-                        BindAuditTrails(guid);
 
-                        LoadAttachment(guid, "Picture", lnkPicture, pnlPictureView, lblPictureDash);
-                        LoadAttachment(guid, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, lblMachineHistoryDash);
-                        LoadAttachment(guid, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, lblJobSpecificationDash);
-                        LoadAttachment(guid, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, lblEngineerEstimatePriceDash);
-                        LoadAttachment(guid, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, lblDecCostReportCurrentYearDash);
-                        LoadAttachment(guid, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, lblDecCostReportLastYearDash);
-                        LoadAttachment(guid, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, lblCostReportLastMonthDash);
-                        LoadAttachment(guid, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, lblDrawingSketchingDash);
-                        LoadAttachment(guid, "Quotation", lnkQuotation, pnlQuotationView, lblQuotationDash);
-                        LoadAttachment(guid, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, lblDamageInvestigationReportDash);
-                        LoadAttachment(guid, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, lblVendorRegistrationRecordDash);
-                        LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
-                        LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
-                    }
-                }
-                else
+        {
+
+            if (!IsPostBack)
+
+            {
+
+                string id = Request.QueryString["Id"];
+
+                if (Guid.TryParse(id, out Guid guid))
+
                 {
+
+                    hdnFormId.Value = guid.ToString();
+
+                    BindData(guid.ToString());
+
+                    BindAuditTrails(guid);
+
+                    LoadAllDocuments(guid);
+
+                }
+
+                else
+
+                {
+
                     Response.Redirect("~/T1C/PO/Upload");
+
                 }
-            }
-        }
-
-        protected void btnSave_Click(object sender, EventArgs e)
-        {
-            if (IsValid)
-            {
-                bool isSuccess = false;
-                string formId = hdnFormId.Value;
-                Guid parsedFormId = Guid.Parse(formId);
-
-                // Actual amount validation
-                if (string.IsNullOrWhiteSpace(txtActualAmount.Text))
-                {
-                    lblActualAmountError.Text = "Actual amount is required.";
-                    lblActualAmountError.CssClass = "text-danger";
-                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
-                    return;
-                }
-
-                if (!decimal.TryParse(txtActualAmount.Text.Replace(",", ""), out decimal actualAmount))
-                {
-                    lblActualAmountError.Text = "Invalid actual amount.";
-                    lblActualAmountError.CssClass = "text-danger";
-                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
-                    return;
-                }
-
-                using (var db = new AppDbContext())
-                {
-                    using (var trans = db.Database.BeginTransaction())
-                    {
-                        try
-                        {
-                            var form = db.Forms.Find(parsedFormId);
-                            if (form != null)
-                            {
-                                decimal estimateAmount = form.Amount ?? 0;
-                                decimal availableBalance = estimateAmount - actualAmount;
-                                bool isAllocationSectionVisible = (actualAmount < estimateAmount);
-
-                                decimal totalAllocated = 0;
-                                var allocations = new List<Transaction>();
-
-                                foreach (RepeaterItem item in rptBudgetAllocations.Items)
-                                {
-                                    var hdnBudgetId = (HiddenField)item.FindControl("hdnBudgetId");
-                                    var txtAllocateAmount = (TextBox)item.FindControl("txtAllocateAmount");
-
-                                    if (Guid.TryParse(hdnBudgetId.Value, out Guid budgetId) &&
-                                        decimal.TryParse(txtAllocateAmount.Text, out decimal allocateAmount) &&
-                                        allocateAmount > 0)
-                                    {
-                                        // Find all old matching transactions (not just one)
-                                        var oldAllocations = db.Transactions
-                                            .Where(t => t.FromId == form.Id &&
-                                                        t.FromType == "Form" &&
-                                                        t.ToId == budgetId &&
-                                                        t.ToType == "Budget")
-                                            .ToList();
-
-                                        // Soft delete them all
-                                        foreach (var old in oldAllocations)
-                                            db.SoftDelete(old);
-
-                                        totalAllocated += allocateAmount;
-
-                                        if (isAllocationSectionVisible)
-                                        {
-                                            allocations.Add(new Transaction
-                                            {
-                                                FromId = form.Id,
-                                                FromType = "Form",
-                                                ToId = budgetId,
-                                                ToType = "Budget",
-                                                Date = DateTime.Now,
-                                                Amount = allocateAmount,
-                                                Status = "Approved"
-                                            });
-                                        }
-                                    }
-                                }
-
-                                if ((Math.Abs(totalAllocated - availableBalance) > 0.009m) && isAllocationSectionVisible)
-                                {
-                                    lblAllocationError.Text = "Total allocated does not match available balance.";
-                                    lblAllocationError.CssClass = "text-danger";
-                                    lblAllocationError.Visible = true;
-                                    return;
-                                }
-
-                                // Save actual amount to form
-                                form.ActualAmount = actualAmount;
-                                form.Status = "Completed";
-                                db.Entry(form).State = EntityState.Modified;
-
-                                // Save file upload (if any)
-                                if (fuPO.HasFile)
-                                {
-                                    // Delete existing PO attachment for this form
-                                    var existingAttachment = db.Attachments
-                                        .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
-
-                                    if (existingAttachment != null)
-                                    {
-                                        db.Attachments.Remove(existingAttachment);
-                                    }
-
-                                    var file = fuPO.PostedFile;
-                                    using (var binaryReader = new BinaryReader(file.InputStream))
-                                    {
-                                        var attachment = new Models.Attachment
-                                        {
-                                            ObjectId = form.Id,
-                                            ObjectType = "Form",
-                                            Type = "PO",
-                                            Name = Path.GetFileNameWithoutExtension(file.FileName),
-                                            FileName = Path.GetFileName(file.FileName),
-                                            ContentType = file.ContentType,
-                                            Content = binaryReader.ReadBytes(file.ContentLength),
-                                            Ext = Path.GetExtension(file.FileName),
-                                            Size = file.ContentLength,
-                                        };
-                                        db.Attachments.Add(attachment);
-                                    }
-                                }
-
-                                // Save allocations
-                                foreach (var transaction in allocations)
-                                {
-                                    db.Transactions.Add(transaction);
-                                }
-
-                                db.SaveChanges();
-                                trans.Commit();
-                                isSuccess = true;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            trans.Rollback();
-                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-                        }
-                    }
-                }
-
-                if (isSuccess)
-                {
-                    string script = @"
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Form updated successfully.',
-                            showConfirmButton: true
-                        }).then(function() {
-                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
-                        });";
-
-                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
-                }
-                else
-                {
-                    string script = @"
-                        Swal.fire({d
-                            icon: 'error',
-                            title: 'Failed to update form. Please try again.',
-                            showConfirmButton: true
-                        }).then(function() {
-                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
-                        });";
-
-                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
-                }
-
-                //if (isSuccess)
-                //{
-                //    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Form updated successfully.");
-                //}
-                //else
-                //{
-                //    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Failed to update form. Please try again.");
-                //}
-
-                // Reload page
-                //Response.Redirect(Request.Url.GetCurrentUrl(true));
-                //Response.Redirect(Request.Url.GetLeftPart(UriPartial.Path));
 
             }
+
         }
 
-        [WebMethod]
-        public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
-        {
-            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
-        }
 
-        [WebMethod]
-        public static List<Models.ViewModels.FormBudgetListViewModel> GetSelectedBudgetIds(Guid formId)
+
+        private void BindData(string id)
+
         {
+
             using (var db = new AppDbContext())
+
             {
-                return db.FormBudgets
-                    .Where(fb => fb.FormId == formId && fb.Type.ToLower() == "additional")
-                    .Select(fb => new
-                    {
+
+                var form = db.Forms.Find(Guid.Parse(id));
+
+                if (form == null) return;
+
+                DateTime? fdate = form.Date.HasValue ? form.Date : DateTime.Now;
+
+                PopulateAllocationDropdown(form.BizAreaCode, fdate , form.Id);
+
+
+
+                // Header Info
+
+                lblTitle.Text = form.Ref;
+
+                lblBA.Text = $"{form.BizAreaCode} - {form.BizAreaName}";
+
+                lblReqName.Text = form.FormRequesterName;
+
+                lblRefNo.Text = form.Ref;
+
+                lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
+
+                lblDetails.Text = form.Details;
+
+                lblJustificationOfNeed.Text = form.JustificationOfNeed;
+
+                lblAmount.Text = form.Amount.HasValue ? "RM " + form.Amount.Value.ToString("#,##0.00") : "-";
+
+                lblAmount2.Text = lblAmount.Text;
+
+                txtActualAmount.Text = form.ActualAmount.HasValue ? form.ActualAmount.Value.ToString("#,##0.00") : "";
+
+
+
+                // Financial Table
+
+                lblCurrentYearActualYTD.Text = form.CurrentYearActualYTD.HasValue ? form.CurrentYearActualYTD.Value.ToString("#,##0.00") : "-";
+
+                lblCurrentYearBudget.Text = form.CurrentYearBudget.HasValue ? form.CurrentYearBudget.Value.ToString("#,##0.00") : "-";
+
+                lblPreviousYearActualYTD.Text = form.PreviousYearActualYTD.HasValue ? form.PreviousYearActualYTD.Value.ToString("#,##0.00") : "-";
+
+                lblPreviousYearActual.Text = form.PreviousYearActual.HasValue ? form.PreviousYearActual.Value.ToString("#,##0.00") : "-";
+
+                lblPreviousYearBudget.Text = form.PreviousYearBudget.HasValue ? form.PreviousYearBudget.Value.ToString("#,##0.00") : "-";
+
+                lblA.Text = form.A.HasValue ? form.A.Value.ToString("#,##0.00") : "-";
+
+                lblB.Text = !string.IsNullOrEmpty(form.B) ? form.B : "-";
+
+                lblC.Text = form.C.HasValue ? form.C.Value.ToString("#,##0.00") : "-";
+
+                lblD.Text = form.D.HasValue ? form.D.Value.ToString("#,##0.00") : "-";
+
+
+
+                // Procurement
+
+                divJustificationDirectNegotiation.Visible = form.ProcurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase);
+
+                lblJustificationDirectAward.Text = form.Justification;
+
+                string pt = "";
+
+                if (form.ProcurementType.Equals("quotation_inclusive", StringComparison.OrdinalIgnoreCase)) pt = "Inclusive Quotation";
+
+                else if (form.ProcurementType.Equals("quotation_selective", StringComparison.OrdinalIgnoreCase)) pt = "Selective Quotation";
+
+                else if (form.ProcurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase)) pt = "Direct Negotiation";
+
+                lblProcurementType.Text = pt;
+
+
+
+                // Vendor
+
+                var vendorNames = db.FormVendors.Where(fv => fv.FormId == form.Id).Select(fv => fv.Vendor.Name).ToList();
+
+                lblVendor.Text = vendorNames.Any() ? "<ol style='padding-left:15px;margin-bottom:0'>" + string.Join("", vendorNames.Select(v => $"<li>{Server.HtmlEncode(v)}</li>")) + "</ol>" : "<em>No Vendors</em>";
+
+
+
+                // Allocations (Savings)
+
+                var savingsBudgets = db.FormBudgets
+
+                    .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
+
+                    .Select(fb => new {
+
                         fb.BudgetId,
-                        fb.Amount
-                    })
-                    .AsEnumerable() // switch to LINQ to Objects
-                    .Select(fb => new Models.ViewModels.FormBudgetListViewModel
-                    {
-                        BudgetId = fb.BudgetId,
-                        Amount = fb.Amount.HasValue
-                            ? fb.Amount.Value.ToString("#,##0.00")
-                            : string.Empty
-                    })
-                    .ToList();
-            }
-        }
 
-        private void BindData(string id = null)
-        {
-            if (!string.IsNullOrEmpty(id))
-            {
-                using (var db = new AppDbContext())
+                        fb.Budget.Ref,
+
+                        fb.Budget.Details,
+
+                        fb.Amount,
+
+                        AllocatedAmount = db.Transactions.Where(t => t.FromId == fb.FormId && t.ToId == fb.BudgetId && t.DeletedDate == null).Sum(t => (decimal?)t.Amount) ?? 0
+
+                    }).ToList();
+
+
+
+                rptBudgetAllocations.DataSource = savingsBudgets;
+
+                rptBudgetAllocations.DataBind();
+
+
+
+                // >>> CRITICAL FIX: Fill the lblAllocation list correctly <<<
+
+                if (savingsBudgets.Any())
+
                 {
-                    var form = db.Forms.Find(Guid.Parse(id));
-                    if (form != null)
+
+                    string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";
+
+                    foreach (var budget in savingsBudgets)
+
                     {
-                        lblTitle.Text = form.Ref;
 
-                        lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
-                        lblReqName.Text = form.FormRequesterName;
-                        lblRefNo.Text = form.Ref;
-                        lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
-                        lblDetails.Text = form.Details;
-                        lblJustificationOfNeed.Text = form.JustificationOfNeed;
-                        lblAmount.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
-                        lblAmount2.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
+                        string amount = budget.Amount.HasValue ? "RM" + budget.Amount.Value.ToString("#,##0.00") : "-";
 
-                        #region Allocation
-                        var budgets = db.FormBudgets
-                            .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
-                            .Select(fb => new
-                            {
-                                fb.BudgetId,
-                                fb.Budget.Ref,
-                                fb.Budget.Details,
-                                fb.Amount,
-                                AllocatedAmount = db.Transactions
-                                    .Where(t =>
-                                        t.FromId == fb.FormId &&
-                                        t.FromType == "Form" &&
-                                        t.ToId == fb.BudgetId &&
-                                        t.ToType == "Budget" &&
-                                        t.Status == "Approved"
-                                    )
-                                    .Sum(t => (decimal?)t.Amount) ?? 0
-                            })
-                            .ToList();
+                        html += $"<li>{Server.HtmlEncode($"{budget.Ref} - {budget.Details} [{amount}]")}</li>";
 
-                        if (budgets.Any())
-                        {
-                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";  // 👈 added style here
-
-                            foreach (var budget in budgets)
-                            {
-                                string amount = budget.Amount.HasValue ? "RM" + budget.Amount.Value.ToString("#,##0.00") : "-";
-                                string line = $"{budget.Ref} - {budget.Details} [{amount}]";
-                                html += $"<li>{Server.HtmlEncode(line)}</li>";
-                            }
-
-                            html += "</ol>";
-
-                            lblAllocation.Text = html;
-                        }
-                        else
-                        {
-                            lblAllocation.Text = "<em>No Budgets Assigned</em>";
-                        }
-                        #endregion
-
-                        #region Vendor
-                        var vendorNames = db.FormVendors
-                            .Where(fv => fv.FormId == form.Id)
-                            .Select(fv => fv.Vendor.Name)
-                            .ToList();
-
-                        if (vendorNames.Any())
-                        {
-                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";
-                            foreach (var name in vendorNames)
-                            {
-                                html += $"<li>{Server.HtmlEncode(name)}</li>";
-                            }
-                            html += "</ol>";
-                            lblVendor.Text = html;
-                        }
-                        else
-                        {
-                            lblVendor.Text = "<em>No Vendors Assigned</em>";
-                        }
-                        #endregion
-
-                        divJustificationDirectNegotiation.Visible = false;
-                        string procurementType = string.Empty;
-                        if (form.ProcurementType.Equals("quotation_inclusive", StringComparison.OrdinalIgnoreCase))
-                        {
-                            procurementType = "Inclusive Quotation";
-                        }
-                        else if (form.ProcurementType.Equals("quotation_selective", StringComparison.OrdinalIgnoreCase))
-                        {
-                            procurementType = "Selective Quotation";
-                        }
-                        else if (form.ProcurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
-                        {
-                            procurementType = "Direct Negotiation";
-                            divJustificationDirectNegotiation.Visible = true;
-                        }
-
-                        lblProcurementType.Text = procurementType;
-                        lblJustificationDirectAward.Text = form.Justification;
-
-                        lblCurrentYearActualYTD.Text = form.CurrentYearActualYTD.HasValue ? form.CurrentYearActualYTD.Value.ToString("#,##0.00") : "-";
-                        lblCurrentYearBudget.Text = form.CurrentYearBudget.HasValue ? form.CurrentYearBudget.Value.ToString("#,##0.00") : "-";
-                        lblPreviousYearActualYTD.Text = form.PreviousYearActualYTD.HasValue ? form.PreviousYearActualYTD.Value.ToString("#,##0.00") : "-";
-                        lblPreviousYearActual.Text = form.PreviousYearActual.HasValue ? form.PreviousYearActual.Value.ToString("#,##0.00") : "-";
-                        lblPreviousYearBudget.Text = form.PreviousYearBudget.HasValue ? form.PreviousYearBudget.Value.ToString("#,##0.00") : "-";
-                        lblA.Text = form.A.HasValue ? form.A.Value.ToString("#,##0.00") : "-";
-                        lblB.Text = !string.IsNullOrEmpty(form.B) ? form.B : "-";
-                        lblC.Text = form.C.HasValue ? form.C.Value.ToString("#,##0.00") : "-";
-                        lblD.Text = form.D.HasValue ? form.D.Value.ToString("#,##0.00") : "-";
-
-                        if (form.Status != null)
-                        {
-                            switch (form.Status.ToLower())
-                            {
-                                case "approved":
-                                    lblStatus.Text = "Approved";
-                                    lblStatus.CssClass = "badge badge-success badge-pill";
-                                    break;
-                                case "pending":
-                                    lblStatus.Text = "Pending";
-                                    lblStatus.CssClass = "badge badge-warning badge-pill";
-                                    break;
-                                case "rejected":
-                                    lblStatus.Text = "Rejected";
-                                    lblStatus.CssClass = "badge badge-danger badge-pill";
-                                    break;
-                                case "draft":
-                                    lblStatus.Text = "Draft";
-                                    lblStatus.CssClass = "badge badge-info badge-pill";
-                                    break;
-                                case "sentback":
-                                    lblStatus.Text = "Sent Back";
-                                    lblStatus.CssClass = "badge badge-secondary badge-pill";
-                                    break;
-                                default:
-                                    lblStatus.Text = form.Status;
-                                    lblStatus.CssClass = "badge badge-secondary badge-pill";
-                                    break;
-                            }
-                        }
-
-                        #region Allocate budget
-                        rptBudgetAllocations.DataSource = budgets;
-                        rptBudgetAllocations.DataBind();
-                        #endregion
-
-                        txtActualAmount.Text = form.ActualAmount.HasValue ? form.ActualAmount.Value.ToString("#,##0.00") : string.Empty;
-
-                        #region PO
-                        var attachmentPO = db.Attachments
-                            .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
-
-                        if (attachmentPO != null)
-                        {
-                            pnlPOView.Visible = true;
-                            lnkPO.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachmentPO.Id}";
-                            lnkPO.Text = attachmentPO.FileName;
-                        }
-                        else
-                        {
-                            pnlPOView.Visible = false;
-                        }
-                        #endregion
                     }
+
+                    html += "</ol>";
+
+                    lblAllocation.Text = html;
+
                 }
+
+                else
+
+                {
+
+                    lblAllocation.Text = "<em>No Budgets Assigned</em>";
+
+                }
+
+
+
+                // Allocations (Overrun)
+
+                rptOverrunAllocations.DataSource = db.Transactions
+
+                    .Where(t => t.ToId == form.Id && t.Status == "PO Overrun Allocation" && t.DeletedDate == null)
+
+                    .Select(t => new { BudgetId = t.FromId, Amount = t.Amount })
+
+                    .ToList();
+
+                rptOverrunAllocations.DataBind();
+
+
+
+                // PO File
+
+                var attachmentPO = db.Attachments.FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
+
+                if (attachmentPO != null) { pnlPOView.Visible = true; lnkPO.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachmentPO.Id}"; lnkPO.Text = attachmentPO.FileName; }
+
+                else pnlPOView.Visible = false;
+
+
+
+                SetStatusBadge(form.Status);
+
+
+
+                // Set Initial Visibility
+
+                decimal actual = form.ActualAmount ?? 0;
+
+                decimal estimate = form.Amount ?? 0;
+
+                if (actual > 0)
+
+                {
+
+                    allocationSection.Attributes["class"] = (actual < estimate) ? "form-group" : "form-group d-none";
+
+                    allocationDropdownSection.Attributes["class"] = (actual > estimate) ? "form-group" : "form-group d-none";
+
+                }
+
             }
+
         }
 
-        #region Documents
-        private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Label dashLabel)
+
+
+        private void LoadAllDocuments(Guid guid)
+
         {
+
+            LoadAttachment(guid, "Picture", lnkPicture, pnlPictureView, lblPictureDash);
+
+            LoadAttachment(guid, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, lblMachineHistoryDash);
+
+            LoadAttachment(guid, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, lblJobSpecificationDash);
+
+            LoadAttachment(guid, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, lblEngineerEstimatePriceDash);
+
+            LoadAttachment(guid, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, lblDecCostReportCurrentYearDash);
+
+            LoadAttachment(guid, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, lblDecCostReportLastYearDash);
+
+            LoadAttachment(guid, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, lblCostReportLastMonthDash);
+
+            LoadAttachment(guid, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, lblDrawingSketchingDash);
+
+            LoadAttachment(guid, "Quotation", lnkQuotation, pnlQuotationView, lblQuotationDash);
+
+            LoadAttachment(guid, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, lblDamageInvestigationReportDash);
+
+            LoadAttachment(guid, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, lblVendorRegistrationRecordDash);
+
+            LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
+
+            LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
+
+        }
+
+
+
+        private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Label dashLabel)
+
+        {
+
             using (var db = new AppDbContext())
+
             {
+
                 var attachment = db.Attachments.FirstOrDefault(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase) && a.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
 
                 if (attachment != null)
-                {
-                    link.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachment.Id}";
-                    link.Text = attachment.FileName;
-                    link.Visible = true;
-                    viewPanel.Visible = true;
-                    dashLabel.Visible = false; // Hide the dash label if the link is visible
-                }
-                else
-                {
-                    link.Visible = false;
-                    viewPanel.Visible = false;
-                    dashLabel.Visible = true; // Show the dash label if no attachment exists
-                }
-            }
-        }
-        #endregion
 
-        #region Audit Trails
-        protected void gvAuditTrails_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            ViewState["pageIndex"] = e.NewPageIndex.ToString();
-            BindAuditTrails(Guid.Parse(hdnFormId.Value));
+                {
+
+                    link.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachment.Id}";
+
+                    link.Text = attachment.FileName;
+
+                    link.Visible = true;
+
+                    viewPanel.Visible = true;
+
+                    dashLabel.Visible = false;
+
+                }
+
+                else
+
+                {
+
+                    link.Visible = false;
+
+                    viewPanel.Visible = false;
+
+                    dashLabel.Visible = true;
+
+                }
+
+            }
+
         }
+
+
+
+        protected void rptOverrunAllocations_ItemDataBound(object sender, RepeaterItemEventArgs e)
+
+        {
+
+            if (e.Item.ItemType == ListItemType.Item || e.Item.ItemType == ListItemType.AlternatingItem)
+
+            {
+
+                DropDownList ddl = (DropDownList)e.Item.FindControl("ddlAllocationItem");
+
+                HiddenField hdnId = (HiddenField)e.Item.FindControl("hdnSelectedBudgetId");
+
+
+
+                if (ddl != null && !string.IsNullOrEmpty(BudgetsJson))
+
+                {
+
+                    var budgets = JsonConvert.DeserializeObject<List<dynamic>>(BudgetsJson);
+
+                    ddl.DataSource = budgets;
+
+                    ddl.DataTextField = "DisplayText";
+
+                    ddl.DataValueField = "BudgetId";
+
+                    ddl.DataBind();
+
+                    ddl.Items.Insert(0, new ListItem("Select Budget Source", ""));
+
+                    if (hdnId != null && !string.IsNullOrEmpty(hdnId.Value)) ddl.SelectedValue = hdnId.Value;
+
+                }
+
+            }
+
+        }
+
+
+
+        private void PopulateAllocationDropdown(string bizAreaCode, DateTime? formdate, Guid? Formid)
+
+        {
+
+            using (var db = new AppDbContext())
+
+            {
+
+                // 1. Get Base Budgets
+                // =========================================================================
+                // STEP 0: Find the Target TypeId based on the Formid (from your SQL logic)
+                // =========================================================================
+                Guid? targetTypeId = null;
+
+                if (Formid.HasValue)
+                {
+                    // Equivalent to:
+                    // 1. select * from Transactions where ToId = Formid
+                    // 2. select * from Budgets where id = Transactions.FromId
+                    // 3. Get the TypeId
+                    targetTypeId = db.Transactions.ExcludeSoftDeleted()
+                        .Where(t => t.ToId == Formid.Value)
+                        .Join(db.Budgets,                  // Join with Budgets table
+                              t => t.FromId,               // Transaction.FromId
+                              b => b.Id,                   // Budget.Id
+                              (t, b) => b.TypeId)          // Select the TypeId
+                        .FirstOrDefault();
+                }
+
+                // =========================================================================
+                // STEP 1: Get Base Budgets (Updated with TypeId condition)
+                // =========================================================================
+                var query = db.Budgets.ExcludeSoftDeleted()
+                    .Where(b => b.BizAreaCode == bizAreaCode
+                             && b.Date.HasValue
+                             && b.Date.Value.Year == formdate.Value.Year);
+
+                // Apply the extra condition ONLY if we found a TypeId from the Form
+                if (targetTypeId.HasValue)
+                {
+                    query = query.Where(b => b.TypeId == targetTypeId.Value);
+                }
+
+                var budgetQuery = query.ToList(); // Execute Query
+                //var budgetQuery = db.Budgets.ExcludeSoftDeleted()
+
+                //    .Where(b => b.BizAreaCode == bizAreaCode && b.Date.HasValue && b.Date.Value.Year == formdate.Value.Year )
+
+                //    .ToList();
+
+
+
+                var budgetIds = budgetQuery.Select(q => q.Id).ToList();
+
+
+
+                // 2. Get Standard Utilized (Standard transactions - Returns)
+
+                var utilizedMap = db.Transactions.ExcludeSoftDeleted()
+
+                    .Where(t => t.Status.ToLower() != "rejected" &&
+
+                          ((t.FromId.HasValue && budgetIds.Contains(t.FromId.Value) && t.FromType == "Budget") ||
+
+                           (t.ToId.HasValue && budgetIds.Contains(t.ToId.Value) && t.ToType == "Budget")))
+
+                    .ToList()
+
+                    .GroupBy(t => t.FromType.ToLower() == "budget" ? t.FromId : t.ToId)
+
+                    .ToDictionary(g => g.Key.Value, g => g.Sum(t => t.FromType.ToLower() == "budget" ? (t.Amount ?? 0m) : -(t.Amount ?? 0m)));
+
+
+
+                // 3. Get Incoming Transfers (Top-ups)
+
+                var transfersInMap = db.Transactions.ExcludeSoftDeleted()
+
+                    .Where(t => t.ToId.HasValue && budgetIds.Contains(t.ToId.Value) && t.FromType == "Budget" && t.ToType == "Budget" && t.Status.ToLower() != "rejected")
+
+                    .GroupBy(t => t.ToId.Value)
+
+                    .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount ?? 0m));
+
+
+
+                // 4. Map into a list that includes the calculated balance
+
+                var dropdownSource = budgetQuery.Select(b => {
+
+                    decimal baseAmt = b.Amount ?? 0m;
+
+                    decimal topUp = transfersInMap.ContainsKey(b.Id) ? transfersInMap[b.Id] : 0m;
+
+                    decimal used = utilizedMap.ContainsKey(b.Id) ? utilizedMap[b.Id] : 0m;
+
+                    decimal currentBalance = (baseAmt + topUp) - used;
+
+
+
+                    return new
+
+                    {
+
+                        BudgetId = b.Id,
+
+                        DisplayText = $"{b.Ref} - {b.Details}",
+
+                        Balance = currentBalance // This is used by JavaScript
+
+                    };
+
+                }).ToList();
+
+
+
+                // Serialize for JS
+
+                BudgetsJson = JsonConvert.SerializeObject(dropdownSource);
+
+            }
+
+        }
+
+
+
+        protected void btnSave_Click(object sender, EventArgs e)
+
+        {
+
+            if (!decimal.TryParse(txtActualAmount.Text.Replace(",", ""), out decimal actualAmount)) return;
+
+
+
+            using (var db = new AppDbContext())
+
+            {
+
+                using (var trans = db.Database.BeginTransaction())
+
+                {
+
+                    try
+
+                    {
+
+                        var form = db.Forms.Find(Guid.Parse(hdnFormId.Value));
+
+                        decimal balance = (form.Amount ?? 0) - actualAmount; // Positive = Savings
+
+
+
+                        // ---------------------------------------------------------
+
+                        // SERVER-SIDE VALIDATION FOR SAVINGS (STRICT ENFORCEMENT)
+
+                        // ---------------------------------------------------------
+
+                        if (balance > 0)
+
+                        {
+
+                            decimal totalCheck = 0;
+
+                            foreach (RepeaterItem ri in rptBudgetAllocations.Items)
+
+                            {
+
+                                decimal.TryParse(((TextBox)ri.FindControl("txtAllocateAmount")).Text, out decimal amt);
+
+                                totalCheck += amt;
+
+                            }
+
+
+
+                            // If total allocated back doesn't equal savings balance -> STOP
+
+                            if (Math.Abs(totalCheck - balance) > 0.01m)
+
+                            {
+
+                                lblAllocationError.Text = $"Server Validation Failed: Total savings allocated (RM {totalCheck:N2}) must equal (RM {balance:N2}).";
+
+                                lblAllocationError.CssClass = "text-danger";
+
+                                lblAllocationError.Visible = true;
+
+                                return; // Blocks the Save
+
+                            }
+
+                        }
+
+
+
+                        // ---------------------------------------------------------
+
+                        // EXECUTE DB OPERATIONS
+
+                        // ---------------------------------------------------------
+
+
+
+                        // 1. Clean up ALL previous PO-related transactions
+
+                        var oldTransactions = db.Transactions.Where(t => (t.FromId == form.Id || t.ToId == form.Id) && t.DeletedDate == null).ToList();
+
+                        oldTransactions.ForEach(x => db.SoftDelete(x));
+
+
+
+                        // 2. Overrun
+
+                        if (balance < 0)
+
+                        {
+
+                            var items = JsonConvert.DeserializeObject<List<AllocationItem>>(hdnAllocationData.Value);
+
+                            foreach (var item in items)
+
+                            {
+
+                                db.Transactions.Add(new Transaction
+
+                                {
+
+                                    Id = Guid.NewGuid(),
+
+                                    FromId = item.BudgetId,
+
+                                    FromType = "Budget",
+
+                                    ToId = form.Id,
+
+                                    ToType = "Form",
+
+                                    Date = DateTime.Now,
+
+                                    Amount = item.Amount,
+
+                                    Status = "PO Overrun Allocation"
+
+                                });
+
+                            }
+
+                        }
+
+                        // 3. Savings
+
+                        else if (balance > 0)
+
+                        {
+
+                            foreach (RepeaterItem ri in rptBudgetAllocations.Items)
+
+                            {
+
+                                var id = Guid.Parse(((HiddenField)ri.FindControl("hdnBudgetId")).Value);
+
+                                decimal.TryParse(((TextBox)ri.FindControl("txtAllocateAmount")).Text, out decimal amt);
+
+                                if (amt > 0) db.Transactions.Add(new Transaction { Id = Guid.NewGuid(), FromId = form.Id, FromType = "Form", ToId = id, ToType = "Budget", Date = DateTime.Now, Amount = amt, Status = "Approved" });
+
+                            }
+
+                        }
+
+
+
+                        form.ActualAmount = actualAmount;
+
+                        form.Status = "Completed";
+
+                        db.Entry(form).State = EntityState.Modified;
+
+
+
+                        // 4. File
+
+                        if (fuPO.HasFile)
+
+                        {
+
+                            var oldFile = db.Attachments.FirstOrDefault(a => a.ObjectId == form.Id && a.Type == "PO");
+
+                            if (oldFile != null) db.Attachments.Remove(oldFile);
+
+
+
+                            using (var reader = new BinaryReader(fuPO.PostedFile.InputStream))
+
+                            {
+
+                                db.Attachments.Add(new Models.Attachment
+
+                                {
+
+                                    Id = Guid.NewGuid(),
+
+                                    ObjectId = form.Id,
+
+                                    ObjectType = "Form",
+
+                                    Type = "PO",
+
+                                    FileName = Path.GetFileName(fuPO.PostedFile.FileName),
+
+                                    Content = reader.ReadBytes(fuPO.PostedFile.ContentLength),
+
+                                    ContentType = fuPO.PostedFile.ContentType,
+
+                                    Size = fuPO.PostedFile.ContentLength
+
+                                });
+
+                            }
+
+                        }
+
+
+
+                        db.SaveChanges();
+
+                        trans.Commit();
+
+                        string script = @"
+
+                        Swal.fire({
+
+                            icon: 'success',
+
+                            title: 'Form updated successfully.',
+
+                            showConfirmButton: true
+
+                        }).then(function() {
+
+                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
+
+                        });";
+
+
+
+                        ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
+
+                    }
+
+                    catch (Exception ex) { trans.Rollback(); }
+
+                }
+
+            }
+
+        }
+
+
+
+        private void SetStatusBadge(string status)
+
+        {
+
+            lblStatus.Text = status;
+
+            lblStatus.CssClass = "badge badge-info badge-pill";
+
+            if (status?.ToLower() == "approved") lblStatus.CssClass = "badge badge-success badge-pill";
+
+            else if (status?.ToLower() == "pending") lblStatus.CssClass = "badge badge-warning badge-pill";
+
+            else if (status?.ToLower() == "rejected") lblStatus.CssClass = "badge badge-danger badge-pill";
+
+        }
+
+
+
+        protected void gvAuditTrails_PageIndexChanging(object sender, GridViewPageEventArgs e)
+
+        {
+
+            ViewState["pageIndex"] = e.NewPageIndex.ToString();
+
+            BindAuditTrails(Guid.Parse(hdnFormId.Value));
+
+        }
+
+
 
         private void BindAuditTrails(Guid formId)
+
         {
+
             ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
 
-            // 1. Get the list of approvals
             var auditTrails = new Class.Approval().GetApprovals(formId, "Form");
 
-            // 2. CHECK LATEST ACTION
             if (auditTrails != null && auditTrails.Count > 0)
+
             {
-                // Get the most recent approval record
+
                 var latestTrail = auditTrails.LastOrDefault();
 
-                // Check if the latest action is "Reviewed PO"
-                if (latestTrail != null &&
-                    latestTrail.Action.Equals("Reviewed PO", StringComparison.OrdinalIgnoreCase))
-                {
-                    btnSave.Visible = false;
-                }
-                else
-                {
-                    // Ensure button is visible otherwise (in case it was hidden previously)
-                    btnSave.Visible = true;
-                }
+                if (latestTrail != null && latestTrail.Action.Equals("Reviewed PO", StringComparison.OrdinalIgnoreCase)) btnSave.Visible = false;
+
+                else btnSave.Visible = true;
+
             }
 
-            // 3. Bind to GridView
             gvAuditTrails.DataSource = auditTrails;
+
             gvAuditTrails.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
+
             gvAuditTrails.DataBind();
+
         }
-        #endregion
+
     }
+
 }
-
-//using CustomGuid.AspNet.Identity;
-//using FGV.Prodata.App;
-//using FGV.Prodata.Web.UI;
-//using Prodata.WebForm.Helpers;
-//using Prodata.WebForm.Models;
-//using System;
-//using System.Collections.Generic;
-//using System.Data.Entity;
-//using System.Globalization;
-//using System.IO;
-//using System.Linq;
-//using System.Net.Mail;
-//using System.Web;
-//using System.Web.Services;
-//using System.Web.UI;
-//using System.Web.UI.WebControls;
-
-//namespace Prodata.WebForm.T1C.PO.Upload
-//{
-//    public partial class UploadPO : ProdataPage
-//    {
-//        protected void Page_Load(object sender, EventArgs e)
-//        {
-//            if (!IsPostBack)
-//            {
-//                if (Request.QueryString["Id"] != null)
-//                {
-//                    string id = Request.QueryString["Id"].ToString();
-//                    Guid guid;
-//                    if (Guid.TryParse(id, out guid))
-//                    {
-//                        hdnFormId.Value = id;
-//                        BindData(id);
-//                        BindAuditTrails(guid);
-
-//                        // LOGIC: Check for "Reviewed PO"
-//                        var auditHistory = new Class.Approval().GetApprovals(guid, "Form");
-//                        if (auditHistory != null)
-//                        {
-//                            var latestAction = auditHistory.OrderByDescending(x => x.Datetime).FirstOrDefault();
-//                            if (latestAction != null && latestAction.Action.Equals("Reviewed PO", StringComparison.OrdinalIgnoreCase))
-//                            {
-//                                // Disable File Upload Input specifically
-//                                fuPO.Enabled = false;
-
-//                                // Disable the container panels
-//                                pnlFileUpload.Enabled = false;
-//                                pnlFormFields.Enabled = false;
-
-//                                // Hide Save Button
-//                                btnSave.Visible = false;
-
-//                                // Hide JS-based allocation buttons
-//                                ScriptManager.RegisterStartupScript(this, GetType(), "disableAllocButtons", "$('#btnAddAllocation, .btnRemoveAllocation').hide();", true);
-//                            }
-//                        }
-
-//                        LoadAttachment(guid, "Picture", lnkPicture, pnlPictureView, lblPictureDash);
-//                        LoadAttachment(guid, "MachineRepairHistory", lnkMachineRepairHistory, pnlMachineRepairHistoryView, lblMachineHistoryDash);
-//                        LoadAttachment(guid, "JobSpecification", lnkJobSpecification, pnlJobSpecificationView, lblJobSpecificationDash);
-//                        LoadAttachment(guid, "EngineerEstimatePrice", lnkEngineerEstimatePrice, pnlEngineerEstimatePriceView, lblEngineerEstimatePriceDash);
-//                        LoadAttachment(guid, "DecCostReportCurrentYear", lnkDecCostReportCurrentYear, pnlDecCostReportCurrentYearView, lblDecCostReportCurrentYearDash);
-//                        LoadAttachment(guid, "DecCostReportLastYear", lnkDecCostReportLastYear, pnlDecCostReportLastYearView, lblDecCostReportLastYearDash);
-//                        LoadAttachment(guid, "CostReportLastMonth", lnkCostReportLastMonth, pnlCostReportLastMonthView, lblCostReportLastMonthDash);
-//                        LoadAttachment(guid, "DrawingSketching", lnkDrawingSketching, pnlDrawingSketchingView, lblDrawingSketchingDash);
-//                        LoadAttachment(guid, "Quotation", lnkQuotation, pnlQuotationView, lblQuotationDash);
-//                        LoadAttachment(guid, "DamageInvestigationReport", lnkDamageInvestigationReport, pnlDamageInvestigationReportView, lblDamageInvestigationReportDash);
-//                        LoadAttachment(guid, "VendorRegistrationRecord", lnkVendorRegistrationRecord, pnlVendorRegistrationRecordView, lblVendorRegistrationRecordDash);
-//                        LoadAttachment(guid, "BudgetTransferAddApproval", lnkBudgetTransferAddApproval, pnlBudgetTransferAddApprovalView, lblBudgetTransferAddApprovalDash);
-//                        LoadAttachment(guid, "OtherSupportingDocument", lnkOtherSupportingDocument, pnlOtherSupportingDocumentView, lblOtherSupportingDocumentDash);
-//                    }
-//                }
-//                else
-//                {
-//                    Response.Redirect("~/T1C/PO/Upload");
-//                }
-//            }
-//        }
-
-//        protected void btnSave_Click(object sender, EventArgs e)
-//        {
-//            if (IsValid)
-//            {
-//                bool isSuccess = false;
-//                string formId = hdnFormId.Value;
-//                Guid parsedFormId = Guid.Parse(formId);
-
-//                // Actual amount validation
-//                if (string.IsNullOrWhiteSpace(txtActualAmount.Text))
-//                {
-//                    lblActualAmountError.Text = "Actual amount is required.";
-//                    lblActualAmountError.CssClass = "text-danger";
-//                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
-//                    return;
-//                }
-
-//                if (!decimal.TryParse(txtActualAmount.Text.Replace(",", ""), out decimal actualAmount))
-//                {
-//                    lblActualAmountError.Text = "Invalid actual amount.";
-//                    lblActualAmountError.CssClass = "text-danger";
-//                    lblActualAmountError.CssClass = lblActualAmountError.CssClass.Replace("d-none", "").Trim();
-//                    return;
-//                }
-
-//                using (var db = new AppDbContext())
-//                {
-//                    using (var trans = db.Database.BeginTransaction())
-//                    {
-//                        try
-//                        {
-//                            var form = db.Forms.Find(parsedFormId);
-//                            if (form != null)
-//                            {
-//                                decimal estimateAmount = form.Amount ?? 0;
-//                                decimal availableBalance = estimateAmount - actualAmount;
-
-//                                decimal totalAllocated = 0;
-//                                var allocations = new List<Transaction>();
-
-//                                foreach (RepeaterItem item in rptBudgetAllocations.Items)
-//                                {
-//                                    var hdnBudgetId = (HiddenField)item.FindControl("hdnBudgetId");
-//                                    var txtAllocateAmount = (TextBox)item.FindControl("txtAllocateAmount");
-
-//                                    if (Guid.TryParse(hdnBudgetId.Value, out Guid budgetId) &&
-//                                        decimal.TryParse(txtAllocateAmount.Text, out decimal allocateAmount) &&
-//                                        allocateAmount > 0)
-//                                    {
-//                                        // Find all old matching transactions (not just one)
-//                                        var oldAllocations = db.Transactions
-//                                            .Where(t => t.FromId == form.Id &&
-//                                                        t.FromType == "Form" &&
-//                                                        t.ToId == budgetId &&
-//                                                        t.ToType == "Budget")
-//                                            .ToList();
-
-//                                        // Soft delete them all
-//                                        foreach (var old in oldAllocations)
-//                                            db.SoftDelete(old);
-
-//                                        totalAllocated += allocateAmount;
-
-//                                        allocations.Add(new Transaction
-//                                        {
-//                                            FromId = form.Id,
-//                                            FromType = "Form",
-//                                            ToId = budgetId,
-//                                            ToType = "Budget",
-//                                            Date = DateTime.Now,
-//                                            Amount = allocateAmount,
-//                                            Status = "Approved"
-//                                        });
-//                                    }
-//                                }
-
-//                                if (Math.Abs(totalAllocated - availableBalance) > 0.009m)
-//                                {
-//                                    lblAllocationError.Text = "Total allocated does not match available balance.";
-//                                    lblAllocationError.CssClass = "text-danger";
-//                                    lblAllocationError.Visible = true;
-//                                    return;
-//                                }
-
-//                                // Save actual amount to form
-//                                form.ActualAmount = actualAmount;
-//                                form.Status = "Completed";
-//                                db.Entry(form).State = EntityState.Modified;
-
-//                                // Save file upload (if any)
-//                                if (fuPO.HasFile)
-//                                {
-//                                    // Delete existing PO attachment for this form
-//                                    var existingAttachment = db.Attachments
-//                                        .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
-
-//                                    if (existingAttachment != null)
-//                                    {
-//                                        db.Attachments.Remove(existingAttachment);
-//                                    }
-
-//                                    var file = fuPO.PostedFile;
-//                                    using (var binaryReader = new BinaryReader(file.InputStream))
-//                                    {
-//                                        var attachment = new Models.Attachment
-//                                        {
-//                                            ObjectId = form.Id,
-//                                            ObjectType = "Form",
-//                                            Type = "PO",
-//                                            Name = Path.GetFileNameWithoutExtension(file.FileName),
-//                                            FileName = Path.GetFileName(file.FileName),
-//                                            ContentType = file.ContentType,
-//                                            Content = binaryReader.ReadBytes(file.ContentLength),
-//                                            Ext = Path.GetExtension(file.FileName),
-//                                            Size = file.ContentLength,
-//                                        };
-//                                        db.Attachments.Add(attachment);
-//                                    }
-//                                }
-
-//                                // Save allocations
-//                                foreach (var transaction in allocations)
-//                                {
-//                                    db.Transactions.Add(transaction);
-//                                }
-
-//                                db.SaveChanges();
-//                                trans.Commit();
-//                                isSuccess = true;
-//                            }
-//                        }
-//                        catch (Exception ex)
-//                        {
-//                            trans.Rollback();
-//                            SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, string.Join("\n", ex.Message));
-//                        }
-//                    }
-//                }
-
-//                if (isSuccess)
-//                {
-//                    string script = @"
-//                        Swal.fire({
-//                            icon: 'success',
-//                            title: 'Form updated successfully.',
-//                            showConfirmButton: true
-//                        }).then(function() {
-//                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
-//                        });";
-
-//                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
-//                }
-//                else
-//                {
-//                    string script = @"
-//                        Swal.fire({
-//                            icon: 'error',
-//                            title: 'Failed to update form. Please try again.',
-//                            showConfirmButton: true
-//                        }).then(function() {
-//                            window.location.href = '" + Request.Url.GetLeftPart(UriPartial.Path) + @"';
-//                        });";
-
-//                    ScriptManager.RegisterStartupScript(this, GetType(), "alertRedirect", script, true);
-//                }
-//            }
-//        }
-
-//        [WebMethod]
-//        public static List<Models.ViewModels.BudgetListViewModel> GetBudgets()
-//        {
-//            return new Class.Budget().GetBudgets(year: DateTime.Now.Year, bizAreaCode: Auth.User().iPMSBizAreaCode);
-//        }
-
-//        [WebMethod]
-//        public static List<Models.ViewModels.FormBudgetListViewModel> GetSelectedBudgetIds(Guid formId)
-//        {
-//            using (var db = new AppDbContext())
-//            {
-//                return db.FormBudgets
-//                    .Where(fb => fb.FormId == formId && fb.Type.ToLower() == "additional")
-//                    .Select(fb => new
-//                    {
-//                        fb.BudgetId,
-//                        fb.Amount
-//                    })
-//                    .AsEnumerable() // switch to LINQ to Objects
-//                    .Select(fb => new Models.ViewModels.FormBudgetListViewModel
-//                    {
-//                        BudgetId = fb.BudgetId,
-//                        Amount = fb.Amount.HasValue
-//                            ? fb.Amount.Value.ToString("#,##0.00")
-//                            : string.Empty
-//                    })
-//                    .ToList();
-//            }
-//        }
-
-//        private void BindData(string id = null)
-//        {
-//            if (!string.IsNullOrEmpty(id))
-//            {
-//                using (var db = new AppDbContext())
-//                {
-//                    var form = db.Forms.Find(Guid.Parse(id));
-//                    if (form != null)
-//                    {
-//                        lblTitle.Text = form.Ref;
-
-//                        lblBA.Text = form.BizAreaCode + " - " + form.BizAreaName;
-//                        lblReqName.Text = form.FormRequesterName;
-//                        lblRefNo.Text = form.Ref;
-//                        lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
-//                        lblDetails.Text = form.Details;
-//                        lblJustificationOfNeed.Text = form.JustificationOfNeed;
-//                        lblAmount.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
-//                        lblAmount2.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
-
-//                        #region Allocation
-//                        var budgets = db.FormBudgets
-//                            .Where(fb => fb.FormId == form.Id && fb.Type.ToLower() == "new")
-//                            .Select(fb => new
-//                            {
-//                                fb.BudgetId,
-//                                fb.Budget.Ref,
-//                                fb.Budget.Details,
-//                                fb.Amount,
-//                                AllocatedAmount = db.Transactions
-//                                    .Where(t =>
-//                                        t.FromId == fb.FormId &&
-//                                        t.FromType == "Form" &&
-//                                        t.ToId == fb.BudgetId &&
-//                                        t.ToType == "Budget" &&
-//                                        t.Status == "Approved" &&
-//                                        t.DeletedBy == null
-//                                    ) 
-//                                    .Sum(t => (decimal?)t.Amount) ?? 0
-//                            })
-//                            .ToList();
-
-//                        if (budgets.Any())
-//                        {
-//                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";
-
-//                            foreach (var budget in budgets)
-//                            {
-//                                string amount = budget.Amount.HasValue ? "RM" + budget.Amount.Value.ToString("#,##0.00") : "-";
-//                                string line = $"{budget.Ref} - {budget.Details} [{amount}]";
-//                                html += $"<li>{Server.HtmlEncode(line)}</li>";
-//                            }
-
-//                            html += "</ol>";
-
-//                            lblAllocation.Text = html;
-//                        }
-//                        else
-//                        {
-//                            lblAllocation.Text = "<em>No Budgets Assigned</em>";
-//                        }
-//                        #endregion
-
-//                        #region Vendor
-//                        var vendorNames = db.FormVendors
-//                            .Where(fv => fv.FormId == form.Id)
-//                            .Select(fv => fv.Vendor.Name)
-//                            .ToList();
-
-//                        if (vendorNames.Any())
-//                        {
-//                            string html = "<ol style='padding-left: 15px; margin-bottom: 0;'>";
-//                            foreach (var name in vendorNames)
-//                            {
-//                                html += $"<li>{Server.HtmlEncode(name)}</li>";
-//                            }
-//                            html += "</ol>";
-//                            lblVendor.Text = html;
-//                        }
-//                        else
-//                        {
-//                            lblVendor.Text = "<em>No Vendors Assigned</em>";
-//                        }
-//                        #endregion
-
-//                        divJustificationDirectNegotiation.Visible = false;
-//                        string procurementType = string.Empty;
-//                        if (form.ProcurementType.Equals("quotation_inclusive", StringComparison.OrdinalIgnoreCase))
-//                        {
-//                            procurementType = "Inclusive Quotation";
-//                        }
-//                        else if (form.ProcurementType.Equals("quotation_selective", StringComparison.OrdinalIgnoreCase))
-//                        {
-//                            procurementType = "Selective Quotation";
-//                        }
-//                        else if (form.ProcurementType.Equals("direct_negotiation", StringComparison.OrdinalIgnoreCase))
-//                        {
-//                            procurementType = "Direct Negotiation";
-//                            divJustificationDirectNegotiation.Visible = true;
-//                        }
-
-//                        lblProcurementType.Text = procurementType;
-//                        lblJustificationDirectAward.Text = form.Justification;
-
-//                        lblCurrentYearActualYTD.Text = form.CurrentYearActualYTD.HasValue ? form.CurrentYearActualYTD.Value.ToString("#,##0.00") : "-";
-//                        lblCurrentYearBudget.Text = form.CurrentYearBudget.HasValue ? form.CurrentYearBudget.Value.ToString("#,##0.00") : "-";
-//                        lblPreviousYearActualYTD.Text = form.PreviousYearActualYTD.HasValue ? form.PreviousYearActualYTD.Value.ToString("#,##0.00") : "-";
-//                        lblPreviousYearActual.Text = form.PreviousYearActual.HasValue ? form.PreviousYearActual.Value.ToString("#,##0.00") : "-";
-//                        lblPreviousYearBudget.Text = form.PreviousYearBudget.HasValue ? form.PreviousYearBudget.Value.ToString("#,##0.00") : "-";
-//                        lblA.Text = form.A.HasValue ? form.A.Value.ToString("#,##0.00") : "-";
-//                        lblB.Text = !string.IsNullOrEmpty(form.B) ? form.B : "-";
-//                        lblC.Text = form.C.HasValue ? form.C.Value.ToString("#,##0.00") : "-";
-//                        lblD.Text = form.D.HasValue ? form.D.Value.ToString("#,##0.00") : "-";
-
-//                        if (form.Status != null)
-//                        {
-//                            switch (form.Status.ToLower())
-//                            {
-//                                case "approved":
-//                                    lblStatus.Text = "Approved";
-//                                    lblStatus.CssClass = "badge badge-success badge-pill";
-//                                    break;
-//                                case "pending":
-//                                    lblStatus.Text = "Pending";
-//                                    lblStatus.CssClass = "badge badge-warning badge-pill";
-//                                    break;
-//                                case "rejected":
-//                                    lblStatus.Text = "Rejected";
-//                                    lblStatus.CssClass = "badge badge-danger badge-pill";
-//                                    break;
-//                                case "draft":
-//                                    lblStatus.Text = "Draft";
-//                                    lblStatus.CssClass = "badge badge-info badge-pill";
-//                                    break;
-//                                case "sentback":
-//                                    lblStatus.Text = "Sent Back";
-//                                    lblStatus.CssClass = "badge badge-secondary badge-pill";
-//                                    break;
-//                                default:
-//                                    lblStatus.Text = form.Status;
-//                                    lblStatus.CssClass = "badge badge-secondary badge-pill";
-//                                    break;
-//                            }
-//                        }
-
-//                        #region Allocate budget
-//                        rptBudgetAllocations.DataSource = budgets;
-//                        rptBudgetAllocations.DataBind();
-//                        #endregion
-
-//                        txtActualAmount.Text = form.ActualAmount.HasValue ? form.ActualAmount.Value.ToString("#,##0.00") : string.Empty;
-
-//                        #region PO
-//                        var attachmentPO = db.Attachments
-//                            .FirstOrDefault(a => a.ObjectId == form.Id && a.ObjectType == "Form" && a.Type == "PO");
-
-//                        if (attachmentPO != null)
-//                        {
-//                            pnlPOView.Visible = true;
-//                            lnkPO.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachmentPO.Id}";
-//                            lnkPO.Text = attachmentPO.FileName;
-//                        }
-//                        else
-//                        {
-//                            pnlPOView.Visible = false;
-//                        }
-//                        #endregion
-//                    }
-//                }
-//            }
-//        }
-
-//        #region Documents
-//        private void LoadAttachment(Guid formId, string type, HyperLink link, Panel viewPanel, Label dashLabel)
-//        {
-//            using (var db = new AppDbContext())
-//            {
-//                var attachment = db.Attachments.FirstOrDefault(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase) && a.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
-
-//                if (attachment != null)
-//                {
-//                    link.NavigateUrl = $"~/DownloadAttachment.ashx?id={attachment.Id}";
-//                    link.Text = attachment.FileName;
-//                    link.Visible = true;
-//                    viewPanel.Visible = true;
-//                    dashLabel.Visible = false; // Hide the dash label if the link is visible
-//                }
-//                else
-//                {
-//                    link.Visible = false;
-//                    viewPanel.Visible = false;
-//                    dashLabel.Visible = true; // Show the dash label if no attachment exists
-//                }
-//            }
-//        }
-//        #endregion
-
-//        #region Audit Trails
-//        protected void gvAuditTrails_PageIndexChanging(object sender, GridViewPageEventArgs e)
-//        {
-//            ViewState["pageIndex"] = e.NewPageIndex.ToString();
-//            BindAuditTrails(Guid.Parse(hdnFormId.Value));
-//        }
-
-//        private void BindAuditTrails(Guid formId)
-//        {
-//            ViewState["pageIndex"] = ViewState["pageIndex"] ?? "0";
-
-//            var auditTrails = new Class.Approval().GetApprovals(formId, "Form");
-//            gvAuditTrails.DataSource = auditTrails;
-//            gvAuditTrails.PageIndex = int.Parse(ViewState["pageIndex"].ToString());
-//            gvAuditTrails.DataBind();
-//        }
-//        #endregion
-//    }
-//}
-
-

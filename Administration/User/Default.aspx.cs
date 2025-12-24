@@ -111,7 +111,8 @@ namespace Prodata.WebForm.Administration.User
                     //(x.IPMSRole != null && x.IPMSRole.ToLower().Contains(keyword)) ||
                     //(x.IPMSBizArea != null && x.IPMSBizArea.ToLower().Contains(keyword)||
                     (x.CCMSRole != null && x.CCMSRole.ToLower().Contains(keyword))||
-                    (x.CCMSBizArea != null && x.CCMSBizArea.ToLower().Contains(keyword))
+                    (x.CCMSBizArea != null && x.CCMSBizArea.ToLower().Contains(keyword)) ||
+                    (x.UserHQ == true && "hq".Contains(keyword))
                 ).ToList();
             }
 

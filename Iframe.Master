@@ -103,7 +103,8 @@
                             </li>
                             <!-- Menu Footer-->
                             <li class="user-footer">
-                                <a href="~/Account/Profile" class="btn btn-default btn-flat nav-link">Profile</a>
+                                <%--<a href="~/Account/Profile" class="btn btn-default btn-flat nav-link">Profile</a>--%>
+                                <a runat="server" href="~/Account/Profile" class="btn btn-default btn-flat nav-link">Profile</a>
                                 <asp:LoginStatus runat="server" LogoutAction="Redirect" LogoutText="Logout" LogoutPageUrl="~/" OnLoggingOut="Unnamed_LoggingOut" CssClass="btn btn-default btn-flat float-right" />
                             </li>
                         </ul>

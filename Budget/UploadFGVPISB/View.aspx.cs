@@ -1,4 +1,5 @@
 ﻿using CustomGuid.AspNet.Identity;
+using FGV.Prodata.Web.UI;
 using NPOI.SS.Formula.Functions;
 using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
@@ -11,10 +12,29 @@ using System.Web.UI.WebControls;
 
 namespace Prodata.WebForm.Budget.UploadFGVPISB
 {
-    public partial class View : System.Web.UI.Page
+    public partial class View : ProdataPage
     {
+
+        protected bool CanEdit { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
+            var user = Auth.User();
+            if (user != null && !string.IsNullOrEmpty(user.CCMSBizAreaCode))
+            {
+                CanEdit = false;
+            }
+            else
+            {
+                CanEdit = true;
+            }
+            foreach (DataControlField col in gvBudget.Columns)
+            {
+                if (col.HeaderText == "Action")
+                {
+                    col.Visible = CanEdit;
+                    break;
+                }
+            }
             if (!IsPostBack)
             {
                 BindYearDropdown();
@@ -163,6 +183,136 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         //    }
         //}
         private void BindData(Guid? typeId = null, int? year = null, string bizArea = null)
+        {
+            int selectedYear = year ?? DateTime.Now.Year;
+            int pageIndex = int.TryParse(ViewState["pageIndex"]?.ToString(), out int idx) ? idx : 0;
+
+            using (var db = new AppDbContext())
+            {
+                // 🔎 Base query
+                var budgets = db.Budgets
+                    .ExcludeSoftDeleted()
+                    .Where(b => b.Date.HasValue && b.Date.Value.Year == selectedYear);
+
+                if (typeId.HasValue)
+                    budgets = budgets.Where(b => b.TypeId == typeId.Value);
+
+                if (!string.IsNullOrEmpty(bizArea))
+                    budgets = budgets.Where(b => b.BizAreaCode == bizArea);
+
+                var query = (from b in budgets
+                             join t in db.BudgetTypes on b.TypeId equals t.Id
+                             orderby b.Ref
+                             select new
+                             {
+                                 b.Id,
+                                 b.TypeId,
+                                 Type = t.Name,
+                                 b.BizAreaCode,
+                                 b.BizAreaName,
+                                 b.Date,
+                                 b.Month,
+                                 b.Ref,
+                                 b.Name,
+                                 b.Details,
+                                 b.Wages,
+                                 b.Purchase,
+                                 b.Amount,
+                                 b.Vendor,
+                                 b.Status
+                             }).ToList();
+
+                // 📌 Step 1: Extract Budget IDs
+                var budgetIds = query.Select(q => q.Id).ToList();
+
+                // 📌 Step 2: Get Standard Utilized Transactions (POs, Actuals, Outgoing Transfers)
+                // Note: For B2B transfers, this captures the SENDER side (Outflow)
+                var utilizedMap = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t =>
+                        (t.FromId.HasValue && budgetIds.Contains(t.FromId.Value) && t.FromType.ToLower() == "budget") ||
+                        (t.ToId.HasValue && budgetIds.Contains(t.ToId.Value) && t.ToType.ToLower() == "budget"))
+                    .Where(t => t.Status.ToLower() != "rejected")
+                    .ToList() // Execute to memory to safely handle complex GroupBy logic if needed
+                    .GroupBy(t => t.FromType.ToLower() == "budget" ? t.FromId : t.ToId)
+                    .ToDictionary(
+                        g => g.Key.Value,
+                        g => g.Sum(t =>
+                        {
+                            decimal amt = t.Amount ?? 0m;
+                            // If From Budget -> Positive Utilized (Reduces Balance)
+                            // If To Budget (e.g. Return) -> Negative Utilized (Increases Balance)
+                            return t.FromType.ToLower() == "budget" ? amt : -amt;
+                        })
+                    );
+
+                // 📌 Step 2.5: Get Incoming Budget Transfers (ADD to Amount) [NEW LOGIC]
+                // This specifically handles: budgets.id = Transactions.ToId AND FromType = ToType = 'Budget'
+                var transfersInMap = db.Transactions.ExcludeSoftDeleted()
+                    .Where(t => t.ToId.HasValue && budgetIds.Contains(t.ToId.Value)) // Receiver matches our list
+                    .Where(t => t.FromType == "Budget" && t.ToType == "Budget")     // It is a Budget-to-Budget transfer
+                    .Where(t => t.Status.ToLower() != "rejected")
+                    .GroupBy(t => t.ToId.Value)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.Sum(t => t.Amount ?? 0m)
+                    );
+
+                // 📌 Step 3: Create GridView list
+                var list = query
+                .OrderBy(x => x.BizAreaCode)
+                .ThenBy(x => x.Ref)
+                .Select(q =>
+                {
+                    // 1. Get Base Amount
+                    decimal baseBudget = q.Amount ?? 0m;
+
+                    // 2. Add Incoming Transfers (Top-ups)
+                    decimal transferIn = transfersInMap.ContainsKey(q.Id) ? transfersInMap[q.Id] : 0m;
+
+                    // 3. Calculate Final Adjusted Budget
+                    decimal totalBudget = baseBudget + transferIn;
+
+                    // 4. Get Utilized (Outflows)
+                    decimal utilized = utilizedMap.ContainsKey(q.Id) ? utilizedMap[q.Id] : 0m;
+
+                    // 5. Calculate Balance
+                    decimal balance = totalBudget - utilized;
+
+                    return new BudgetListViewModel
+                    {
+                        Id = q.Id,
+                        Type = q.Type,
+                        BizAreaCode = q.BizAreaCode,
+                        BizAreaName = q.BizAreaName,
+                        Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : "",
+                        Month = q.Month.HasValue ? q.Month.ToString() : "",
+                        Ref = q.Ref,
+                        Name = q.Name,
+                        DisplayName = $"{q.Ref} - {q.Name}",
+                        Details = q.Details,
+
+                        // 🟦 Shows Adjusted Budget (Original + Transfers In)
+                        Amount = FormatDecimal(totalBudget),
+
+                        // 🟨 Balance Calculation
+                        Balance = FormatDecimal(balance),
+
+                        Wages = FormatDecimal(q.Wages),
+                        Purchase = FormatDecimal(q.Purchase),
+                        Vendor = q.Vendor,
+                        Status = q.Status
+                    };
+                })
+                .ToList();
+
+                Session["BudgetList"] = list;
+
+                gvBudget.PageIndex = pageIndex;
+                gvBudget.DataSource = list;
+                gvBudget.DataBind();
+            }
+        }
+        private void BindData1(Guid? typeId = null, int? year = null, string bizArea = null)
         {
             int selectedYear = year ?? DateTime.Now.Year;
             int pageIndex = int.TryParse(ViewState["pageIndex"]?.ToString(), out int idx) ? idx : 0;

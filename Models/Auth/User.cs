@@ -36,6 +36,7 @@ namespace Prodata.WebForm.Models.Auth
         [StringLength(20)]
         public string CCMSBizAreaCode { get; set; }
         public string CCMSRoleCode { get; set; }
+        public bool? UserHQ { get; set; }
         
     }
 }

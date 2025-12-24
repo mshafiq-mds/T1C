@@ -113,6 +113,15 @@
                                                             <asp:DropDownList ID="ddlCCMSBizArea" runat="server" CssClass="form-control select2" data-placeholder="CCMS Biz Area"></asp:DropDownList>
                                                         </div>
                                                     </div>
+                                                    <div class="form-group row">
+                                                        <asp:Label ID="lblUserHQ" runat="server" AssociatedControlID="chkUserHQ" CssClass="col-md-4 col-form-label text-md-right" Text="User HQ"></asp:Label>
+                                                        <div class="col-md-8 pt-2">
+                                                            <div class="custom-control custom-checkbox"> 
+                                                                <input type="checkbox" id="chkUserHQ" runat="server" class="custom-control-input" />
+                                                                <label class="custom-control-label" for="<%= chkUserHQ.ClientID %>">Is HQ User</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -130,6 +139,30 @@
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
+            // Initial Select2 setup
+            $('.select2').select2({ theme: 'bootstrap4' });
+
+            function toggleHQLogic() {
+                var isChecked = $('#<%= chkUserHQ.ClientID %>').is(':checked');
+                var $bizArea = $('#<%= ddlCCMSBizArea.ClientID %>');
+
+                if (isChecked) {
+                    // Reset value and disable
+                    $bizArea.val('').trigger('change');
+                    $bizArea.prop('disabled', true);
+                } else {
+                    $bizArea.prop('disabled', false);
+                }
+            }
+
+            // Bind change event
+            $('#<%= chkUserHQ.ClientID %>').on('change', function () {
+                toggleHQLogic();
+            });
+
+            // Run on load
+            toggleHQLogic();
+
             $('#<%= txtName.ClientID %>').on('input', function () {
                 $('#<%= lblNameErrors.ClientID %>').hide();
             });

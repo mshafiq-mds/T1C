@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Web;
 using System.Web.Services;
 using System.Web.UI;
@@ -56,6 +57,7 @@ namespace Prodata.WebForm.T1C
                     string b = txtB.Text.Trim();
                     decimal c = !string.IsNullOrEmpty(txtC.Text.Trim()) ? decimal.Parse(txtC.Text.Trim().Replace(",", "")) : 0;
                     decimal d = !string.IsNullOrEmpty(txtD.Text.Trim()) ? decimal.Parse(txtD.Text.Trim().Replace(",", "")) : 0;
+                    string BTcode = ddlBT.SelectedValue;
 
                     string allocationList = hdnAllocationList.Value;
                     string vendorList = hdnVendorList.Value;
@@ -89,9 +91,9 @@ namespace Prodata.WebForm.T1C
                         using (var trans = db.Database.BeginTransaction())
                         {
                             try
-                            {
+                            { 
                                 var typeEntity = db.FormTypes
-                                    .FirstOrDefault(t => t.Code.Equals(type, StringComparison.OrdinalIgnoreCase));
+                                .FirstOrDefault(t => t.Code.Equals(type, StringComparison.OrdinalIgnoreCase));
 
                                 if (typeEntity == null)
                                     throw new Exception("Form type not found.");
@@ -114,6 +116,7 @@ namespace Prodata.WebForm.T1C
                                     PreviousYearActualYTD = previousYearActualYTD,
                                     PreviousYearActual = previousYearActual,
                                     PreviousYearBudget = previousYearBudget,
+                                    BudgetTypeCode = BTcode,
                                     A = a,
                                     B = b,
                                     C = c,
@@ -268,6 +271,7 @@ namespace Prodata.WebForm.T1C
                     string b = txtB.Text.Trim();
                     decimal c = !string.IsNullOrEmpty(txtC.Text.Trim()) ? decimal.Parse(txtC.Text.Trim().Replace(",", "")) : 0;
                     decimal d = !string.IsNullOrEmpty(txtD.Text.Trim()) ? decimal.Parse(txtD.Text.Trim().Replace(",", "")) : 0;
+                    string BTcode = ddlBT.SelectedValue;
 
                     string allocationList = hdnAllocationList.Value;
                     string vendorList = hdnVendorList.Value;
@@ -326,6 +330,7 @@ namespace Prodata.WebForm.T1C
                                     PreviousYearActualYTD = previousYearActualYTD,
                                     PreviousYearActual = previousYearActual,
                                     PreviousYearBudget = previousYearBudget,
+                                    BudgetTypeCode = BTcode,
                                     A = a,
                                     B = b,
                                     C = c,

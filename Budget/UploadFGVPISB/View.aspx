@@ -140,6 +140,17 @@
                                                 <asp:BoundField DataField="Purchase" SortExpression="Purchase" HeaderText="Belian Alat Ganti (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
                                                 <asp:BoundField DataField="Amount" SortExpression="Amount" HeaderText="Budget (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
                                                 <asp:BoundField DataField="Balance" SortExpression="Balance" HeaderText="Balance (RM)" HeaderStyle-CssClass="align-middle text-center" ItemStyle-CssClass="text-right" />
+                                                <asp:TemplateField HeaderText="Action">
+                                                    <HeaderStyle CssClass="text-center align-middle" Width="50px" />
+                                                    <ItemStyle CssClass="text-center" />
+                                                    <ItemTemplate>
+                                                        <asp:HyperLink ID="lnkEdit" runat="server" CssClass="btn btn-sm btn-primary"
+                                                            NavigateUrl='<%# "Edit.aspx?id=" + Eval("Id") %>'
+                                                            Visible='<%# CanEdit %>' ToolTip="Edit Budget">
+                                                            <i class="fas fa-edit"></i>
+                                                        </asp:HyperLink>
+                                                    </ItemTemplate>
+                                                </asp:TemplateField>
                                             </Columns>
                                             <PagerSettings Mode="NumericFirstLast" PageButtonCount="5" Position="TopAndBottom" />
                                             <PagerStyle CssClass="pagination-ys" />

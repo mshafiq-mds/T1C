@@ -13,6 +13,7 @@ namespace Prodata.WebForm.Models
         public Guid? TypeId { get; set; }
 
         public Guid? BizAreaId { get; set; }
+        public string BudgetTypeCode { get; set; }
 
         [StringLength(100)]
         public string BizAreaCode { get; set; }

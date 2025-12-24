@@ -87,6 +87,7 @@ namespace Prodata.WebForm.Models
         public DbSet<BudgetType> BudgetTypes { get; set; }
 
         public DbSet<Budget> Budgets { get; set; }
+        public DbSet<Budgets_Audit> Budgets_Audit { get; set; }
 
         public DbSet<FormType> FormTypes { get; set; }
 

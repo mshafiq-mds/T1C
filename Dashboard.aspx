@@ -51,6 +51,26 @@
                 </div>
 
                 <div class="row mb-3">
+                    <div class="col-md-12"><h5 class="border-bottom pb-2 mb-3 text-secondary"><i class="fas fa-shopping-cart text-warning me-2"></i> T1C Others</h5></div>
+                </div>
+                <div class="row mb-4 g-3">
+                    <div class="col-md-2 col-6th"><asp:LinkButton ID="BtnT1COthersSubmitted" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Submitted" CssClass="card-link"><div class="info-box bg-primary"><span class="info-box-icon"><i class="fas fa-paper-plane"></i></span><div class="info-box-content"><span class="info-box-text">Submitted</span><asp:Label ID="LblT1COthersSubmitted" runat="server" CssClass="info-box-number">0</asp:Label></div></div></asp:LinkButton></div>
+                    <div class="col-md-2 col-6th"><asp:LinkButton ID="BtnT1COthersReview" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Under Review" CssClass="card-link"><div class="info-box bg-warning"><span class="info-box-icon"><i class="fas fa-eye"></i></span><div class="info-box-content"><span class="info-box-text">Under Review</span><asp:Label ID="LblT1COthersReview" runat="server" CssClass="info-box-number">0</asp:Label></div></div></asp:LinkButton></div>
+                    <div class="col-md-2 col-6th"><asp:LinkButton ID="BtnT1COthersResubmit" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Resubmit" CssClass="card-link"><div class="info-box bg-gray"><span class="info-box-icon"><i class="fas fa-undo"></i></span><div class="info-box-content"><span class="info-box-text">Resubmit</span><asp:Label ID="LblT1COthersResubmit" runat="server" CssClass="info-box-number">0</asp:Label></div></div></asp:LinkButton></div>
+                    <div class="col-md-2 col-6th"><asp:LinkButton ID="BtnT1COthersComplete" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Approved" CssClass="card-link"><div class="info-box bg-info"><span class="info-box-icon"><i class="fas fa-check-circle"></i></span><div class="info-box-content"><span class="info-box-text">Approved</span><asp:Label ID="LblT1COthersComplete" runat="server" CssClass="info-box-number">0</asp:Label></div></div></asp:LinkButton></div>
+                    
+                    <div class="col-md-2 col-6th" style="display:none;">
+                        <asp:LinkButton ID="BtnT1COthersFinalized" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Completed" CssClass="card-link">
+                            <div class="info-box bg-success"><span class="info-box-icon"><i class="fas fa-flag-checkered"></i></span>
+                                <div class="info-box-content"><span class="info-box-text">Completed</span><asp:Label ID="LblT1COthersFinalized" runat="server" CssClass="info-box-number">0</asp:Label></div>
+                            </div>
+                        </asp:LinkButton>
+                    </div>
+
+                    <div class="col-md-2 col-6th"><asp:LinkButton ID="BtnT1COthersDeleted" runat="server" OnClick="Card_Click" CommandArgument="T1COthers|Deleted" CssClass="card-link"><div class="info-box bg-danger"><span class="info-box-icon"><i class="fas fa-trash"></i></span><div class="info-box-content"><span class="info-box-text">Deleted</span><asp:Label ID="LblT1COthersDeleted" runat="server" CssClass="info-box-number">0</asp:Label></div></div></asp:LinkButton></div>
+                </div>
+
+                <div class="row mb-3">
                     <div class="col-md-12"><h5 class="border-bottom pb-2 mb-3 text-secondary"><i class="fas fa-wallet text-info me-2"></i> Additional Budget Requests</h5></div>
                 </div>
                 <div class="row mb-4 g-3">
@@ -78,7 +98,7 @@
                     <div class="col-md-12">
                         <h5 class="border-bottom pb-2 mb-3 text-secondary"><i class="fas fa-chart-bar text-success me-2"></i> Analytics Overview</h5>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-light font-weight-bold text-center">T1C Budget</div>
                             <div class="card-body">
@@ -86,7 +106,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-light font-weight-bold text-center">T1C Others</div>
+                            <div class="card-body">
+                                <div style="height: 250px;"><canvas id="chartT1COthers"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-light font-weight-bold text-center">Additional Budget</div>
                             <div class="card-body">
@@ -94,7 +122,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-lg-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-light font-weight-bold text-center">Transfer Transactions</div>
                             <div class="card-body">
@@ -156,10 +184,11 @@
         }
 
         var myChartT1C = null;
+        var myChartT1COthers = null;
         var myChartAdd = null;
         var myChartTrans = null;
 
-        function renderDashboardCharts(t1cData, addData, transData) {
+        function renderDashboardCharts(t1cData, t1cOthersData, addData, transData) {
             var bgColors = ['rgba(23, 162, 184, 0.7)', 'rgba(255, 193, 7, 0.7)', 'rgba(108, 117, 125, 0.7)', 'rgba(40, 167, 69, 0.7)', 'rgba(220, 53, 69, 0.7)', 'rgba(52, 58, 64, 0.7)'];
             var borderColors = ['rgba(23, 162, 184, 1)', 'rgba(255, 193, 7, 1)', 'rgba(108, 117, 125, 1)', 'rgba(40, 167, 69, 1)', 'rgba(220, 53, 69, 1)', 'rgba(52, 58, 64, 1)'];
             var labels = ['Submitted', 'Review', 'Resubmit', 'Approved', 'Deleted', 'Completed'];
@@ -183,6 +212,7 @@
             }
 
             if (document.getElementById('chartT1C')) myChartT1C = createChart('chartT1C', t1cData, 'T1C', myChartT1C);
+            if (document.getElementById('chartT1COthers')) myChartT1COthers = createChart('chartT1COthers', t1cOthersData, 'T1C Others', myChartT1COthers);
             if (document.getElementById('chartAdd')) myChartAdd = createChart('chartAdd', addData, 'Additional', myChartAdd);
             if (document.getElementById('chartTrans')) myChartTrans = createChart('chartTrans', transData, 'Transfer', myChartTrans);
         }

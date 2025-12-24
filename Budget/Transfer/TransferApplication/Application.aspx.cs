@@ -194,6 +194,8 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                                     FromType = "Budget",
                                     ToId = newBudget.Id,
                                     ToType = "Budget",
+                                    //ToId = transferRecord.Id,
+                                    //ToType = "TransfersTransaction",
                                     Amount = amount,
                                     Date = DateTime.Now,
                                     Name = txtRemarks.Text.Trim(),
@@ -232,6 +234,8 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                         };
                         db.TransferApprovalLog.Add(log);
 
+                        //newBudget.Amount = totalAllocated;
+                        
                         db.SaveChanges();
                         transaction.Commit();
 

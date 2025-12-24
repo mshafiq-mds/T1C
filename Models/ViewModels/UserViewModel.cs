@@ -16,6 +16,7 @@ namespace Prodata.WebForm.Models.ViewModels
 		public string CCMSRole { get; set; }
 		public string IPMSBizArea { get; set; }
 		public string CCMSBizArea { get; set; }
+		public bool? UserHQ { get; set; }
     }
 
 	public class UserAccessViewModel

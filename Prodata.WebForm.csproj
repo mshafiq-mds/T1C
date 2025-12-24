@@ -2318,6 +2318,7 @@
     <Content Include="Budget\Transfer\TransferApplication\View.aspx" />
     <Content Include="Budget\Transfer\View.aspx" />
     <Content Include="Budget\UploadFGVPISB\Default.aspx" />
+    <Content Include="Budget\UploadFGVPISB\Edit.aspx" />
     <Content Include="Budget\UploadFGVPISB\View.aspx" />
     <Content Include="Budget\Upload\Default.aspx" />
     <Content Include="Contact.aspx" />
@@ -3108,6 +3109,13 @@
     <Compile Include="Budget\UploadFGVPISB\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\UploadFGVPISB\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\UploadFGVPISB\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\UploadFGVPISB\View.aspx.cs">
       <DependentUpon>View.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3271,6 +3279,7 @@
     <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetsDetails.cs" />
+    <Compile Include="Models\Budgets_Audit.cs" />
     <Compile Include="Models\Form.cs" />
     <Compile Include="Models\FormBudget.cs" />
     <Compile Include="Models\FormsProcurement.cs" />

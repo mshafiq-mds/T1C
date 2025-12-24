@@ -93,7 +93,8 @@ namespace Prodata.WebForm
                             //u.iPMSRoleCode,
                             //u.iPMSBizAreaCode,
                             u.CCMSRoleCode,
-                            u.CCMSBizAreaCode
+                            u.CCMSBizAreaCode,
+                            u.UserHQ
                         };
 
             if (!string.IsNullOrEmpty(filter))
@@ -205,7 +206,8 @@ namespace Prodata.WebForm
                 //    : string.Empty
                 CCMSBizArea = !string.IsNullOrEmpty(q.CCMSBizAreaCode) && ipmsBizAreaDict.TryGetValue(q.CCMSBizAreaCode, out var areaName)
                     ? q.CCMSBizAreaCode + " - " + areaName
-                    : string.Empty
+                    : string.Empty,
+                UserHQ = q.UserHQ
             })
             .Distinct()
             .ToList();
