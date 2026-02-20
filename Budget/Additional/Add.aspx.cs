@@ -77,12 +77,15 @@ namespace Prodata.WebForm.Budget.AddBudget
 
                     // Tracking
                     BA = LblBA.Text, // Static or you can bind dynamically
-                    Status = 1,
+
+                    // Updated Status to String
+                    Status = "Submitted",
                     //Nota
-                    //status == 0 ? "Resubmit" :
-                    //status == 1 ? "Submitted" :
-                    //status == 2 ? "Under Review" :
-                    //status == 3 ? "Completed" :
+                    //status == "Resubmit" :
+                    //status == "Submitted" :
+                    //status == "UnderReview" :
+                    //status == "Completed" :
+                    //status == "Finalized" :
 
                     CreatedBy = Auth.Id(),
                     CreatedDate = DateTime.Now

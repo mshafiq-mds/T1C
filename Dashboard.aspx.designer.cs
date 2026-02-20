@@ -87,6 +87,51 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.HiddenField hfModalStatus;
 
         /// <summary>
+        /// btnTriggerChartClick control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnTriggerChartClick;
+
+        /// <summary>
+        /// hfChartDataT1C control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfChartDataT1C;
+
+        /// <summary>
+        /// hfChartDataT1COthers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfChartDataT1COthers;
+
+        /// <summary>
+        /// hfChartDataAdd control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfChartDataAdd;
+
+        /// <summary>
+        /// hfChartDataTrans control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfChartDataTrans;
+
+        /// <summary>
         /// BtnT1CSubmitted control.
         /// </summary>
         /// <remarks>

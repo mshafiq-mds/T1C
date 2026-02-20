@@ -82,7 +82,7 @@ namespace Prodata.WebForm.Budget.Transfer
                 txtToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
                 txtToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
                 txtToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
-                txtToGL.Text = transfer.ToGL ;
+                txtToGL.Text = transfer.ToGL;
                 LblBA.Text = transfer.BA;
             }
         }
@@ -122,6 +122,10 @@ namespace Prodata.WebForm.Budget.Transfer
                     //model.ToBalance = Convert.ToDecimal(txtToBalance.Text);
                     //model.ToTransfer = Convert.ToDecimal(txtToTransfer.Text);
                     //model.ToAfter = Convert.ToDecimal(txtToAfter.Text);
+
+                    // Update Status to "Submitted" if applicable upon re-save/edit
+                    // Assuming this action puts it back into workflow
+                    model.status = "Submitted";
 
                     model.UpdatedBy = Auth.User().Id; // Or your method to get current user
                     model.UpdatedDate = DateTime.Now;

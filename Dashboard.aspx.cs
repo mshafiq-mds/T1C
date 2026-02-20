@@ -120,6 +120,8 @@ namespace Prodata.WebForm
             string selectedBA = ddBA.SelectedValue;
             int selectedYear = int.TryParse(ddYear.SelectedValue, out int y) ? y : DateTime.Now.Year;
             var bizAreaHelper = new Class.IPMSBizArea();
+             
+            Dictionary<string, string> bizAreaDict = bizAreaHelper.GetAllBizAreaNames();
 
             List<string> targetCodes = new List<string>();
             if (!string.IsNullOrEmpty(selectedBA))
@@ -142,11 +144,11 @@ namespace Prodata.WebForm
 
                     switch (statusType)
                     {
-                        case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
+                        case "Submitted": query = query.Where(x => x.Status != "Draft" && x.Status != "Rejected" && x.DeletedDate == null); break;
                         case "Under Review": query = query.Where(x => x.Status == "Pending" && x.DeletedDate == null); break;
                         case "Resubmit": query = query.Where(x => x.Status == "SentBack" && x.DeletedDate == null); break;
                         case "Approved": query = query.Where(x => x.Status == "Approved" && x.DeletedDate == null); break;
-                        case "Deleted": query = query.Where(x => x.DeletedDate != null || x.Status == "Rejected"); break;
+                        case "Deleted": query = query.Where(x => (x.Status != "Draft" && x.DeletedDate != null) || x.Status == "Rejected"); break;
                         case "Completed": query = query.Where(x => x.Status == "Completed" && x.DeletedDate == null); break;
                     }
 
@@ -159,7 +161,8 @@ namespace Prodata.WebForm
                     {
                         x.RefNo,
                         x.Date,
-                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        //BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"),
                         x.Status,
                         Amount = (x.Amount ?? 0).ToString("N2")
                     }).ToList();
@@ -193,7 +196,8 @@ namespace Prodata.WebForm
                     {
                         x.RefNo,
                         x.Date,
-                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        //BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"),
                         x.Status,
                         Amount = (x.Amount ?? 0).ToString("N2")
                     }).ToList();
@@ -210,11 +214,11 @@ namespace Prodata.WebForm
                     switch (statusType)
                     {
                         case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
-                        case "Under Review": query = query.Where(x => x.Status == 2 && x.DeletedDate == null); break;
-                        case "Resubmit": query = query.Where(x => x.Status == 0 && x.DeletedDate == null); break;
-                        case "Approved": query = query.Where(x => x.Status == 3 && x.DeletedDate == null); break;
+                        case "Under Review": query = query.Where(x => x.Status == "UnderReview" && x.DeletedDate == null); break;
+                        case "Resubmit": query = query.Where(x => x.Status == "Resubmit" && x.DeletedDate == null); break;
+                        case "Approved": query = query.Where(x => x.Status == "Completed" && x.DeletedDate == null); break; // Map Approved to Completed
                         case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
-                        case "Completed": query = query.Where(x => x.Status == 4 && x.DeletedDate == null); break;
+                        case "Completed": query = query.Where(x => x.Status == "Finalized" && x.DeletedDate == null); break; // Map Completed to Finalized
                     }
 
                     var resultList = query.OrderByDescending(x => x.CreatedDate)
@@ -226,7 +230,8 @@ namespace Prodata.WebForm
                     {
                         RefNo = x.RequestNo,
                         x.Date,
-                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        //BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                        BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"),
                         Status = x.Status.ToString(),
                         Amount = "0.00"
                     }).ToList();
@@ -242,16 +247,34 @@ namespace Prodata.WebForm
 
                     switch (statusType)
                     {
-                        case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
-                        case "Under Review": query = query.Where(x => x.status == 2 && x.DeletedDate == null); break;
-                        case "Resubmit": query = query.Where(x => x.status == 0 && x.DeletedDate == null); break;
-                        case "Approved": query = query.Where(x => x.status == 3 && x.DeletedDate == null); break;
-                        case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
-                        case "Completed": query = query.Where(x => x.status == 4 && x.DeletedDate == null); break;
+                        // Aggregate of all active statuses
+                        case "SUBMITTED":
+                            query = query.Where(x => (x.status == "Completed" || x.status == "sentback" || x.status == "Submitted" || x.status == "UnderReview") && x.DeletedDate == null);
+                            break;
+
+                        case "BUDGET ALLOCATE":
+                            query = query.Where(x => x.status == "Submitted" && x.DeletedDate == null);
+                            break;
+
+                        case "UNDER REVIEW":
+                            query = query.Where(x => x.status == "UnderReview" && x.DeletedDate == null);
+                            break;
+
+                        case "RESUBMIT":
+                            query = query.Where(x => x.status == "sentback" && x.DeletedDate == null);
+                            break;
+
+                        case "COMPLETED":
+                            query = query.Where(x => x.status == "Completed" && x.DeletedDate == null);
+                            break;
+
+                        case "DELETED":
+                            query = query.Where(x => x.DeletedDate != null || x.status == "Deleted");
+                            break;
                     }
 
                     var resultList = query.OrderByDescending(x => x.CreatedDate)
-                        .Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status }).ToList();
+                        .Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status, Amount = x.FromTransfer }).ToList();
 
                     totalAmount = 0;
 
@@ -259,11 +282,42 @@ namespace Prodata.WebForm
                     {
                         x.RefNo,
                         x.Date,
-                        BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
-                        Status = x.Status.ToString(),
-                        Amount = "0.00"
+                        BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"),
+                        Status = x.Status,
+                        x.Amount
                     }).ToList();
                 }
+                //else if (category == "Transfer")
+                //{
+                //    var query = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
+                //    if (targetCodes.Any()) query = query.Where(x => targetCodes.Contains(x.BA));
+                //    if (!string.IsNullOrEmpty(searchKeyword)) query = query.Where(x => x.RefNo.Contains(searchKeyword));
+
+                //    switch (statusType)
+                //    {
+                //        case "Submitted": query = query.Where(x => x.DeletedDate == null); break;
+                //        case "Under Review": query = query.Where(x => x.status == "UnderReview" && x.DeletedDate == null); break;
+                //        case "Resubmit": query = query.Where(x => x.status == "sentback" && x.DeletedDate == null); break;
+                //        case "Approved": query = query.Where(x => x.status == "Completed" && x.DeletedDate == null); break; // Map Approved to Completed
+                //        case "Deleted": query = query.Where(x => x.DeletedDate != null); break;
+                //        case "Completed": query = query.Where(x => x.status == "Finalized" && x.DeletedDate == null); break; // Map Completed to Finalized
+                //    }
+
+                //    var resultList = query.OrderByDescending(x => x.CreatedDate)
+                //        .Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status, Amount = x.FromTransfer }).ToList();
+
+                //    totalAmount = 0;
+
+                //    gvDetails.DataSource = resultList.Select(x => new
+                //    {
+                //        x.RefNo,
+                //        x.Date,
+                //        //BA = x.BA + " - " + bizAreaHelper.GetNameByCode(x.BA),
+                //        BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"),
+                //        Status = x.Status,
+                //        x.Amount 
+                //    }).ToList();
+                //}
 
                 lblModalTotal.Text = "RM" + totalAmount.ToString("N2");
                 gvDetails.DataBind();
@@ -283,9 +337,14 @@ namespace Prodata.WebForm
 
             using (var db = new AppDbContext())
             {
+                var t1cData = new int[] { 0, 0, 0, 0, 0, 0 };
+                var t1cOthersData = new int[] { 0, 0, 0, 0, 0, 0 };
+                var addData = new int[] { 0, 0, 0, 0, 0, 0 };
+                var transData = new int[] { 0, 0, 0, 0, 0, 0 };
+
+                // 1. Additional
                 try
                 {
-                    // 1. Additional
                     var addQ = db.AdditionalBudgetRequests.Where(x => x.CreatedDate.Year == selectedYear);
                     if (targetCodes.Any()) addQ = addQ.Where(x => targetCodes.Contains(x.BA));
 
@@ -293,44 +352,107 @@ namespace Prodata.WebForm
                     {
                         Deleted = g.Count(x => x.DeletedDate != null),
                         Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.Status == 2 && x.DeletedDate == null),
-                        Resubmit = g.Count(x => x.Status == 0 && x.DeletedDate == null),
-                        Complete = g.Count(x => x.Status == 3 && x.DeletedDate == null),
-                        Finalized = g.Count(x => x.Status == 4 && x.DeletedDate == null)
+                        // Use ToString() to force string comparison and avoid SQL int conversion errors
+                        Review = g.Count(x => x.Status.ToString() == "UnderReview" && x.DeletedDate == null),
+                        Resubmit = g.Count(x => x.Status.ToString() == "Resubmit" && x.DeletedDate == null),
+                        Complete = g.Count(x => x.Status.ToString() == "Completed" && x.DeletedDate == null),
+                        Finalized = g.Count(x => x.Status.ToString() == "Finalized" && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
-                    UpdateSection(addS, LblAdditionalSubmitted, LblAdditionalReview, LblAdditionalResubmit, LblAdditionalComplete, LblAdditionalDeleted, LblAdditionalFinalized);
 
-                    // 2. Transfer
+                    UpdateSection(addS, LblAdditionalSubmitted, LblAdditionalReview, LblAdditionalResubmit, LblAdditionalComplete, LblAdditionalDeleted, LblAdditionalFinalized);
+                    addData = new int[] { addS.Submitted, addS.Review, addS.Resubmit, addS.Complete, addS.Deleted, addS.Finalized };
+                }
+                catch (Exception ex)
+                {
+                    // Log error but allow other charts to load
+                    System.Diagnostics.Debug.WriteLine("Additional Chart Error: " + ex.Message);
+                }
+
+                // 2. Transfer 
+                try
+                {
                     var trQ = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
                     if (targetCodes.Any()) trQ = trQ.Where(x => targetCodes.Contains(x.BA));
 
                     var trS = trQ.GroupBy(x => 1).Select(g => new DashboardCounts
                     {
-                        Deleted = g.Count(x => x.DeletedDate != null),
-                        Submitted = g.Count(x => x.DeletedDate == null),
-                        Review = g.Count(x => x.status == 2 && x.DeletedDate == null),
-                        Resubmit = g.Count(x => x.status == 0 && x.DeletedDate == null),
-                        Complete = g.Count(x => x.status == 3 && x.DeletedDate == null),
-                        Finalized = g.Count(x => x.status == 4 && x.DeletedDate == null)
-                    }).FirstOrDefault() ?? new DashboardCounts();
-                    UpdateSection(trS, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
+                        // Total Aggregate "SUBMITTED"
+                        Submitted = g.Count(x => (x.status.ToString() == "Completed" || x.status.ToString() == "sentback" || x.status.ToString() == "Submitted" || x.status.ToString() == "UnderReview") && x.DeletedDate == null),
 
-                    // 3. T1C (Forms)
+                        // BUDGET ALLOCATE
+                        Review = g.Count(x => x.status.ToString() == "Submitted" && x.DeletedDate == null),
+
+                        // UNDER REVIEW
+                        Resubmit = g.Count(x => x.status.ToString() == "UnderReview" && x.DeletedDate == null),
+
+                        // RESUBMIT
+                        Complete = g.Count(x => x.status.ToString() == "sentback" && x.DeletedDate == null),
+
+                        // DELETED
+                        Deleted = g.Count(x => x.DeletedDate != null || x.status.ToString() == "Deleted"),
+
+                        // COMPLETED
+                        Finalized = g.Count(x => x.status.ToString() == "Completed" && x.DeletedDate == null)
+                    }).FirstOrDefault() ?? new DashboardCounts();
+
+                    UpdateSection(trS, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
+                    transData = new int[] { trS.Submitted, trS.Review, trS.Resubmit, trS.Complete, trS.Deleted, trS.Finalized };
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("Transfer Chart Error: " + ex.Message);
+                }
+                //try
+                //{
+                //    var trQ = db.TransfersTransaction.Where(x => x.CreatedDate.Year == selectedYear);
+                //    if (targetCodes.Any()) trQ = trQ.Where(x => targetCodes.Contains(x.BA));
+
+                //    var trS = trQ.GroupBy(x => 1).Select(g => new DashboardCounts
+                //    {
+                //        Deleted = g.Count(x => x.DeletedDate != null),
+                //        Submitted = g.Count(x => x.DeletedDate == null),
+                //        // Use ToString() to force string comparison
+                //        Review = g.Count(x => x.status.ToString() == "UnderReview" && x.DeletedDate == null),
+                //        Resubmit = g.Count(x => x.status.ToString() == "sentback" && x.DeletedDate == null),
+                //        Complete = g.Count(x => x.status.ToString() == "Completed" && x.DeletedDate == null),
+                //        Finalized = g.Count(x => x.status.ToString() == "Finalized" && x.DeletedDate == null)
+                //    }).FirstOrDefault() ?? new DashboardCounts();
+
+                //    UpdateSection(trS, LblTransferSubmitted, LblTransferReview, LblTransferResubmit, LblTransferComplete, LblTransferDeleted, LblTransferFinalized);
+                //    transData = new int[] { trS.Submitted, trS.Review, trS.Resubmit, trS.Complete, trS.Deleted, trS.Finalized };
+                //}
+                //catch (Exception ex)
+                //{
+                //    System.Diagnostics.Debug.WriteLine("Transfer Chart Error: " + ex.Message);
+                //}
+
+                // 3. T1C (Forms)
+                try
+                {
                     var fmQ = db.Forms.Where(x => x.CreatedDate.Year == selectedYear);
                     if (targetCodes.Any()) fmQ = fmQ.Where(x => targetCodes.Contains(x.BizAreaCode));
 
                     var fmS = fmQ.GroupBy(x => 1).Select(g => new DashboardCounts
                     {
-                        Deleted = g.Count(x => x.DeletedDate != null || x.Status == "Rejected"),
-                        Submitted = g.Count(x => x.DeletedDate == null),
+                        Deleted = g.Count(x => (x.Status != "Draft" && x.DeletedDate != null) || x.Status == "Rejected"),
+                        Submitted = g.Count(x => x.Status != "Draft" && x.Status != "Rejected" && x.DeletedDate == null),
                         Review = g.Count(x => x.Status == "Pending" && x.DeletedDate == null),
                         Resubmit = g.Count(x => x.Status == "SentBack" && x.DeletedDate == null),
                         Complete = g.Count(x => x.Status == "Approved" && x.DeletedDate == null),
                         Finalized = g.Count(x => x.Status == "Completed" && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
-                    UpdateSection(fmS, LblT1CSubmitted, LblT1CReview, LblT1CResubmit, LblT1CComplete, LblT1CDeleted, LblT1CFinalized);
 
-                    // 4. T1C Others (FormsProcurement)
+                    UpdateSection(fmS, LblT1CSubmitted, LblT1CReview, LblT1CResubmit, LblT1CComplete, LblT1CDeleted, LblT1CFinalized);
+                    t1cData = new int[] { fmS.Submitted, fmS.Review, fmS.Resubmit, fmS.Complete, fmS.Deleted, fmS.Finalized };
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("T1C Chart Error: " + ex.Message);
+                }
+
+                // 4. T1C Others (FormsProcurement)
+                try
+                {
                     var fmoQ = db.FormsProcurement.Where(x => x.CreatedDate.Year == selectedYear);
                     if (targetCodes.Any()) fmoQ = fmoQ.Where(x => targetCodes.Contains(x.BizAreaCode));
 
@@ -341,23 +463,30 @@ namespace Prodata.WebForm
                         Review = g.Count(x => x.Status == "Pending" && x.DeletedDate == null),
                         Resubmit = g.Count(x => x.Status == "SentBack" && x.DeletedDate == null),
                         Complete = g.Count(x => x.Status == "Approved" && x.DeletedDate == null),
-                        // STANDBY CODE: This will calculate 0 for now as "Completed" doesn't exist
                         Finalized = g.Count(x => x.Status == "Completed" && x.DeletedDate == null)
                     }).FirstOrDefault() ?? new DashboardCounts();
 
                     UpdateSection(fmoS, LblT1COthersSubmitted, LblT1COthersReview, LblT1COthersResubmit, LblT1COthersComplete, LblT1COthersDeleted, LblT1COthersFinalized);
-
-                    // Render Charts
-                    var t1cData = new int[] { fmS.Submitted, fmS.Review, fmS.Resubmit, fmS.Complete, fmS.Deleted, fmS.Finalized };
-                    var t1cOthersData = new int[] { fmoS.Submitted, fmoS.Review, fmoS.Resubmit, fmoS.Complete, fmoS.Deleted, fmoS.Finalized };
-                    var addData = new int[] { addS.Submitted, addS.Review, addS.Resubmit, addS.Complete, addS.Deleted, addS.Finalized };
-                    var transData = new int[] { trS.Submitted, trS.Review, trS.Resubmit, trS.Complete, trS.Deleted, trS.Finalized };
-
-                    JavaScriptSerializer js = new JavaScriptSerializer();
-                    string script = $"renderDashboardCharts({js.Serialize(t1cData)}, {js.Serialize(t1cOthersData)}, {js.Serialize(addData)}, {js.Serialize(transData)});";
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "InitCharts", script, true);
+                    t1cOthersData = new int[] { fmoS.Submitted, fmoS.Review, fmoS.Resubmit, fmoS.Complete, fmoS.Deleted, fmoS.Finalized };
                 }
-                catch (Exception ex) { SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error: " + ex.Message); }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("T1C Others Chart Error: " + ex.Message);
+                }
+
+                // Finalize Charts
+                try
+                {
+                    JavaScriptSerializer js = new JavaScriptSerializer();
+                    hfChartDataT1C.Value = js.Serialize(t1cData);
+                    hfChartDataT1COthers.Value = js.Serialize(t1cOthersData);
+                    hfChartDataAdd.Value = js.Serialize(addData);
+                    hfChartDataTrans.Value = js.Serialize(transData);
+                }
+                catch (Exception ex)
+                {
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "Error Serializing Data: " + ex.Message);
+                }
             }
         }
 

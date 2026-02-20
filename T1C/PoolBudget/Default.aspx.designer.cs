@@ -177,6 +177,15 @@ namespace Prodata.WebForm.T1C.PoolBudget
         protected global::System.Web.UI.WebControls.LinkButton btnReset;
 
         /// <summary>
+        /// btnExportExcel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton btnExportExcel;
+
+        /// <summary>
         /// btnAdd control.
         /// </summary>
         /// <remarks>

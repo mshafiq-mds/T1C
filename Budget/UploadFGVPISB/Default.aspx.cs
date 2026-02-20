@@ -23,6 +23,7 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         {
             if (!IsPostBack)
             {
+                //GlobalBudgetButton.Visible = Auth.User().Can("Global-Budget-List");
                 BindData();
                 BindDropdown(ddlBT , Functions.GetBudgetTypes(), "ID", "DisplayName");
             }

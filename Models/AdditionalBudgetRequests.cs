@@ -61,7 +61,7 @@ namespace Prodata.WebForm.Models
         public string BA { get; set; }
         public string NextApprover { get; set; }
 
-        public int? Status { get; set; }
+        public string Status { get; set; }
 
         // Audit Fields
         public Guid? CreatedBy { get; set; }

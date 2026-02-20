@@ -93,6 +93,20 @@ namespace Prodata.WebForm.Budget.Transfer
                 lblBudgetType.Text = transfer.BudgetType;
                 lblBA.Text = transfer.BA;
 
+                // Status Logic
+                string status = transfer.DeletedDate != null ? "Deleted" : (transfer.status ?? "Unknown");
+                lblStatus.Text = status;
+
+                // Status Styling (matching Default.aspx style)
+                string statusClass = "fw-bold ";
+                if (status == "Deleted") statusClass += "text-danger";
+                else if (status == "sentback") statusClass += "text-warning";
+                else if (status == "UnderReview") statusClass += "text-primary";
+                else if (status == "Completed") statusClass += "text-success";
+                else if (status == "Finalized") statusClass += "text-muted fst-italic";
+
+                lblStatus.CssClass = statusClass;
+
                 // From Budget
                 Guid FromBudgetTypeGuid = transfer.FromBudgetType;
                 var FromBudgetType = db.BudgetTypes

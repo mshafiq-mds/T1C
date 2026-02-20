@@ -31,7 +31,7 @@ namespace Prodata.WebForm.Budget.AddBudget
             using (var db = new AppDbContext())
             {
                 var query = db.AdditionalBudgetRequests.AsQueryable();
-                              //.Where(x => x.DeletedDate == null);
+                //.Where(x => x.DeletedDate == null);
 
                 // If user has a specific BizAreaCode, filter by it
                 if (!string.IsNullOrEmpty(ba))
@@ -41,6 +41,7 @@ namespace Prodata.WebForm.Budget.AddBudget
 
                 var transfers = query
                     .OrderByDescending(x => x.CreatedDate)
+                    .ToList() // Materialize query to memory to perform client-side projection
                     .Select(x => new
                     {
                         x.Id,
@@ -48,13 +49,9 @@ namespace Prodata.WebForm.Budget.AddBudget
                         x.CreatedDate,
                         x.BA,
                         x.Project,
-                        x.EstimatedCost, 
-                        Status =
-                            x.DeletedDate != null ? "Deleted" :
-                            x.Status == 0 ? "Resubmit" :
-                            x.Status == 2 ? "Under Review" :
-                            x.Status == 3 ? "Completed" :
-                            "Submitted"
+                        x.EstimatedCost,
+                        // Updated Status Logic for String values
+                        Status = x.DeletedDate != null ? "Deleted" : (x.Status ?? "Unknown")
                     })
                     .Where(x => statusFilter == "" || x.Status == statusFilter)
                     .OrderByDescending(x => x.CreatedDate)
@@ -118,5 +115,5 @@ namespace Prodata.WebForm.Budget.AddBudget
             BindTransfers();
         }
     }
-     
+
 }

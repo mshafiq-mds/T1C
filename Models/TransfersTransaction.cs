@@ -37,6 +37,7 @@ namespace Prodata.WebForm.Models
         public decimal? ToBalance { get; set; }
         public decimal? ToTransfer { get; set; }
         public decimal? ToAfter { get; set; }
+        public Guid? NewBudgetId { get; set; }
 
         public Guid? CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -44,7 +45,7 @@ namespace Prodata.WebForm.Models
         public DateTime? UpdatedDate { get; set; }
         public Guid? DeletedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
-        public int? status { get; set; }
+        public string status { get; set; }
         public string BA { get; set; }
         public string NextApprover { get; set; }
     }

@@ -48,7 +48,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
         {
             esCost = string.IsNullOrWhiteSpace(lblAdditionalBudget.Text) ? 0 : Convert.ToDecimal(lblAdditionalBudget.Text);
             HandleApprovalAction("Resubmit");
-            UpdateStatusTransferTransaction(0);
+            // Status 0 -> "Resubmit" (based on your notes)
+            UpdateStatusTransferTransaction("Resubmit");
             Response.Redirect("~/Budget/Additional/Approval/COGS");
         }
 
@@ -60,14 +61,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
             Response.Redirect("~/Budget/Additional/Approval/COGS");
         }
 
-        private int FindNextStatus()
+        private string FindNextStatus()
         {
             //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
-            int status = 2;
+            //status == "Resubmit" :
+            //status == "Submitted" :
+            //status == "UnderReview" :
+            //status == "Completed" :
+
+            string status = "UnderReview"; // Default to UnderReview (was 2)
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -78,19 +80,16 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
                                     x.AmountMin <= esCost &&
                                     (x.AmountMax == null || esCost <= x.AmountMax))
                         .OrderByDescending(x => x.Order).Select(x => x.Order).FirstOrDefault().GetValueOrDefault();
+
                     if (currentorder == currentLimitorder)
-                        status = 3;
+                        status = "Completed"; // Final status (was 3)
                 }
             }
             return status;
         }
-        private void UpdateStatusTransferTransaction(int status)
+
+        private void UpdateStatusTransferTransaction(string status)
         {
-            //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -103,14 +102,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.COGS
 
                     model.Status = status;
 
-                    db.SaveChanges(); 
+                    db.SaveChanges();
                     string action = hdnAction.Value?.ToLower();
 
-                    if (action != "approve" || status == 3) //resubmit or complete 
+                    // Check for "Completed" instead of int 3
+                    if (action != "approve" || status == "Completed") // resubmit or complete 
                     {
                         Emails.EmailsAdditionalBudgetForApprover(_transferId, model);
                     }
-                    else if (action == "approve") //next approve 
+                    else if (action == "approve") // next approve 
                     {
                         Emails.EmailsAdditionalBudgetForApprover(_transferId, model, Auth.User().CCMSRoleCode);
                     }

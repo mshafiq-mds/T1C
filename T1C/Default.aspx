@@ -96,6 +96,20 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
+                                    <asp:Label ID="lblStatus" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="ddlStatus" Text="Status"></asp:Label>
+                                    <div class="col-md-5">
+                                        <asp:DropDownList ID="ddlStatus" runat="server" CssClass="form-control select2" data-placeholder="Status">
+                                            <asp:ListItem Text="" Value="" />
+                                            <asp:ListItem Text="Draft" Value="Draft" />
+                                            <asp:ListItem Text="Pending" Value="Pending" />
+                                            <asp:ListItem Text="Approved" Value="Approved" />
+                                            <asp:ListItem Text="Rejected" Value="Rejected" />
+                                            <asp:ListItem Text="Sent Back" Value="SentBack" />
+                                            <asp:ListItem Text="Completed" Value="Completed" />
+                                        </asp:DropDownList>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
                                     <asp:Label ID="lblStartDate" runat="server" CssClass="col-md-3 col-form-label" AssociatedControlID="txtStartDate" Text="Start Date"></asp:Label>
                                     <div class="col-md-5">
                                         <asp:TextBox ID="txtStartDate" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
@@ -119,7 +133,7 @@
                                         <asp:TextBox ID="txtMaxAmount" runat="server" CssClass="form-control input-number" TextMode="Number" placeholder="Max Amount"></asp:TextBox>
                                     </div>
                                 </div>
-                                <div class="row">
+                                <div class="form-group row">
                                     <div class="col-md-9 offset-md-3">
                                         <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnSearch_Click">
                                             <i class="fas fa-search"></i> Search
@@ -142,6 +156,12 @@
                     <div class="card-header card-header-sticky">
                         <h3 class="card-title d-none d-sm-inline"><%= Page.Title %></h3>
                         <div class="card-tools">
+                            
+                            <%-- EXCEL EXPORT BUTTON --%>
+                            <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="btn btn-success mr-1" OnClick="btnExportExcel_Click">
+                                <i class="fas fa-file-excel"></i> Excel
+                            </asp:LinkButton>
+
                             <button type="button" class="btn btn-default mr-1" onclick="window.print();">
                                 <i class="fas fa-print"></i> Print
                             </button>
@@ -223,6 +243,9 @@
                                             </asp:GridView>
                                         </div>
                                     </ContentTemplate>
+                                    <Triggers>
+                                        <asp:PostBackTrigger ControlID="btnExportExcel" />
+                                    </Triggers>
                                 </asp:UpdatePanel>
                             </div>
                         </div>

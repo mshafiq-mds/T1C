@@ -95,7 +95,7 @@ namespace Prodata.WebForm.Budget.Additional
                         return;
                     }
 
-                    model.Status = 2;
+                    model.Status = "Submitted"; // Updated from 2 to "Submitted"
 
                     model.UpdatedBy = Auth.User().Id; // Or your method to get current user
                     model.UpdatedDate = DateTime.Now;
@@ -143,7 +143,7 @@ namespace Prodata.WebForm.Budget.Additional
                         UserId = userId,
                         ActionType = "Resubmit",
                         ActionDate = DateTime.Now,
-                        Status = "Submitted",
+                        Status = "Submitted", // Updated Status
                         Remarks = txtResubmit.Text?.Trim()
                     };
 
@@ -156,7 +156,7 @@ namespace Prodata.WebForm.Budget.Additional
                 }
             }
         }
-         
+
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())

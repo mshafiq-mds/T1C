@@ -19,15 +19,15 @@
                     <div class="row">
                         <div class="col-md-8 offset-md-2">
                             <div class="form-group row">
-                                <asp:Label ID="lblMinValue" runat="server" AssociatedControlID="txtMinValue" CssClass="col-md-3 col-form-label text-md-right" Text="Min Value"></asp:Label>
+                                <asp:Label ID="lblMinValue" runat="server" AssociatedControlID="txtMinValue" CssClass="col-md-3 col-form-label text-md-right" Text="Cumulative"></asp:Label>
                                 <div class="col-md-7">
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text">RM</span>
                                         </div>
-                                        <asp:TextBox ID="txtMinValue" runat="server" CssClass="form-control input-number2" placeholder="Min Value"></asp:TextBox>
+                                        <asp:TextBox ID="txtMinValue" runat="server" CssClass="form-control input-number2" placeholder="Cumulative"></asp:TextBox>
                                     </div>
-                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtMinValue" CssClass="text-danger" Display="Dynamic" ErrorMessage="Min Value is required"></asp:RequiredFieldValidator>
+                                    <asp:RequiredFieldValidator runat="server" ControlToValidate="txtMinValue" CssClass="text-danger" Display="Dynamic" ErrorMessage="Cumulative is required"></asp:RequiredFieldValidator>
                                 </div>
                             </div>
                             <div class="form-group row">

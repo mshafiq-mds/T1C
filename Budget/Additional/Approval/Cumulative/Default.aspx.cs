@@ -79,9 +79,12 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     {
                         var eligibleLimit = Class.Budget.GetEligibleCumulativeLimit(db, limits, x.AdditionalBudget, x.ApplicationDate.Year);
                         bool canEdit = Class.Budget.CanEditCumulativeRequest(eligibleLimit, userRole, x.DeletedDate);
-                        canEdit = x.Status == 3 ? canEdit : false;
-                        //string status = Class.Budget.GetStatusName(x.Status, x.DeletedDate);
-                        string status = canEdit ? "User Action" : Class.Budget.GetStatusName(x.Status, x.DeletedDate);
+
+                        // Update status check: "Completed" instead of 3
+                        canEdit = x.Status == "Completed" ? canEdit : false;
+
+                        string dbStatus = x.DeletedDate != null ? "Deleted" : (x.Status ?? "Unknown");
+                        string status = canEdit ? "User Action" : dbStatus;
 
                         return new
                         {

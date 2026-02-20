@@ -75,7 +75,43 @@ namespace Prodata.WebForm.Class
 
             return bizAreas;
         }
+        public Dictionary<string, string> GetAllBizAreaNames()
+        {
+            var result = new Dictionary<string, string>();
 
+            try
+            {
+                using (var con = new SqlConn().GetSqlConnection("iPMSConnection"))
+                {
+                    string sql = "SELECT code, description FROM BizArea";
+
+                    using (SqlCommand cmd = new SqlCommand(sql, con))
+                    {
+                        con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string code = reader["code"].ToString();
+                                string desc = reader["description"].ToString();
+
+                                // Prevent duplicate keys if data is dirty
+                                if (!result.ContainsKey(code))
+                                {
+                                    result.Add(code, desc);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Handle exception or return empty dictionary
+            }
+
+            return result;
+        }
 
         public string GetNameByCode(string code)
         {
@@ -300,6 +336,7 @@ namespace Prodata.WebForm.Class
 
             return bizAreaCodes;
         }
+
         public static string GetZoneCodeByBizAreaCode(string bizAreaCode)
         {
             string zoneCode = null;
@@ -324,6 +361,36 @@ namespace Prodata.WebForm.Class
                     if (reader.Read())
                     {
                         zoneCode = reader["zone_code"].ToString();
+                    }
+                }
+            }
+
+            return zoneCode;
+        }
+        public static string GetWilayahCodeByBizAreaCode(string bizAreaCode)
+        {
+            string zoneCode = null;
+
+            string connectionString = ConfigurationManager.ConnectionStrings["iPMSConnection"].ConnectionString;
+
+            string query = @"
+        SELECT TOP 1 W.kod_wilayah
+        FROM iPMS.dbo.BizArea B
+        JOIN iPMS.dbo.Wilayah W ON B.kod_wilayah = W.kod_wilayah
+        WHERE B.code = @BizAreaCode
+          AND B.type = 'MILL'";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@BizAreaCode", bizAreaCode);
+
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        zoneCode = reader["kod_wilayah"].ToString();
                     }
                 }
             }

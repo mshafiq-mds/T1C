@@ -127,7 +127,7 @@
                                 <asp:Label ID="lblRequestorName" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label" AssociatedControlID="txtReqName" Text="Requester Name"></asp:Label>
                                 <div class="col-lg-6 col-sm-5">
                                     <asp:Label ID="Label3" runat="server" CssClass="form-control text-muted" Visible="false"></asp:Label>
-                                    <asp:TextBox ID="txtReqName" runat="server" CssClass="form-control" placeholder="Full Name"></asp:TextBox>
+                                    <asp:TextBox ID="txtReqName" runat="server" CssClass="form-control text-uppercase" placeholder="Full Name"></asp:TextBox>
                                     <asp:RequiredFieldValidator ID="rfvRequestorName" runat="server" ControlToValidate="txtReqName" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please Fill Name" InitialValue=""></asp:RequiredFieldValidator>
                                 </div>
                             </div>
@@ -176,12 +176,12 @@
                                     </div>
                                     <asp:RequiredFieldValidator runat="server" ControlToValidate="txtAmount" CssClass="text-danger" Display="Dynamic" ErrorMessage="Please enter estimate amount (RM)"></asp:RequiredFieldValidator>
                                   <%--  <asp:CustomValidator ID="cvAmountLimit" runat="server" 
-                                        ControlToValidate="txtAmount"
-                                        OnServerValidate="cvAmountLimit_ServerValidate"
-                                        ClientValidationFunction="validateAmountLimit"
-                                        EnableClientScript="true"
-                                        CssClass="text-danger" Display="Dynamic"
-                                        ErrorMessage="Amount is outside the allowed range.">
+                                            ControlToValidate="txtAmount"
+                                            OnServerValidate="cvAmountLimit_ServerValidate"
+                                            ClientValidationFunction="validateAmountLimit"
+                                            EnableClientScript="true"
+                                            CssClass="text-danger" Display="Dynamic"
+                                            ErrorMessage="Amount is outside the allowed range.">
                                     </asp:CustomValidator>--%>
                                 </div>
                             </div>
@@ -201,15 +201,24 @@
                                     </asp:DropDownList> 
                                 </div>
                             </div>
+                            
+                            <!-- Updated Allocation Row with Year Dropdown -->
                             <div class="form-group row">
                                 <asp:Label ID="lblAllocation" runat="server" CssClass="col-lg-2 col-sm-3 col-form-label"  Style="font-weight:bold;" Text="Allocation"></asp:Label>
                                 <div class="col-lg-9 col-sm-8">
-                                    <asp:Button ID="btnSelectAllocations" runat="server" 
-                                        CssClass="btn btn-info" 
-                                        Text='Select Allocations' 
-                                        OnClientClick="$('#allocationModal').modal('show'); return false;" 
-                                        UseSubmitBehavior="false" 
-                                        Enabled="false" />
+                                    <div class="row">
+                                        <div class="col-md-3 mb-2">
+                                            <asp:DropDownList ID="ddlYear" runat="server" CssClass="form-control select2" AutoPostBack="true" OnSelectedIndexChanged="ddlYear_SelectedIndexChanged"></asp:DropDownList>
+                                        </div>
+                                        <div class="col-md-9 mb-2">
+                                            <asp:Button ID="btnSelectAllocations" runat="server" 
+                                                CssClass="btn btn-info" 
+                                                Text='Select Allocations' 
+                                                OnClientClick="$('#allocationModal').modal('show'); return false;" 
+                                                UseSubmitBehavior="false" 
+                                                Enabled="false" />
+                                        </div>
+                                    </div>
 
                                     <div id="allocationContainer">
                                         <!-- Selected allocations will appear here -->
@@ -235,7 +244,7 @@
                                 <div class="col-lg-10 col-sm-9">
                                     <div id="vendorContainer">
                                         <div class="input-group mb-2 vendor-group">
-                                        
+                                             
                                             <asp:TextBox ID="txtVendor1" runat="server" CssClass="form-control vendor-input" placeholder="Contractor"></asp:TextBox>
                                         </div>
                                         <div class="input-group mb-2 vendor-group">
@@ -252,7 +261,7 @@
                                     </div>
 
                                     <!-- Plus button below textboxes -->
-                               <%--     <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
+                               <%--      <button type="button" class="btn btn-info mt-1" id="btnAddVendor">
                                         <i class="fa fa-plus"></i> Add Contractor
                                     </button>--%>
                                 </div>
@@ -298,7 +307,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="text-nowrap align-middle" >
-                                                        S & M <%--<i class="fas fa-info-circle text-muted"></i>--%>
+                                                        <%-- S & M  <i class="fas fa-info-circle text-muted"></i>--%>
                                                     </td>
                                                     <td><asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
                                                     <td><asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
@@ -491,7 +500,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -500,6 +508,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
     <script> 
         // ========================
@@ -578,55 +587,55 @@
         });
 
         $(document).ready(function () {
-        //    // ==============================
-        //    // Contractor field control logic
-        //    // ==============================
-        //    function updateContractorFields(type) {
-        //        var $container = $("#vendorContainer");
-        //        $container.empty();
+            //    // ==============================
+            //    // Contractor field control logic
+            //    // ==============================
+            //    function updateContractorFields(type) {
+            //        var $container = $("#vendorContainer");
+            //        $container.empty();
 
-        //        if (type === "quotation_inclusive") {
-        //            $container.closest(".vendor-section").hide(); // hide contractor section
-        //        } else if (type === "quotation_selective") {
-        //            $container.closest(".vendor-section").show();
-        //            for (let i = 1; i <= 3; i++) {
-        //                $container.append(`
-        //        <div class="input-group input-group-sm mb-2 vendor-group">
-        //            <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor ${i}">
-        //            <div class="input-group-append">
-        //                <button type="button" class="btn btn-danger btnRemoveVendor">
-        //                    <i class="fa fa-minus"></i>
-        //                </button>
-        //            </div>
-        //        </div>
-        //    `);
-        //            }
-        //        } else if (type === "direct_negotiation") {
-        //            $container.closest(".vendor-section").show();
-        //            $container.append(`
-        //    <div class="input-group input-group-sm mb-2 vendor-group">
-        //        <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor">
-        //        <div class="input-group-append">
-        //            <button type="button" class="btn btn-danger btnRemoveVendor">
-        //                <i class="fa fa-minus"></i>
-        //            </button>
-        //        </div>
-        //    </div>
-        //`);
-        //        }
+            //        if (type === "quotation_inclusive") {
+            //            $container.closest(".vendor-section").hide(); // hide contractor section
+            //        } else if (type === "quotation_selective") {
+            //            $container.closest(".vendor-section").show();
+            //            for (let i = 1; i <= 3; i++) {
+            //                $container.append(`
+            //        <div class="input-group input-group-sm mb-2 vendor-group">
+            //            <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor ${i}">
+            //            <div class="input-group-append">
+            //                <button type="button" class="btn btn-danger btnRemoveVendor">
+            //                    <i class="fa fa-minus"></i>
+            //                </button>
+            //            </div>
+            //        </div>
+            //    `);
+            //            }
+            //        } else if (type === "direct_negotiation") {
+            //            $container.closest(".vendor-section").show();
+            //            $container.append(`
+            //    <div class="input-group input-group-sm mb-2 vendor-group">
+            //        <input type="text" class="form-control form-control-sm vendor-input" placeholder="Contractor">
+            //        <div class="input-group-append">
+            //            <button type="button" class="btn btn-danger btnRemoveVendor">
+            //                <i class="fa fa-minus"></i>
+            //            </button>
+            //        </div>
+            //    </div>
+            //`);
+            //        }
 
-        //        updateRemoveButtons("#vendorContainer", ".btnRemoveVendor");
-        //    }
+            //        updateRemoveButtons("#vendorContainer", ".btnRemoveVendor");
+            //    }
 
-        //    // Event handler for procurement type radio buttons
-        //    $("input[name$='rblProcurementType']").change(function () {
-        //        var selected = $(this).val();
-        //        updateContractorFields(selected);
-        //    });
+            //    // Event handler for procurement type radio buttons
+            //    $("input[name$='rblProcurementType']").change(function () {
+            //        var selected = $(this).val();
+            //        updateContractorFields(selected);
+            //    });
 
-        //    // Run once on page load
-        //    var initialType = $("input[name$='rblProcurementType']:checked").val();
-        //    if (initialType) updateContractorFields(initialType);
+            //    // Run once on page load
+            //    var initialType = $("input[name$='rblProcurementType']:checked").val();
+            //    if (initialType) updateContractorFields(initialType);
 
             bsCustomFileInput.init();
 
@@ -1090,16 +1099,20 @@
             var tbody = $("#allocationList");
             tbody.empty();
 
-            budgets.forEach(function (b) {
-                tbody.append(`
-            <tr>
-                <td><input type="checkbox" class="chkAllocation" value="${b.Id}" data-display="${b.DisplayName}" data-balance="${b.Amount}" /></td>
-                <td>${b.DisplayName}</td>
-                <td class="allocationBalance" data-balance="${b.Amount}">RM ${b.Amount}</td>
-                <td><input type="number" class="form-control form-control-sm allocationAmount" disabled /></td>
-            </tr>
-        `);
-            });
+            if (!budgets || budgets.length === 0) {
+               // Handle empty state if needed
+            } else {
+                budgets.forEach(function (b) {
+                    tbody.append(`
+                    <tr>
+                        <td><input type="checkbox" class="chkAllocation" value="${b.Id}" data-display="${b.DisplayName}" data-balance="${b.Amount}" /></td>
+                        <td>${b.DisplayName}</td>
+                        <td class="allocationBalance" data-balance="${b.Amount}">RM ${b.Amount}</td>
+                        <td><input type="number" class="form-control form-control-sm allocationAmount" disabled /></td>
+                    </tr>
+                `);
+                });
+            }
 
             // Enable/disable amount input on check
             $(".chkAllocation").change(function () {
@@ -1165,7 +1178,7 @@
             updateTotalAllocation();
 
         });
-        var budgets = <%= BudgetsJson %>;
+        var budgets = <%= BudgetsJson != null ? BudgetsJson : "[]" %>;
         $(document).ready(function () {
             loadAllocationsModal(budgets);
         });

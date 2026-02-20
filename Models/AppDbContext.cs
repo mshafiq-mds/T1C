@@ -37,6 +37,9 @@ namespace Prodata.WebForm.Models
             modelBuilder.Entity<TransferApprovalLog>().ToTable("TransferApprovalLog");  
             modelBuilder.Entity<AdditionalBudgetLog>().ToTable("AdditionalBudgetLog"); 
             modelBuilder.Ignore<BaseModel>();
+
+            // IGNORE THE DUPLICATE UserRole CLASS TO PREVENT CONFLICT
+            modelBuilder.Ignore<UserRole>();
         }
 
         public override int SaveChanges()
@@ -82,7 +85,7 @@ namespace Prodata.WebForm.Models
 
         public DbSet<Module> Modules { get; set; }
 
-        public DbSet<RoleModule> RoleModules { get; set; }
+        public DbSet<RoleModule> RoleModules { get; set; } 
 
         public DbSet<BudgetType> BudgetTypes { get; set; }
 
@@ -130,6 +133,7 @@ namespace Prodata.WebForm.Models
         public DbSet<PurchaseTypes> PurchaseTypes { get; set; }
         public DbSet<FormsProcurement> FormsProcurement { get; set; }
         public DbSet<FormsProcurementDocuments> FormsProcurementDocuments { get; set; }
+        //public DbSet<PoolBudgets> PoolBudgets { get; set; }
         
 
 

@@ -2306,6 +2306,9 @@
     <Content Include="Budget\Additional\Edit.aspx" />
     <Content Include="Budget\Additional\Resubmit.aspx" />
     <Content Include="Budget\Additional\View.aspx" />
+    <Content Include="Budget\GlobalBudget\Add.aspx" />
+    <Content Include="Budget\GlobalBudget\Default.aspx" />
+    <Content Include="Budget\GlobalBudget\Edit.aspx" />
     <Content Include="Budget\Transfer\Add.aspx" />
     <Content Include="Budget\Transfer\Approval\Approval.aspx" />
     <Content Include="Budget\Transfer\Approval\Default.aspx" />
@@ -2341,6 +2344,8 @@
     <Content Include="Content\paging.gridview.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Dashboard.aspx" />
+    <Content Include="DashboardV2.aspx" />
+    <Content Include="DashboardV3.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Error\404.aspx" />
     <Content Include="favicon.ico" />
@@ -2368,6 +2373,7 @@
     <Content Include="MasterData\TransferBudgetApprover\Add.aspx" />
     <Content Include="MasterData\TransferBudgetApprover\Default.aspx" />
     <Content Include="MasterData\TransferBudgetApprover\Edit.aspx" />
+    <Content Include="Report\T1CSummary.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -2744,6 +2750,7 @@
     <Content Include="Site.Master" />
     <Content Include="T1C\Add.aspx" />
     <Content Include="T1C\Addv1.aspx" />
+    <Content Include="T1C\Addv2.aspx" />
     <Content Include="T1C\Approval\Default.aspx" />
     <Content Include="T1C\Approval\Edit.aspx" />
     <Content Include="T1C\Default.aspx" />
@@ -3025,6 +3032,27 @@
     <Compile Include="Budget\Additional\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\GlobalBudget\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\GlobalBudget\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GlobalBudget\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\GlobalBudget\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\GlobalBudget\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\GlobalBudget\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Transfer\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3140,6 +3168,20 @@
     <Compile Include="Class\IPMSBizArea.cs" />
     <Compile Include="Class\IPMSRole.cs" />
     <Compile Include="Class\Mill.cs" />
+    <Compile Include="DashboardV2.aspx.cs">
+      <DependentUpon>DashboardV2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DashboardV2.aspx.designer.cs">
+      <DependentUpon>DashboardV2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="DashboardV3.aspx.cs">
+      <DependentUpon>DashboardV3.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="DashboardV3.aspx.designer.cs">
+      <DependentUpon>DashboardV3.aspx</DependentUpon>
+    </Compile>
     <Compile Include="DocumentHandler.ashx.cs">
       <DependentUpon>DocumentHandler.ashx</DependentUpon>
     </Compile>
@@ -3277,6 +3319,7 @@
     <Compile Include="Models\Approval.cs" />
     <Compile Include="Models\ApprovalLimit.cs" />
     <Compile Include="Models\Attachment.cs" />
+    <Compile Include="Models\Auth\UserRole.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetsDetails.cs" />
     <Compile Include="Models\Budgets_Audit.cs" />
@@ -3288,6 +3331,7 @@
     <Compile Include="Models\MasterData\BudgetType.cs" />
     <Compile Include="Models\MasterData\FormType.cs" />
     <Compile Include="Models\MasterData\PurchaseTypes.cs" />
+    <Compile Include="Models\PoolBudget.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransferApprovalLimits.cs" />
     <Compile Include="Models\TransferApprovalLog.cs" />
@@ -3304,6 +3348,13 @@
     <Compile Include="Models\ViewModels\IPMSRoleViewModel.cs" />
     <Compile Include="Models\ViewModels\MillViewModel.cs" />
     <Compile Include="Models\ViewModels\TransferApprovalLimitListViewModel.cs" />
+    <Compile Include="Report\T1CSummary.aspx.cs">
+      <DependentUpon>T1CSummary.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Report\T1CSummary.aspx.designer.cs">
+      <DependentUpon>T1CSummary.aspx</DependentUpon>
+    </Compile>
     <Compile Include="SiteLogin.Master.cs">
       <DependentUpon>SiteLogin.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3383,6 +3434,13 @@
     </Compile>
     <Compile Include="T1C\Addv1.aspx.designer.cs">
       <DependentUpon>Addv1.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="T1C\Addv2.aspx.cs">
+      <DependentUpon>Addv2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="T1C\Addv2.aspx.designer.cs">
+      <DependentUpon>Addv2.aspx</DependentUpon>
     </Compile>
     <Compile Include="T1C\Approval\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>

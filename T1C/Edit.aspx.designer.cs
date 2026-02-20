@@ -24,6 +24,15 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.HiddenField hdnFormId;
 
         /// <summary>
+        /// hdnBudgetsJson control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnBudgetsJson;
+
+        /// <summary>
         /// btnBack control.
         /// </summary>
         /// <remarks>
@@ -141,6 +150,15 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.Label Label1;
 
         /// <summary>
+        /// Label3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label Label3;
+
+        /// <summary>
         /// txtReqName control.
         /// </summary>
         /// <remarks>
@@ -148,6 +166,15 @@ namespace Prodata.WebForm.T1C
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtReqName;
+
+        /// <summary>
+        /// rfvRequestorName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvRequestorName;
 
         /// <summary>
         /// lblRefNo control.
@@ -240,6 +267,24 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.TextBox txtAmount;
 
         /// <summary>
+        /// lblBudget control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblBudget;
+
+        /// <summary>
+        /// ddlBT control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlBT;
+
+        /// <summary>
         /// lblAllocation control.
         /// </summary>
         /// <remarks>
@@ -247,6 +292,24 @@ namespace Prodata.WebForm.T1C
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblAllocation;
+
+        /// <summary>
+        /// ddlYear control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlYear;
+
+        /// <summary>
+        /// btnSelectAllocations control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSelectAllocations;
 
         /// <summary>
         /// lblProcurementType control.
@@ -276,15 +339,6 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.Label lblVendor;
 
         /// <summary>
-        /// txtVendor control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtVendor;
-
-        /// <summary>
         /// lblJustificationDirectAward control.
         /// </summary>
         /// <remarks>
@@ -301,6 +355,15 @@ namespace Prodata.WebForm.T1C
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtJustificationDirectAward;
+
+        /// <summary>
+        /// phDataCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.PlaceHolder phDataCost;
 
         /// <summary>
         /// lblDataKos control.
@@ -402,13 +465,13 @@ namespace Prodata.WebForm.T1C
         protected global::System.Web.UI.WebControls.TextBox txtD;
 
         /// <summary>
-        /// lblDocuments control.
+        /// lblDocument control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDocuments;
+        protected global::System.Web.UI.WebControls.Label lblDocument;
 
         /// <summary>
         /// pnlPictureView control.

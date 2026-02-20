@@ -61,7 +61,8 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 lblProject.Text = transfer.Project;
                 lblDate.Text = transfer.Date.ToString("yyyy-MM-dd");
                 lblEstimatedCost.Text = transfer.EstimatedCost.ToString("F2");
-                esCost = transfer.EstimatedCost;
+                //esCost = transfer.EstimatedCost; 
+
                 lblEVisa.Text = transfer.EVisaNo;
                 lblBudgetType.Text = transfer.BudgetType;
                 lblBA.Text = transfer.BA;
@@ -101,28 +102,23 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            esCost = string.IsNullOrWhiteSpace(lblEstimatedCost.Text) ? 0 : Convert.ToDecimal(lblEstimatedCost.Text);
+            esCost = string.IsNullOrWhiteSpace(lblFromTransfer.Text) ? 0 : Convert.ToDecimal(lblFromTransfer.Text);
             HandleApprovalAction("Resubmit");
-            UpdateStatusTransferTransaction(0);
+            UpdateStatusTransferTransaction("sentback");
             Response.Redirect("~/Budget/Transfer/Approval");
         }
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            esCost = string.IsNullOrWhiteSpace(lblEstimatedCost.Text) ? 0 : Convert.ToDecimal(lblEstimatedCost.Text);
+            esCost = string.IsNullOrWhiteSpace(lblFromTransfer.Text) ? 0 : Convert.ToDecimal(lblFromTransfer.Text);
             HandleApprovalAction("Approved");
             UpdateStatusTransferTransaction(FindNextStatus());
             Response.Redirect("~/Budget/Transfer/Approval");
         }
 
-        private int FindNextStatus()
-        {
-            //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
-            int status = 2;
+        private string FindNextStatus()
+        { 
+            string status = "UnderReview";
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -133,14 +129,15 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                                     x.AmountMin <= esCost &&
                                     (x.AmountMax == null || esCost <= x.AmountMax))
                         .OrderByDescending(x => x.Order).Select(x => x.Order).FirstOrDefault().GetValueOrDefault();
+
                     if (currentorder == currentLimitorder)
-                        status = 3;
+                        status = "Completed";
                 }
             }
             return status;
         }
 
-        private void UpdateStatusTransferTransaction(int status)
+        private void UpdateStatusTransferTransaction(string status)
         {
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
@@ -157,7 +154,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                     string action = hdnAction.Value?.ToLower();
 
-                    if (action != "approve" || status == 3) //resubmit or complete 
+                    if (action != "approve" || status == "Completed") // resubmit or complete 
                     {
                         Emails.EmailsReqTransferBudgetForApprover(_transferId, model);
                     }
@@ -166,6 +163,15 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                         Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().CCMSRoleCode);
                     }
 
+                    if (status == "Completed")
+                    { 
+                        var TTdata = db.TransfersTransaction.Where(x => x.Id == _transferId).FirstOrDefault();
+                        var BudgetData = db.Budgets.Where(x => x.Id == TTdata.NewBudgetId).FirstOrDefault();
+
+                        BudgetData.DeletedBy = null;
+                        BudgetData.DeletedDate = null;
+                        db.SaveChanges();
+                    }
                 }
             }
         }
@@ -202,7 +208,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                 int approvalStep = approvalConfig?.Order ?? 0;
                 string section = approvalConfig?.Section ?? "Unknown";
-
+ 
                 if (section == "Unknown")
                 {
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This role has no approval authority.");

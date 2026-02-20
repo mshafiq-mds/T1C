@@ -84,9 +84,15 @@
                             </div>
                             
                             <div class="col-md-9 text-right">
+                                
+                                <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="btn btn-success mr-1" OnClick="btnExportExcel_Click">
+                                    <i class="fas fa-file-excel"></i> Excel
+                                </asp:LinkButton>
+
                                 <button type="button" class="btn btn-default" onclick="window.print();">
                                     <i class="fas fa-print"></i> Print
                                 </button>
+
                             </div>
                         </div>
                     </div>
@@ -96,6 +102,25 @@
                             <div class="col-12">
                                 <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                                     <ContentTemplate>
+                                        <!-- Search Tools -->
+                                        <div class="row mb-2 no-print">
+                                            <div class="col-12">
+                                                <div class="float-left">
+                                                    <div class="input-group input-group-sm" style="width: 250px;">
+                                                        <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Search (insert keyword)..." AutoPostBack="true" ></asp:TextBox>
+                                                        <div class="input-group-append">
+                                                            <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn btn-default btn-preload" OnClick="btnSearch_Click">
+                                                                <i class="fas fa-search"></i>
+                                                            </asp:LinkButton>
+                                                            <asp:LinkButton ID="btnClear" runat="server" CssClass="btn btn-secondary btn-preload" OnClick="btnClear_Click">
+                                                                <i class="fas fa-times"></i>
+                                                            </asp:LinkButton>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                         <div class="table-responsive">
                                             <asp:GridView ID="gvData" runat="server" AutoGenerateColumns="false" CssClass="table table-bordered" PageSize='<%# FGV.Prodata.App.Setting.RecordsPerPage() %>' AllowPaging="true" OnPageIndexChanging="gvData_PageIndexChanging" EmptyDataText="No record.">
                                                 <Columns>
@@ -176,4 +201,5 @@
                 </div>
             </div>
         </div>
-    </div> </asp:Content>
+    </div>
+</asp:Content>

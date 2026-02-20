@@ -12,10 +12,10 @@
                 <asp:DropDownList ID="ddlStatusFilter" runat="server" AutoPostBack="true" CssClass="form-control select2" Style="width: 300px;"
                     OnSelectedIndexChanged="ddlStatusFilter_SelectedIndexChanged" data-placeholder="All">
                     <asp:ListItem Text="" Value=""/>
-                    <%--<asp:ListItem Text="All" Value="All" Selected="True"/>--%>
+                    <%-- Updated Values to match DB strings --%>
                     <asp:ListItem Text="Submitted" Value="Submitted" />
-                    <asp:ListItem Text="Resubmit" Value="Resubmit" />
-                    <asp:ListItem Text="Under Review" Value="Under Review" />
+                    <asp:ListItem Text="Resubmit / Sent Back" Value="sentback" />
+                    <asp:ListItem Text="Under Review" Value="UnderReview" />
                     <asp:ListItem Text="Completed" Value="Completed" />
                     <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
@@ -45,17 +45,18 @@
                         <asp:BoundField DataField="Project" HeaderText="Project" />
                         <asp:BoundField DataField="Date" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
+                        <asp:BoundField DataField="NextApprover" HeaderText="Next Approver"  />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <asp:Label ID="lblStatus" runat="server"
                                     Text='<%# Eval("Status") %>'
                                     CssClass='<%# 
-                                          Eval("Status").ToString() == "Deleted" ? "text-danger fw-bold" :
-                                          Eval("Status").ToString() == "Resubmit" ? "text-warning fw-bold" :
-                                          Eval("Status").ToString() == "Under Review" ? "text-primary" :
-                                          Eval("Status").ToString() == "Completed" ? "text-success" :
-                                          Eval("Status").ToString() == "Finalized" ? "text-muted fst-italic" :
-                                          ""
+                                        Eval("Status").ToString() == "Deleted" ? "text-danger fw-bold" :
+                                        Eval("Status").ToString() == "sentback" ? "text-warning fw-bold" :
+                                        Eval("Status").ToString() == "UnderReview" ? "text-primary" :
+                                        Eval("Status").ToString() == "Completed" ? "text-success" :
+                                        Eval("Status").ToString() == "Finalized" ? "text-muted fst-italic" :
+                                        ""
                                     %>'>
                                 </asp:Label>
                             </ItemTemplate>
@@ -65,16 +66,20 @@
                             <HeaderStyle CssClass="width-80 text-center align-middle" />
                             <ItemStyle CssClass="width-80 text-center" />
                             <ItemTemplate>
-                                <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "Under Review"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
+                                <%-- View: Completed, UnderReview, Deleted, Finalized --%>
+                                <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "UnderReview"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
                                     "<a class='btn btn-info btn-xs' href='View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
-                                <%# (Eval("Status").ToString() == "Resubmit") ? 
+                                <%-- Resubmit: sentback --%>
+                                <%# (Eval("Status").ToString() == "sentback") ? 
                                     "<a class='btn btn-info btn-xs' href='Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
 
+                                <%-- Edit: Submitted --%>
                                 <%# (Eval("Status").ToString() == "Submitted") ? 
                                     "<a class='btn btn-info btn-xs' href='Edit.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
 
-                                <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "Resubmit") 
+                                <%-- Delete: Submitted or sentback --%>
+                                <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "sentback") 
                                     ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "' title='Delete Entry'><i class='fas fa-trash-alt'></i></a>" 
                                     : "" 
                                 %>

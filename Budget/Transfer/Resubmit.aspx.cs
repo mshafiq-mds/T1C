@@ -204,8 +204,7 @@ namespace Prodata.WebForm.Budget.Transfer
                     }
 
                     // 3. Update Transaction Status
-                    // Status 2 = "Submitted" / "Under Review" (Depending on your workflow enum)
-                    model.status = 2;
+                    model.status = "Submitted";
                     model.UpdatedBy = Auth.User().Id;
                     model.UpdatedDate = DateTime.Now;
 

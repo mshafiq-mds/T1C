@@ -207,7 +207,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <th class="text-nowrap align-middle">S & M</th>
+                                                    <th class="text-nowrap align-middle"><%--S & M--%></th>
                                                     <td class="text-center"><asp:Label ID="lblCurrentYearActualYTD" runat="server" CssClass="text-muted"></asp:Label></td>
                                                     <td class="text-center"><asp:Label ID="lblCurrentYearBudget" runat="server" CssClass="text-muted"></asp:Label></td>
                                                     <td class="text-center"><asp:Label ID="lblPreviousYearActualYTD" runat="server" CssClass="text-muted"></asp:Label></td>

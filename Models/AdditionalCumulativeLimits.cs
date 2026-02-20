@@ -43,17 +43,13 @@ namespace Prodata.WebForm.Models
         public string Status { get; set; }
 
         public int Order { get; set; }
-
-        public Guid? CreatedBy { get; set; }
-
-        public DateTime? CreatedDate { get; set; }
-
-        public Guid? UpdatedBy { get; set; }
-
-        public DateTime? UpdatedDate { get; set; }
-
-        public Guid? DeletedBy { get; set; }
-
-        public DateTime? DeletedDate { get; set; }
+        public AdditionalCumulativeLimits()
+        {
+            Id = Guid.NewGuid();
+            CreatedBy = Prodata.WebForm.Auth.Id();
+            CreatedDate = DateTime.Now;
+            UpdatedBy = Prodata.WebForm.Auth.Id();
+            UpdatedDate = DateTime.Now;
+        }
     }
 }

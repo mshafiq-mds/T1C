@@ -25,7 +25,7 @@ namespace Prodata.WebForm.Budget.Transfer
                 BindControl();
                 BindBALabel();
 
-                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true); 
+                txtEVisa.Text = txtRefNo.Text = Functions.GetGeneratedRefNo("PB", true);
 
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
             }
@@ -43,7 +43,7 @@ namespace Prodata.WebForm.Budget.Transfer
 
                 string refNo = Functions.GetGeneratedRefNo("PB", false);
 
-                if(txtRefNo.Text != refNo)
+                if (txtRefNo.Text != refNo)
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Ref No. " + txtRefNo.Text + " already exists and has been updated to a new Ref No: " + refNo + ".");
 
                 var model = new TransfersTransaction
@@ -71,22 +71,31 @@ namespace Prodata.WebForm.Budget.Transfer
                     ToBA = lblToBA.Text.Trim(),
                     ToBudget = string.IsNullOrWhiteSpace(txtToBudget.Text) ? 0 : Convert.ToDecimal(txtToBudget.Text),
                     ToBalance = string.IsNullOrWhiteSpace(txtToBalance.Text) ? 0 : Convert.ToDecimal(txtToBalance.Text),
-                    ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),  
-                    ToAfter = string.IsNullOrWhiteSpace(txtToAfter.Text) ? 0 : Convert.ToDecimal(txtToAfter.Text), 
+                    ToTransfer = string.IsNullOrWhiteSpace(txtToTransfer.Text) ? 0 : Convert.ToDecimal(txtToTransfer.Text),
+                    ToAfter = string.IsNullOrWhiteSpace(txtToAfter.Text) ? 0 : Convert.ToDecimal(txtToAfter.Text),
                     ToGL = txtToGLCode.Text.Trim(),
-                    status = 1,
-                    //Nota
-                    //status == 0 ? "Resubmit" :
-                    //status == 1 ? "Submitted" :
-                    //status == 2 ? "Under Review" :
-                    //status == 3 ? "Completed" :
 
-                    CreatedBy = Auth.Id(),  
+                    // Updated Status to String
+                    status = "Submitted",
+
+                    CreatedBy = Auth.Id(),
                     CreatedDate = DateTime.Now
                 };
 
                 db.TransfersTransaction.Add(model);
                 db.SaveChanges();
+
+                var log = new TransferApprovalLog
+                {
+                    BudgetTransferId = newId,
+                    StepNumber = 100,
+                    RoleName = Auth.User().CCMSRoleCode,
+                    UserId = Auth.User().Id,
+                    ActionType = "Submitted",
+                    ActionDate = DateTime.Now,
+                    Status = "UnderReview" 
+                };
+                db.TransferApprovalLog.Add(log);
 
                 if (fuDocument.HasFile)
                 {
@@ -109,7 +118,7 @@ namespace Prodata.WebForm.Budget.Transfer
                         db.SaveChanges();
                     }
                 }
-                Emails.EmailsReqTransferBudgetForNewRequest(newId, model, Auth.User().CCMSRoleCode);
+                Emails.EmailsReqTransferBudgetForNewRequest(newId, model );
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Transfer Budget added.");
                 Response.Redirect("~/Budget/Transfer");
@@ -125,9 +134,9 @@ namespace Prodata.WebForm.Budget.Transfer
             phBA.Visible = !isEmptyBA;
             phBADropdown.Visible = isEmptyBA;
 
-            if (!isEmptyBA) 
+            if (!isEmptyBA)
             {
-                LblBA.Text = 
+                LblBA.Text =
                     lblToBA.Text = ba;
                 LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(ba) ?? "";
             }
@@ -186,9 +195,9 @@ namespace Prodata.WebForm.Budget.Transfer
                 var sumAmount = (from b in db.Budgets
                                  join bt in db.BudgetTypes on b.TypeId equals bt.Id
                                  where bt.Id == typeId
-                                       && b.BizAreaCode == bizAreaCode
-                                       && b.DeletedDate == null
-                                       && SqlFunctions.DatePart("year", b.Date) == currentYear
+                                        && b.BizAreaCode == bizAreaCode
+                                        && b.DeletedDate == null
+                                        && SqlFunctions.DatePart("year", b.Date) == currentYear
                                  select (decimal?)b.Amount).Sum() ?? 0;
 
                 targetTextBox.Text = sumAmount.ToString("N2");

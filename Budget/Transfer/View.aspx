@@ -13,13 +13,6 @@
                     OnClientClick="printPanel(); return false;">
                     <i class="fas fa-print"></i> Print
                 </asp:LinkButton>
-
-                <%--<asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary btn-revision">
-                    <i class="fas fa-edit"></i> Request Revision
-                </asp:LinkButton>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve">
-                    <i class="fas fa-circle"></i> Approve Transfer
-                </asp:LinkButton>--%>
             </div>
         </div>
 
@@ -52,6 +45,11 @@
             <div class="col-md-6 mb-3">
                 <label class="fw-bold">E-VISA No.:</label>
                 <div><asp:Label ID="lblEVisa" runat="server" /></div>
+            </div>
+            <!-- Added Status Field -->
+            <div class="col-md-6 mb-3">
+                <label class="fw-bold">Status:</label>
+                <div><asp:Label ID="lblStatus" runat="server" /></div>
             </div>
         </div>
 
@@ -102,7 +100,7 @@
         <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group" Visible="false">
             <asp:PlaceHolder ID="phDocumentList" runat="server" />
         </asp:Panel>
-         
+          
         <h4 class="mt-4">Approval History</h4>
          <asp:UpdatePanel ID="UpdatePanel1" runat="server">
             <ContentTemplate>
@@ -164,6 +162,5 @@
         };
     }
 </script>
-   
+    
 </asp:Content>
-

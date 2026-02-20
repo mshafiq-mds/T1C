@@ -51,7 +51,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
 
             if (HandleApprovalAction(transferId, esCost))
             {
-                ProcessTransfer(transferId); 
+                ProcessTransfer(transferId);
                 RedirectToDefault();
             }
         }
@@ -80,7 +80,7 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                 {
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This role has no approval authority.");
                     return false;
-                } 
+                }
                 var logEntry = new AdditionalBudgetLog
                 {
                     BudgetTransferId = transferId,
@@ -122,9 +122,10 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     Purchase = 0.0m,
                     Amount = request.AdditionalBudget ?? 0,
                     Vendor = "LUAR",
-                }); 
+                });
 
-                request.Status = 4;
+                // Updated status from int 4 to string "Finalized"
+                request.Status = "Finalized";
 
                 db.SaveChanges();
 
@@ -144,16 +145,19 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                 }
 
                 LblBA.Text = model.BA ?? "-";
-                LblBAName.Text = new IPMSBizArea().GetNameByCode(model.BA ?? "") ?? "-";
+                LblBAName.Text = new Class.IPMSBizArea().GetNameByCode(model.BA ?? "") ?? "-";
+
                 lblBudgetType.Text = model.BudgetType ?? "-";
                 lblProject.Text = model.Project ?? "-";
                 lblRefNo.Text = model.RefNo ?? "-";
                 lblDate.Text = model.ApplicationDate.ToString("yyyy-MM-dd");
+
                 lblBudgetEstimate.Text = model.EstimatedCost.ToString("N2");
                 lblEVisa.Text = string.IsNullOrWhiteSpace(model.EVisaNo) ? "-" : model.EVisaNo;
                 lblRequestDetails.Text = string.IsNullOrWhiteSpace(model.RequestDetails) ? "-" : model.RequestDetails;
                 lblReason.Text = string.IsNullOrWhiteSpace(model.Reason) ? "-" : model.Reason;
                 lblCostCentre.Text = string.IsNullOrWhiteSpace(model.CostCentre) ? "-" : model.CostCentre;
+
                 Guid? TOGuid = model.ToBudgetType;
                 var ToBudgetType = db.BudgetTypes
                     .Where(x => x.Id == TOGuid)
@@ -161,12 +165,14 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Cumulative
                     .FirstOrDefault();
                 lblTBT.Text = ToBudgetType;
                 hdnTBTGuid.Value = model.ToBudgetType.ToString();
-                lblApprovedBudget.Text = model.ApprovedBudget?.ToString("N2") ?? "-";
-                lblNewTotalBudget.Text = model.NewTotalBudget?.ToString("N2") ?? "-";
-                lblAdditionalBudget.Text = model.AdditionalBudget?.ToString("N2") ?? "-";
+
+                lblApprovedBudget.Text = model.ApprovedBudget.HasValue ? model.ApprovedBudget.Value.ToString("N2") : "-";
+                lblNewTotalBudget.Text = model.NewTotalBudget.HasValue ? model.NewTotalBudget.Value.ToString("N2") : "-";
+                lblAdditionalBudget.Text = model.AdditionalBudget.HasValue ? model.AdditionalBudget.Value.ToString("N2") : "-";
                 lblCheckType.Text = model.CheckType ?? "-";
             }
         }
+
 
         private void LoadDocument(Guid transferId)
         {

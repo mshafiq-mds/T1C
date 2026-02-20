@@ -106,6 +106,81 @@ namespace Prodata.WebForm.Helpers
         //}
         public static bool IsFormPendingUserAction(Guid formId, Guid? userId = null)
         {
+            /// not using this function
+            using (var db = new AppDbContext())
+            {
+                var user = userId.HasValue ? db.Users.Find(userId.Value) : Auth.User();
+                if (user == null) return false;
+
+                var form = db.Forms.Find(formId);
+                if (form == null) return false;
+
+                var approvalLimits = db.ApprovalLimits.ExcludeSoftDeleted()
+                    .Where(al => al.AmountMin <= form.Amount && (form.Amount <= al.AmountMax || al.AmountMax == null))
+                    .OrderBy(al => al.Order)
+                    .ToList();
+
+                if (!approvalLimits.Any()) return false;
+
+                var approvals = db.Approvals
+                    .Where(a => a.ObjectId == formId && a.ObjectType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(a => a.CreatedDate)
+                    .ToList();
+
+                if (!approvals.Any()) return false;
+
+                // Step 1: Find the last "Submitted" to reset the cycle
+                // Everything before the last submission is history and irrelevant for the current status check
+                var lastSubmittedIndex = approvals.FindLastIndex(a => a.Action.Equals("Submitted", StringComparison.OrdinalIgnoreCase));
+                if (lastSubmittedIndex == -1)
+                    return false;
+
+                // Step 2: Get ALL actions that happened AFTER the last submission
+                var actionsAfterSubmit = approvals
+                    .Skip(lastSubmittedIndex + 1)
+                    .ToList();
+
+                // [CRITICAL CHECK] If the LATEST action is "Sent Back", stop the approval flow.
+                // The ball is now in the Applicant's court to edit and resubmit.
+                // No approver should see "Approve/Reject" buttons while it is Sent Back.
+                if (actionsAfterSubmit.Any())
+                {
+                    var latestAction = actionsAfterSubmit.Last();
+                    if (latestAction.Action.Equals("Sent Back", StringComparison.OrdinalIgnoreCase))
+                    {
+                        return false;
+                    }
+                }
+
+                // [Existing Check] If any action is "Rejected", the approval flow stops permanently.
+                if (actionsAfterSubmit.Any(a => a.Action.Equals("Rejected", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return false;
+                }
+
+                // Step 3: Filter for the "Approved" codes to determine who has already acted in this cycle
+                var approvedCodes = actionsAfterSubmit
+                    .Where(a => a.Action.Equals("Approved", StringComparison.OrdinalIgnoreCase))
+                    .Select(a => a.ActionByCode)
+                    .ToList();
+
+                // Step 4: Find the next approver in the sequence
+                foreach (var limit in approvalLimits)
+                {
+                    // If this role has NOT approved yet in this cycle
+                    if (!approvedCodes.Contains(limit.ApproverCode, StringComparer.OrdinalIgnoreCase))
+                    {
+                        // Then it is this role's turn.
+                        // Return TRUE if the current user holds this role.
+                        return string.Equals(user.CCMSRoleCode, limit.ApproverCode, StringComparison.OrdinalIgnoreCase);
+                    }
+                }
+
+                return false;
+            }
+        }
+        public static bool IsFormPendingUserActionOld(Guid formId, Guid? userId = null)
+        {
             using (var db = new AppDbContext())
             {
                 var user = userId.HasValue ? db.Users.Find(userId.Value) : Auth.User();

@@ -61,8 +61,16 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                     .OrderByDescending(x => x.Date)
                     .ToList()
                     .Select(x =>
-                    {   
-                        bool CanEdit = false;
+                    {
+                        // Determine status string
+                        string status = x.DeletedDate != null ? "Deleted" : (x.status ?? "Unknown");
+
+                        // Determine CanEdit based on string status
+                        // Adjust logic as needed. Example: Only "Completed" is editable/approvable here?
+                        // Or maybe "UnderReview" depending on your workflow. 
+                        // The original code had x.status == 3 (Completed) -> true.
+                        bool CanEdit = (status == "Submitted");
+
                         return new
                         {
                             x.BA,
@@ -71,17 +79,9 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
                             x.Project,
                             x.Date,
                             x.EstimatedCost,
-                            Status =
-                                        x.DeletedDate != null ? "Deleted" :
-                                        x.status == 0 ? "Resubmit" :
-                                        x.status == 1 ? "Submitted" :
-                                        x.status == 2 ? "Under Review" :
-                                        x.status == 3 ? "Completed" :
-                                        x.status == 4 ? "Finalized" :
-                                        "Unknown",
-                            CanEdit =
-                                        x.status == 3 ? true :
-                                        false,
+                            x.NextApprover,
+                            Status = status,
+                            CanEdit = CanEdit,
                         };
                     })
                     .Where(x =>

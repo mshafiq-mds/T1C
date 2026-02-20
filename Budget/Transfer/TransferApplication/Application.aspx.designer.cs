@@ -15,6 +15,15 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
     {
 
         /// <summary>
+        /// hdnRemarks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnRemarks;
+
+        /// <summary>
         /// btnBack control.
         /// </summary>
         /// <remarks>
@@ -24,13 +33,22 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
         protected global::System.Web.UI.WebControls.LinkButton btnBack;
 
         /// <summary>
-        /// btnSubmit control.
+        /// btnReject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton btnSubmit;
+        protected global::System.Web.UI.WebControls.Button btnReject;
+
+        /// <summary>
+        /// btnServerSubmit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnServerSubmit;
 
         /// <summary>
         /// lblRef control.
@@ -112,24 +130,6 @@ namespace Prodata.WebForm.Budget.Transfer.TransferApplication
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblReason;
-
-        /// <summary>
-        /// txtRemarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtRemarks;
-
-        /// <summary>
-        /// rfvRemarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvRemarks;
 
         /// <summary>
         /// hdnTargetAmount control.

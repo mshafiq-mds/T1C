@@ -1,6 +1,6 @@
 ﻿using FGV.Prodata.App;
 using FGV.Prodata.Web.UI;
-using Prodata.WebForm.Models; // Your model namespace
+using Prodata.WebForm.Models;
 using System;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -15,15 +15,18 @@ namespace Prodata.WebForm.Budget.Transfer
         {
             if (!IsPostBack)
             {
-                ddlStatusFilter.SelectedValue = "All"; // Optional: Set default value
+                // Optional: set a default filter if needed
+                // ddlStatusFilter.SelectedValue = ""; 
                 BindTransfers();
             }
         }
+
         protected void ddlStatusFilter_SelectedIndexChanged(object sender, EventArgs e)
         {
             string selectedStatus = ddlStatusFilter.SelectedValue;
             BindTransfers(selectedStatus);
         }
+
         private void BindTransfers(string statusFilter = "")
         {
             string ba = Auth.User().CCMSBizAreaCode;
@@ -37,9 +40,10 @@ namespace Prodata.WebForm.Budget.Transfer
                     query = query.Where(x => x.BA == ba);
                 }
 
-                var transfers = query
+                // Execute query and project
+                var transfersList = query
                     .OrderByDescending(x => x.Date)
-                    .ToList()
+                    .ToList() // Materialize to memory to perform text transformation
                     .Select(x => new
                     {
                         x.BA,
@@ -48,23 +52,29 @@ namespace Prodata.WebForm.Budget.Transfer
                         x.Project,
                         x.Date,
                         x.EstimatedCost,
-                        Status = Class.Budget.GetStatusName(x.status, x.DeletedDate)
+                        x.NextApprover,
+                        // Update status logic: 
+                        // If DeletedDate is present -> "Deleted"
+                        // Else -> Use the string status directly from DB ("sentback", "Submitted", etc.)
+                        Status = x.DeletedDate != null ? "Deleted" : (x.status ?? "Unknown")
                     })
                     .Where(x => statusFilter == "" || x.Status == statusFilter)
                     .OrderByDescending(x => x.Date)
                     .ThenByDescending(x => x.RefNo)
                     .ToList();
 
-                gvTransfers.DataSource = transfers;
+                gvTransfers.DataSource = transfersList;
                 gvTransfers.DataBind();
             }
         }
+
         protected void gvList_PageIndexChanging(object sender, GridViewPageEventArgs e)
         {
             gvTransfers.PageIndex = e.NewPageIndex;
             string selectedStatus = ddlStatusFilter.SelectedValue;
             BindTransfers(selectedStatus);
         }
+
         protected void btnDeleteConfirmed_Click(object sender, EventArgs e)
         {
             try
@@ -98,6 +108,27 @@ namespace Prodata.WebForm.Budget.Transfer
 
                     record.DeletedBy = userId;
                     record.DeletedDate = DateTime.Now;
+                    record.status = "Deleted";
+
+
+                    // 5. DELETE TRANSACTIONS DATA
+                    if (record.NewBudgetId.HasValue)
+                    {
+                        var linkedTransactions = db.Transactions
+                            .Where(t => t.ToId == record.NewBudgetId.Value)
+                            .ToList();
+
+                        if (linkedTransactions.Any())
+                        {
+                            //db.Transactions.RemoveRange(linkedTransactions);
+                            // Option B: Soft Delete (If your Transactions table has these columns)
+                            foreach (var trans in linkedTransactions)
+                            {
+                                trans.DeletedDate = DateTime.Now;
+                                trans.DeletedBy = userId;
+                            }
+                        }
+                    } 
 
                     db.SaveChanges();
 

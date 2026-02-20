@@ -1,5 +1,4 @@
-﻿using Antlr.Runtime.Misc;
-using FGV.Prodata.Web.UI;
+﻿using FGV.Prodata.Web.UI;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Prodata.WebForm.Class;
 using Prodata.WebForm.Models;
@@ -48,7 +47,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
         {
             esCost = string.IsNullOrWhiteSpace(lblAdditionalBudget.Text) ? 0 : Convert.ToDecimal(lblAdditionalBudget.Text);
             HandleApprovalAction("Resubmit");
-            UpdateStatusTransferTransaction(0);
+            // Status 0 -> "Resubmit"
+            UpdateStatusTransferTransaction("Resubmit");
             Response.Redirect("~/Budget/Additional/Approval/Finance");
         }
 
@@ -60,14 +60,15 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
             Response.Redirect("~/Budget/Additional/Approval/Finance");
         }
 
-        private int FindNextStatus()
+        private string FindNextStatus()
         {
             //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
-            int status = 2;
+            //status == "Resubmit" :
+            //status == "Submitted" :
+            //status == "UnderReview" :
+            //status == "Completed" :
+
+            string status = "UnderReview"; // Default to UnderReview (was 2)
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -78,19 +79,16 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
                     x.AmountMin <= esCost &&
                                     (x.AmountMax == null || esCost <= x.AmountMax))
                         .OrderByDescending(x => x.Order).Select(x => x.Order).FirstOrDefault().GetValueOrDefault();
+
                     if (currentorder == currentLimitorder)
-                        status = 3;
+                        status = "Completed"; // Completed (was 3)
                 }
             }
             return status;
         }
-        private void UpdateStatusTransferTransaction(int status)
+
+        private void UpdateStatusTransferTransaction(string status)
         {
-            //Nota
-            //status == 0 ? "Resubmit" :
-            //status == 1 ? "Submitted" :
-            //status == 2 ? "Under Review" :
-            //status == 3 ? "Completed" :
             if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
             {
                 using (var db = new AppDbContext())
@@ -107,7 +105,8 @@ namespace Prodata.WebForm.Budget.Additional.Approval.Finance
 
                     string action = hdnAction.Value?.ToLower();
 
-                    if (action != "approve" || status == 3) //resubmit or complete
+                    // Check for "Completed" instead of int 3
+                    if (action != "approve" || status == "Completed") //resubmit or complete
                     {
                         Emails.EmailsAdditionalBudgetForApprover(_transferId, model);
                     }

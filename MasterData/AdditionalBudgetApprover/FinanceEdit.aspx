@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="FinanceEdit.aspx.cs" Inherits="Prodata.WebForm.MasterData.AdditionalBudgetApprover.FinanceEdit" %>
+﻿<%@ Page Title="Edit Finance Approver" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="FinanceEdit.aspx.cs" Inherits="Prodata.WebForm.MasterData.AdditionalBudgetApprover.FinanceEdit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnId" runat="server" />
     <div class="row">

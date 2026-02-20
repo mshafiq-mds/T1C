@@ -93,8 +93,12 @@ namespace Prodata.WebForm.T1C
                         lblRefNo.Text = form.Ref;
                         lblReqName.Text = form.FormRequesterName;
                         lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
-                        lblDetails.Text = form.Details;
-                        lblJustificationOfNeed.Text = form.JustificationOfNeed;
+                        // Updated to handle line breaks for Details as well
+                        lblDetails.Text = !string.IsNullOrEmpty(form.Details) ? form.Details.Replace(Environment.NewLine, "<br />").Replace("\n", "<br />") : "-";
+
+                        // FIX: Replace newlines with <br /> to preserve formatting
+                        lblJustificationOfNeed.Text = !string.IsNullOrEmpty(form.JustificationOfNeed) ? form.JustificationOfNeed.Replace(Environment.NewLine, "<br />").Replace("\n", "<br />") : "-";
+
                         lblAmount.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
 
                         #region Allocation

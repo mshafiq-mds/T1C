@@ -60,15 +60,6 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         protected global::System.Web.UI.WebControls.TextBox txtBACode;
 
         /// <summary>
-        /// rfvBA control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvBA;
-
-        /// <summary>
         /// txtProject control.
         /// </summary>
         /// <remarks>
@@ -94,15 +85,6 @@ namespace Prodata.WebForm.Budget.UploadFGVPISB
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlMonth;
-
-        /// <summary>
-        /// rfvMonth control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvMonth;
 
         /// <summary>
         /// ddlYear control.

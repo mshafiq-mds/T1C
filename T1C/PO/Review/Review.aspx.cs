@@ -56,8 +56,12 @@ namespace Prodata.WebForm.T1C.PO.Review
                     lblReqName.Text = form.FormRequesterName;
                     lblRefNo.Text = form.Ref;
                     lblDate.Text = form.Date.HasValue ? form.Date.Value.ToString("dd/MM/yyyy") : "-";
-                    lblDetails.Text = form.Details;
-                    lblJustificationOfNeed.Text = form.JustificationOfNeed;
+                    // Updated to handle line breaks for Details as well
+                    lblDetails.Text = !string.IsNullOrEmpty(form.Details) ? form.Details.Replace(Environment.NewLine, "<br />").Replace("\n", "<br />") : "-";
+
+                    // FIX: Replace newlines with <br /> to preserve formatting
+                    lblJustificationOfNeed.Text = !string.IsNullOrEmpty(form.JustificationOfNeed) ? form.JustificationOfNeed.Replace(Environment.NewLine, "<br />").Replace("\n", "<br />") : "-";
+
                     lblAmount.Text = form.Amount.HasValue ? "RM" + form.Amount.Value.ToString("#,##0.00") : "-";
 
                     // Display Actual Amount (Simple View)

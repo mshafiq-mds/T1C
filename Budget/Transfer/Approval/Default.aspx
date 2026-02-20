@@ -38,6 +38,7 @@
                         <asp:BoundField DataField="Date" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
                         <asp:BoundField DataField="FromTransfer" HeaderText="Transfer (RM)" DataFormatString="{0:N2}" />
+                        <asp:BoundField DataField="NextApprover" HeaderText="Next Approver"  />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <asp:Label ID="lblStatus" runat="server"
@@ -45,8 +46,9 @@
                                     CssClass='<%#
                                         Eval("Status").ToString() == "Deleted" ? "text-danger font-weight-bold" :
                                         Eval("Status").ToString() == "Resubmit" ? "text-warning font-weight-bold" :
-                                        Eval("Status").ToString() == "Under Review" ? "text-info" :
+                                        Eval("Status").ToString() == "UnderReview" ? "text-info" :
                                         Eval("Status").ToString() == "Completed" ? "text-success" :
+                                        Eval("Status").ToString() == "Finalized" ? "text-success" :
                                         "text-primary"
                                     %>'>
                                 </asp:Label>

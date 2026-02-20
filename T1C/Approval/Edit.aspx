@@ -9,7 +9,14 @@
             .no-print, .card-tools, .btn, .modal, .page-preloader {
                 display: none !important;
             }
+            
+            th[data-bs-toggle="tooltip"] {
+                cursor: help; /* help cursor to show it's hoverable */
+            } 
 
+            td[data-bs-toggle="tooltip"] {
+                cursor: help; /* show help cursor so users know it's hoverable */
+            }
             /* Hide Master Page elements (Sidebar, Navbar, Footer) */
             /* Note: Adjust class names if your MasterPage uses different ones */
             .main-sidebar, .main-header, .main-footer, .breadcrumb {
@@ -168,8 +175,8 @@
                                         <thead>
                                             <tr>
                                                 <th></th>
-                                                <th colspan="2" class="text-center"><%= DateTime.Now.Year %> (RM/MT)</th>
-                                                <th colspan="3" class="text-center">YTD <%= DateTime.Now.Year - 1 %> (RM/MT)</th>
+                                                <th colspan="2" class="text-center">Current Year (RM/MT)</th>
+                                                <th colspan="3" class="text-center">YTD Past Year (RM/MT)</th>
                                             </tr>
                                             <tr>
                                                 <th></th>
@@ -182,7 +189,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <th class="text-nowrap align-middle">S & M</th>
+                                                <th class="text-nowrap align-middle"><%--S & M--%></th>
                                                 <td class="text-center">
                                                     <asp:Label ID="lblCurrentYearActualYTD" runat="server" CssClass="text-muted"></asp:Label></td>
                                                 <td class="text-center">
@@ -200,18 +207,38 @@
                                 <table style="width: 100%;">
                                     <tbody>
                                         <tr>
-                                            <th class="text-center align-middle pl-1 pr-1">A</th>
+                                            <th class="text-center align-middle pl-2 pr-1"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Annual Budget Balance for Maintenance & Repair Current Year (RM)">
+                                                A 
+                                                <i class="fas fa-info-circle text-muted ms-1"></i>
+                                            </th>
                                             <td style="width: 45%;">
                                                 <asp:Label ID="lblA" runat="server" CssClass="form-control text-muted"></asp:Label></td>
-                                            <th class="text-center align-middle pl-1 pr-1">C</th>
+                                            <th class="text-center align-middle pl-2 pr-1"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Work Order & Purchase Order Costs Not Yet GR This Month (RM)">
+                                                C 
+                                                <i class="fas fa-info-circle text-muted ms-1"></i>
+                                            </th>
                                             <td style="width: 45%;">
                                                 <asp:Label ID="lblC" runat="server" CssClass="form-control text-muted"></asp:Label></td>
                                         </tr>
                                         <tr>
-                                            <th class="text-center align-middle pl-1 pr-1">B</th>
+                                            <th class="text-center align-middle pl-2 pr-1"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Final Repair Date & Cost (Date & RM)">
+                                                B 
+                                                <i class="fas fa-info-circle text-muted ms-1"></i>
+                                            </th>
                                             <td style="width: 45%;">
                                                 <asp:Label ID="lblB" runat="server" CssClass="form-control text-muted"></asp:Label></td>
-                                            <th class="text-center align-middle pl-1 pr-1">D</th>
+                                            <th class="text-center align-middle pl-2 pr-1"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="RFS/RFQ In-Progress Costs This Month (RM)">
+                                                D 
+                                                <i class="fas fa-info-circle text-muted ms-1"></i>
+                                            </th>
                                             <td style="width: 45%;">
                                                 <asp:Label ID="lblD" runat="server" CssClass="form-control text-muted"></asp:Label></td>
                                         </tr>

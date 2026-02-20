@@ -105,10 +105,18 @@
                                 <i class="fas fa-download"></i> Download Template Other Budget
                             </asp:LinkButton>
                         </div>
+                         
                     </div>
                 </div>
 
                 <div class="card-body">
+                            
+                    <%--        <asp:LinkButton ID="GlobalBudgetButton" runat="server" 
+                                CssClass="btn btn-outline-success px-4 fw-bold border-2" 
+                                PostBackUrl="~/Budget/GlobalBudget/Default.aspx">
+                                <i class="fas fa-file-invoice-dollar me-2"></i> Pool Budget Template
+                            </asp:LinkButton>
+                    <br /><br />  --%>
                     <div class="row">
                         <div class="col-12">
                             <asp:UpdatePanel ID="UpdatePanel1" runat="server">

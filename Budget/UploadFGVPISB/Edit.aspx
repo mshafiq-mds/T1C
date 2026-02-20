@@ -50,8 +50,8 @@
                             <div class="form-group">
                                 <label class="form-label">Business Area Code (BA)</label>
                                 <asp:TextBox ID="txtBACode" runat="server" CssClass="form-control" placeholder="e.g. 1234"></asp:TextBox>
-                                <asp:RequiredFieldValidator ID="rfvBA" runat="server" ControlToValidate="txtBACode" 
-                                    CssClass="text-danger small" ErrorMessage="BA Code is required" Display="Dynamic" />
+                       <%--         <asp:RequiredFieldValidator ID="rfvBA" runat="server" ControlToValidate="txtBACode" 
+                                    CssClass="text-danger small" ErrorMessage="BA Code is required" Display="Dynamic" />--%>
                             </div>
                         </div>
                     </div>
@@ -94,8 +94,8 @@
                                     <asp:ListItem Value="11" Text="November" />
                                     <asp:ListItem Value="12" Text="December" />
                                 </asp:DropDownList>
-                                <asp:RequiredFieldValidator ID="rfvMonth" runat="server" ControlToValidate="ddlMonth" 
-                                    CssClass="text-danger small" ErrorMessage="Month is required" Display="Dynamic" />
+                               <%-- <asp:RequiredFieldValidator ID="rfvMonth" runat="server" ControlToValidate="ddlMonth" 
+                                    CssClass="text-danger small" ErrorMessage="Month is required" Display="Dynamic" />--%>
                             </div>
                         </div>
                         <div class="col-md-6">

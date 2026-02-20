@@ -122,7 +122,7 @@ namespace Prodata.WebForm.MasterData.AdditionalBudgetApprover
             string budgetApproverId = ((HiddenField)row.FindControl("hdnId3")).Value;
             string test = (Request.Url.GetCurrentUrl() + "/CumEdit?Id=" + budgetApproverId).ToString();
 
-            Response.Redirect(Request.Url.GetCurrentUrl() + "/CogsEdit?Id=" + budgetApproverId);
+            Response.Redirect(Request.Url.GetCurrentUrl() + "/CumEdit?Id=" + budgetApproverId);
         }
 
         private void BindLoaFinance()

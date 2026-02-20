@@ -23,7 +23,7 @@
                 CssClass="text-danger" ErrorMessage="Username is required." Display="Dynamic" />
 
             <div class="input-group mb-3">
-                <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" placeholder="Password" />
+                <asp:TextBox runat="server" ID="Password" TextMode="Password" CssClass="form-control" placeholder="Password" MaxLength="8" />
                 <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-lock"></span>

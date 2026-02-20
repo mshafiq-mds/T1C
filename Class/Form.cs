@@ -2,6 +2,7 @@
 using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Web;
@@ -10,7 +11,128 @@ namespace Prodata.WebForm.Class
 {
     public class Form
     {
+        private class FormDto
+        {
+            public Guid Id { get; set; }
+            public Guid? EntityId { get; set; }
+            public Guid? TypeId { get; set; }
+            public string TypeName { get; set; } // Matches SP "TypeName"
+            public string BizAreaCode { get; set; }
+            public string BizAreaName { get; set; }
+            public DateTime? Date { get; set; }
+            public string Ref { get; set; }
+            public string Details { get; set; }
+            public string JustificationOfNeed { get; set; }
+            public string Remarks { get; set; }
+            public decimal? Amount { get; set; }
+            public string ProcurementType { get; set; }
+            public string Justification { get; set; }
+            public string Status { get; set; }
+            public string NextApprover { get; set; }
+            public decimal? CurrentYearActualYTD { get; set; }
+            public decimal? CurrentYearBudget { get; set; }
+            public decimal? PreviousYearActualYTD { get; set; }
+            public decimal? PreviousYearActual { get; set; }
+            public decimal? PreviousYearBudget { get; set; }
+            public decimal? A { get; set; }
+            public string B { get; set; }
+            public decimal? C { get; set; }
+            public decimal? D { get; set; }
+            public bool IsEditable { get; set; }
+            public bool IsPendingUserAction { get; set; }
+        }
         public List<Models.ViewModels.FormListViewModel> GetForms(
+        Guid? entityId = null,
+        Guid? typeId = null,
+        Guid? budgetTypeId = null,
+        string bizAreaCode = null,
+        List<string> bizAreaCodes = null,
+        int? year = null,
+        string refNo = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        decimal? amountMin = null,
+        decimal? amountMax = null,
+        string procurementType = null,
+        List<string> statuses = null
+        )
+        {
+            // Prepare List parameters as Comma-Separated Strings for the SP
+            string bizAreaCodesCsv = (bizAreaCodes != null && bizAreaCodes.Any()) ? string.Join(",", bizAreaCodes) : null;
+            string statusesCsv = (statuses != null && statuses.Any()) ? string.Join(",", statuses) : null;
+
+            // Get Current User Id safely
+            Guid? currentUserId = Prodata.WebForm.Auth.User()?.Id;
+
+            using (var db = new AppDbContext())
+            {
+                // Fetch User Role Code via Entity Framework to avoid SQL Table Name issues
+                string currentUserRoleCode = null;
+                if (currentUserId.HasValue)
+                {
+                    var user = db.Users.Find(currentUserId.Value);
+                    currentUserRoleCode = user?.CCMSRoleCode;
+                }
+
+                // Define parameters
+                var pEntityId = new System.Data.SqlClient.SqlParameter("@EntityId", (object)entityId ?? DBNull.Value);
+                var pTypeId = new System.Data.SqlClient.SqlParameter("@TypeId", (object)typeId ?? DBNull.Value);
+                var pbudgetTypeId = new System.Data.SqlClient.SqlParameter("@budgetTypeId", (object)budgetTypeId ?? DBNull.Value);
+                var pBizAreaCode = new System.Data.SqlClient.SqlParameter("@BizAreaCode", string.IsNullOrEmpty(bizAreaCode) ? (object)DBNull.Value : bizAreaCode);
+                var pBizAreaCodes = new System.Data.SqlClient.SqlParameter("@BizAreaCodes", (object)bizAreaCodesCsv ?? DBNull.Value);
+                var pYear = new System.Data.SqlClient.SqlParameter("@Year", (object)year ?? DBNull.Value);
+                var pRefNo = new System.Data.SqlClient.SqlParameter("@RefNo", (object)refNo ?? DBNull.Value);
+                var pStartDate = new System.Data.SqlClient.SqlParameter("@StartDate", (object)startDate ?? DBNull.Value);
+                var pEndDate = new System.Data.SqlClient.SqlParameter("@EndDate", (object)endDate ?? DBNull.Value);
+                var pAmountMin = new System.Data.SqlClient.SqlParameter("@AmountMin", (object)amountMin ?? DBNull.Value);
+                var pAmountMax = new System.Data.SqlClient.SqlParameter("@AmountMax", (object)amountMax ?? DBNull.Value);
+                var pProcurementType = new System.Data.SqlClient.SqlParameter("@ProcurementType", (object)procurementType ?? DBNull.Value);
+                var pStatuses = new System.Data.SqlClient.SqlParameter("@Statuses", (object)statusesCsv ?? DBNull.Value);
+
+                // UPDATED: Pass the Role Code explicitly
+                var pUserRoleCode = new System.Data.SqlClient.SqlParameter("@UserRoleCode", (object)currentUserRoleCode ?? DBNull.Value);
+
+                // Execute SP and get raw DTO results
+                string sql = "EXEC sp_GetFormList @EntityId, @TypeId, @BizAreaCode, @BizAreaCodes, @Year, @RefNo, @StartDate, @EndDate, @AmountMin, @AmountMax, @ProcurementType, @Statuses, @UserRoleCode, @budgetTypeId";
+
+                var rawResults = db.Database.SqlQuery<FormDto>(sql,
+                    pEntityId, pTypeId, pBizAreaCode, pBizAreaCodes, pYear, pRefNo,
+                    pStartDate, pEndDate, pAmountMin, pAmountMax, pProcurementType, pStatuses, pUserRoleCode, pbudgetTypeId
+                ).ToList();
+
+                // Map to ViewModel in memory (Fast operation)
+                return rawResults.Select(q => new Models.ViewModels.FormListViewModel
+                {
+                    Id = q.Id,
+                    Type = q.TypeName, // Mapped from SP alias [Type] or TypeName
+                    BizAreaCode = q.BizAreaCode,
+                    BizAreaName = q.BizAreaName,
+                    BizAreaDisplayName = q.BizAreaCode + " - " + q.BizAreaName,
+                    Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+                    Ref = q.Ref,
+                    Details = q.Details,
+                    JustificationOfNeed = q.JustificationOfNeed,
+                    Remarks = q.Remarks,
+                    Amount = q.Amount.HasValue ? q.Amount.Value.ToString("#,##0.00") : string.Empty,
+                    ProcurementType = q.ProcurementType,
+                    Justification = q.Justification,
+                    CurrentYearActualYTD = q.CurrentYearActualYTD.HasValue ? q.CurrentYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
+                    CurrentYearBudget = q.CurrentYearBudget.HasValue ? q.CurrentYearBudget.Value.ToString("#,##0.00") : string.Empty,
+                    PreviousYearActualYTD = q.PreviousYearActualYTD.HasValue ? q.PreviousYearActualYTD.Value.ToString("#,##0.00") : string.Empty,
+                    PreviousYearActual = q.PreviousYearActual.HasValue ? q.PreviousYearActual.Value.ToString("#,##0.00") : string.Empty,
+                    PreviousYearBudget = q.PreviousYearBudget.HasValue ? q.PreviousYearBudget.Value.ToString("#,##0.00") : string.Empty,
+                    A = q.A.HasValue ? q.A.Value.ToString("#,##0.00") : string.Empty,
+                    B = q.B,
+                    C = q.C.HasValue ? q.C.Value.ToString("#,##0.00") : string.Empty,
+                    D = q.D.HasValue ? q.D.Value.ToString("#,##0.00") : string.Empty,
+                    Status = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(q.Status ?? ""),
+                    NextApprover = q.NextApprover,
+                    IsEditable = q.IsEditable,
+                    IsPendingUserAction = q.IsPendingUserAction
+                }).OrderBy(x => x.Ref).ToList();
+            }
+        }
+        public List<Models.ViewModels.FormListViewModel> GetFormsOld(
             Guid? entityId = null, 
             Guid? typeId = null, 
             string bizAreaCode = null,
@@ -363,7 +485,9 @@ namespace Prodata.WebForm.Class
                                                (CCMSRoleCode == "MM" || CCMSRoleCode == "AM" ||
                                                 userName.Equals("Superadmin", StringComparison.OrdinalIgnoreCase)))
                     };
-                }).ToList();
+                })
+                    .
+                    OrderBy(q => q.Ref).ToList();
             }
         }
 

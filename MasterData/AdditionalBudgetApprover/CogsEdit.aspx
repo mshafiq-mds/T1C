@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CogsEdit.aspx.cs" Inherits="Prodata.WebForm.MasterData.AdditionalBudgetApprover.CogsEdit" %>
+﻿<%@ Page Title="Edit COGS Approver" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="CogsEdit.aspx.cs" Inherits="Prodata.WebForm.MasterData.AdditionalBudgetApprover.CogsEdit" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <asp:HiddenField ID="hdnId" runat="server" />
     <div class="row">

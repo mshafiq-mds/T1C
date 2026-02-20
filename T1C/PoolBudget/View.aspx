@@ -13,6 +13,10 @@
                         <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/T1C/PoolBudget/Default" CausesValidation="false">
                             <i class="fas fa-angle-double-left"></i> Back
                         </asp:LinkButton> 
+                        
+                            <button type="button" class="btn btn-default mr-1" onclick="window.print();">
+                                <i class="fas fa-print"></i> Print
+                            </button>
                     </div>
                 </div>
 

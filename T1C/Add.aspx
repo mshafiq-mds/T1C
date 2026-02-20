@@ -260,8 +260,10 @@
                                                         data-bs-toggle="tooltip"
                                                         data-bs-placement="top"
                                                         data-bs-boundary="window"
-                                                        title="S&M refers to Maintenance & Repair Costs">
-                                                        S & M <i class="fas fa-info-circle text-muted"></i>
+                                                        >
+                                                        <%--
+                                                            title="S&M refers to Maintenance & Repair Costs"
+                                                            S & M <i class="fas fa-info-circle text-muted"></i>--%>
                                                     </td>
                                                     <td><asp:TextBox ID="txtCurrentYearActualYTD" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>
                                                     <td><asp:TextBox ID="txtCurrentYearBudget" runat="server" CssClass="form-control input-number2"></asp:TextBox></td>

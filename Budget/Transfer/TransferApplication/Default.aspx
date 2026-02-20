@@ -37,6 +37,7 @@
                         <asp:BoundField DataField="Project" HeaderText="Project" />
                         <asp:BoundField DataField="Date" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
+                        <asp:BoundField DataField="NextApprover" HeaderText="Next Approver" />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>
                                 <asp:Label ID="lblStatus" runat="server"

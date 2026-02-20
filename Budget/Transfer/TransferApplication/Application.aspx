@@ -23,18 +23,29 @@
         
         <div class="card-header card-header-sticky d-flex align-items-center py-3">
             <div class="d-flex align-items-center flex-grow-1">
-                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary me-3"
-                    PostBackUrl="~/Budget/Transfer/TransferApplication/Default" CausesValidation="false">
-                    <i class="fas fa-arrow-left"></i> Back
-                </asp:LinkButton>
+                
                 <h5 class="card-title m-0 text-primary"><i class="fas fa-file-invoice-dollar me-2"></i> Budget Transfer Application</h5>
             </div>
 
             <div class="ms-auto">
-                <asp:LinkButton ID="btnSubmit" runat="server" CssClass="btn btn-success shadow-sm px-4 fw-bold"
-                    OnClick="btnSubmit_Click" OnClientClick="return validateAndSubmit();">
-                    <i class="fas fa-check-circle me-2"></i> Finalize Transfer
+                <%-- Hidden Fields and Button for Logic --%>
+                <asp:HiddenField ID="hdnRemarks" runat="server" />
+                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary me-3"
+                    PostBackUrl="~/Budget/Transfer/TransferApplication/Default" CausesValidation="false">
+                    <i class="fas fa-arrow-left"></i> Back
                 </asp:LinkButton>
+                <asp:Button ID="btnReject" runat="server" OnClick="btnReject_Click" style="display:none;" />
+                <asp:Button ID="btnServerSubmit" runat="server" OnClick="btnSubmit_Click" style="display:none;" />
+
+                <%-- Visible Client Button triggering SweetAlert --%>
+                <button type="button" id="btnClientReject" class="btn btn-danger shadow-sm px-4 fw-bold me-2" onclick="initiateRejection()">
+                    <i class="fas fa-times-circle me-2"></i> Reject
+                </button>
+
+                <button type="button" id="btnClientSubmit" class="btn btn-success shadow-sm px-4 fw-bold" onclick="initiateSubmission()">
+                    <i class="fas fa-check-circle me-2"></i> Submit Form
+                </button>
+                
             </div>
         </div>
 
@@ -96,12 +107,6 @@
                 <button type="button" class="btn btn-sm btn-outline-primary mt-2" onclick="addNewRow()">
                     <i class="fas fa-plus"></i> Add Source
                 </button>
-            </div>
-
-            <div class="form-group">
-                <label for="txtRemarks" class="form-label">Approval Remarks <span class="text-danger">*</span></label>
-                <asp:TextBox ID="txtRemarks" runat="server" TextMode="MultiLine" CssClass="form-control" Rows="3" placeholder="Enter remarks for this approval..." />
-                <asp:RequiredFieldValidator ID="rfvRemarks" runat="server" ControlToValidate="txtRemarks" CssClass="text-danger small" ErrorMessage="Remarks are required." Display="Dynamic" />
             </div>
 
         </div>
@@ -295,7 +300,7 @@
             return isValid;
         }
 
-        function validateAndSubmit() {
+        function initiateSubmission() {
             // 1. Math Check (Allocations vs Total)
             if (!recalculateTotal()) {
                 Swal.fire({
@@ -303,7 +308,7 @@
                     title: 'Validation Error',
                     text: 'Please check amounts: Allocations must not exceed balance, and Total must match request.'
                 });
-                return false;
+                return;
             }
 
             // 2. Empty Selection Check
@@ -314,27 +319,91 @@
 
             if (empty) {
                 Swal.fire({ icon: 'error', title: 'Error', text: 'Please select a budget source for all rows.' });
-                return false;
+                return;
             }
 
             // 3. ASP.NET Client Side Validation (Fixes Stuck Loader)
-            // If the Remarks field (RequiredFieldValidator) is invalid, Page_ClientValidate will return false.
             if (typeof (Page_ClientValidate) == 'function') {
                 if (!Page_ClientValidate()) {
-                    // Do NOT show loader, just return false so user can see the error message on the textbox
-                    return false;
+                    // This won't show anything specific since we removed txtRemarks validation, 
+                    // but kept here for safety if other validators exist.
+                    return;
                 }
             }
 
-            // 4. Show loading state (Only if everything is valid)
+            // 4. Show SweetAlert with Input
             Swal.fire({
-                title: 'Processing...',
-                text: 'Submitting transfer...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
+                title: 'Confirm Submission',
+                text: "Please enter your remarks for this transfer application:",
+                input: 'textarea',
+                inputPlaceholder: 'Type your remarks here...',
+                inputAttributes: {
+                    'aria-label': 'Type your remarks here'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to write something!'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Set the hidden field value
+                    document.getElementById('<%= hdnRemarks.ClientID %>').value = result.value;
 
-            return true;
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Submitting transfer...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    // Trigger server-side button click
+                    document.getElementById('<%= btnServerSubmit.ClientID %>').click();
+                }
+            });
+        }
+        function initiateRejection() {
+            Swal.fire({
+                title: 'Confirm Rejection',
+                text: "Please provide a reason for rejecting this application:",
+                icon: 'warning',
+                input: 'textarea',
+                inputPlaceholder: 'Enter rejection remarks...',
+                inputLabel: 'Remarks (Mandatory)',
+                inputAttributes: {
+                    'aria-label': 'Enter rejection remarks'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Reject',
+                confirmButtonColor: '#d33', // Red for danger
+                cancelButtonColor: '#6c757d',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Remarks are mandatory for rejection!'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Set the hidden field value
+                    document.getElementById('<%= hdnRemarks.ClientID %>').value = result.value;
+
+                    // Show loading state
+                    Swal.fire({
+                        title: 'Processing...',
+                        text: 'Rejecting application...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    // Trigger server-side button click
+                    document.getElementById('<%= btnReject.ClientID %>').click();
+                }
+            });
         }
     </script>
 </asp:Content>

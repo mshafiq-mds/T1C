@@ -1,4 +1,5 @@
-﻿using NPOI.SS.Formula.Functions;
+﻿using CustomGuid.AspNet.Identity;
+using NPOI.SS.Formula.Functions;
 using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.Auth;
 using System;
@@ -50,10 +51,16 @@ namespace Prodata.WebForm.Class
 
 
         // ✅ For request Transfer
-        public static void EmailsReqTransferBudgetForNewRequest(Guid id, TransfersTransaction TT, string roleCode)
+        public static void EmailsReqTransferBudgetForNewRequest(Guid id, TransfersTransaction TT)
         {
             string baseUrl = urlsystem();
-            Task.Run(() => EmailsTransferBudgetForNewRequestModified(id, TT, roleCode, baseUrl));
+            Task.Run(() => EmailsTransferBudgetForNewRequestModified(id, TT, baseUrl));
+        }
+        // ✅ For request Transfer Submit after application
+        public static void EmailsReqTransferBudgetForFirstApprover(Guid id, TransfersTransaction TT)
+        {
+            string baseUrl = urlsystem();
+            Task.Run(() => EmailsTransferBudgetForFirstApproverModified(id, TT, baseUrl));
         }
 
 
@@ -84,10 +91,10 @@ namespace Prodata.WebForm.Class
 
 
         // ✅ For request Transfer 
-        public static void EmailsReqTransferBudgetForApprover(Guid id, TransfersTransaction TT, string roleCode = "")
+        public static void EmailsReqTransferBudgetForApprover(Guid id, TransfersTransaction TT, string roleCode = "", bool reject = false)
         {
             string baseUrl = urlsystem();
-            Task.Run(() => EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode, baseUrl));
+            Task.Run(() => EmailsReqTransferBudgetModifiedForApprover(id, TT, roleCode, baseUrl, reject));
         }
 
 
@@ -119,12 +126,6 @@ namespace Prodata.WebForm.Class
 
         #endregion
 
-
-
-
-
-
-
         #region T1C Logic
         public static void EmailsT1CRequestModified(Guid id, Models.Form Fo, string roleCode, string baseUrl)
         {
@@ -137,7 +138,7 @@ namespace Prodata.WebForm.Class
 
             // First try direct match on BizArea
             List<User> userRole = db.Users
-                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && x.CCMSBizAreaCode == Fo.BizAreaCode)
+                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && (x.CCMSBizAreaCode == Fo.BizAreaCode || x.CCMSBizAreaCode == ""))
                 .ToList();
 
             // Fallback: Try zone-level using helper
@@ -213,7 +214,7 @@ namespace Prodata.WebForm.Class
         #endregion
 
         #region Transfer budget Logic
-        public static void EmailsReqTransferBudgetModifiedForApprover(Guid id, TransfersTransaction TT, string roleCode, string baseUrl)
+        public static void EmailsReqTransferBudgetModifiedForApprover(Guid id, TransfersTransaction TT, string roleCode, string baseUrl, bool reject = false)
         {
             string nextApproverCode = GetNextTransferApproverCode(TT.FromTransfer ?? 0, roleCode, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
@@ -225,10 +226,15 @@ namespace Prodata.WebForm.Class
             foreach (var user in userRole)
             {
 
-                if (TT.status == 3) // completed transfer budget
+                if (TT.status == "Completed") // completed transfer budget
                 {
                     fullUrl = $"{baseUrl}/Budget/Transfer/View?Id={id}";
                     actionName = "Completed Transfer Budget";
+                }
+                else if (roleCode == "" && reject) // Reject
+                {
+                    fullUrl = $"{baseUrl}/Budget/Transfer/Default";
+                    actionName = "Transfer Budget Rejected";
                 }
                 else if (roleCode == "") // resubmit approver to creator
                 {
@@ -283,66 +289,121 @@ namespace Prodata.WebForm.Class
         }
         #endregion
 
-        #region  Transfer budget For Requestor Logic
-        public static void EmailsTransferBudgetForNewRequestModified(Guid id, TransfersTransaction TT, string roleCode, string baseUrl)
+        #region  Transfer budget For Requestor To Application Approve Logic
+        public static void EmailsTransferBudgetForNewRequestModified(Guid id, TransfersTransaction TT, string baseUrl)
         {
-            decimal amount = TT.FromTransfer ?? 0;
+            // 1. Get Approver Role Codes & Initialize DB
+            var nextApproverCodes = GetApplicationApproveCodesForTransferBudgetForNewRequest( TT.FromBA, out var db);
 
-            List<string> nextApproverCodes = GetNextApproverCodesForTransferBudgetForNewRequest(amount, roleCode, out var db);
-            if (nextApproverCodes == null || !nextApproverCodes.Any()) return;
+            if (!nextApproverCodes.Any()) return;
+
             SaveNextApproverTransfer(id, nextApproverCodes, db);
 
-            // First try direct match on BizArea
-            List<User> userRole = db.Users
-                .Where(x => nextApproverCodes.Contains(x.CCMSRoleCode) && x.CCMSBizAreaCode == TT.BA)
+            // 2. Try Direct Match (Users in the specific BizArea)
+            var users = db.Users
+                .Where(x => x.CCMSBizAreaCode == TT.FromBA && nextApproverCodes.Contains(x.CCMSRoleCode))
                 .ToList();
 
-            // Fallback: Try zone-level using helper
-            if (!userRole.Any())
+            // 3. Fallback: Try Zone/Wilayah if no direct match found
+            if (!users.Any())
             {
-                foreach (var code in nextApproverCodes)
-                {
-                    var fallbackUsers = GetUsersDetails(db, code, TT.BA);
-                    if (fallbackUsers.Any())
-                    {
-                        userRole.AddRange(fallbackUsers);
-                    }
-                }
+                var fallbackUsers = nextApproverCodes
+                    .SelectMany(code => GetUsersDetails(db, code, TT.FromBA)) // Collect users for all codes
+                    .GroupBy(u => u.Email) // Remove duplicates by Email
+                    .Select(g => g.First())
+                    .ToList();
 
-                // Optional: remove duplicates by Email if multiple fallback hits
-                userRole = userRole.GroupBy(u => u.Email).Select(g => g.First()).ToList();
+                users.AddRange(fallbackUsers);
             }
 
-            if (!userRole.Any()) return; // Still no users, exit
-             
+            if (!users.Any()) return;
+
+            // 4. Send Emails
             string actionName = "Transfer Budget Request";
+            //string targetUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
+            string targetUrl = $"{baseUrl}/Budget/Transfer/TransferApplication/Default";
 
-
-            foreach (var user in userRole)
+            foreach (var user in users)
             {
-                string fullUrl = $"{baseUrl}/Budget/Transfer/Approval/Default";
-                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, fullUrl, user);
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, targetUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
         }
-
-
-
-        private static List<string> GetNextApproverCodesForTransferBudgetForNewRequest(decimal amount, string roleCode, out AppDbContext db)
+        public static List<string> GetApplicationApproveCodesForTransferBudgetForNewRequest( string BAccms, out AppDbContext db)
         {
-            db = new AppDbContext();
-             
-                return db.TransferApprovalLimits
-                    .Where(x => x.DeletedDate == null &&
-                                x.AmountMin <= amount &&
-                                (x.AmountMax == null || amount <= x.AmountMax) &&
-                                x.Order == 1)
-                    .Select(x => x.TransApproverCode)
-                    .Distinct()
-                    .ToList();
-             
+
+            db = new AppDbContext(); 
+
+            var userRolesTable = db.Set<CustomIdentityUserRole>();
+
+            // Using Query Syntax for cleaner JOIN operations
+            var query = from u in db.Users
+                        join ur in userRolesTable on u.Id equals ur.UserId
+                        join rm in db.RoleModules on ur.RoleId equals rm.RoleId
+                        join m in db.Modules on rm.ModuleId equals m.Id
+                        where u.CCMSBizAreaCode == BAccms
+                           && m.Url.Contains("~/Budget/Transfer/TransferApplication/Application")
+                        select u.CCMSRoleCode;
+
+            return query.Distinct().ToList();
         }
 
+
+        #endregion
+
+        #region  Transfer budget Application Approve To Approver Logic
+        public static void EmailsTransferBudgetForFirstApproverModified(Guid id, TransfersTransaction TT, string baseUrl)
+        {
+            // 1. Get Approver Role Codes & Initialize DB
+            var nextApproverCodes = GetFirstApproverCodesForTransferBudget(TT.FromTransfer, out var db);
+
+            if (!nextApproverCodes.Any()) return;
+
+            SaveNextApproverTransfer(id, nextApproverCodes, db);
+
+            // 2. Try Direct Match (Users in the specific BizArea)
+            var users = db.Users
+                .Where(x => x.CCMSBizAreaCode == TT.ToBA && nextApproverCodes.Contains(x.CCMSRoleCode))
+                .ToList();
+
+            // 3. Fallback: Try Zone/Wilayah if no direct match found
+            if (!users.Any())
+            {
+                var fallbackUsers = nextApproverCodes
+                    .SelectMany(code => GetUsersDetails(db, code, TT.ToBA)) // Collect users for all codes
+                    .GroupBy(u => u.Email) // Remove duplicates by Email
+                    .Select(g => g.First())
+                    .ToList();
+
+                users.AddRange(fallbackUsers);
+            }
+
+            if (!users.Any()) return;
+
+            // 4. Send Emails
+            string actionName = "Transfer Budget Request";
+            string targetUrl = $"{baseUrl}/Budget/Transfer/Approval/Default"; 
+
+            foreach (var user in users)
+            {
+                string body = EmailTemplateBuilder.BuildTransferEmailBody(TT, actionName, targetUrl, user);
+                SendFunctionEmail(user.Email, actionName, body);
+            }
+        }
+        private static List<string> GetFirstApproverCodesForTransferBudget(decimal? amount, out AppDbContext db)
+        {
+            db = new AppDbContext();
+
+            return db.TransferApprovalLimits
+                .Where(x => x.DeletedDate == null &&
+                            x.AmountMin <= amount &&
+                            (x.AmountMax == null || amount <= x.AmountMax) &&
+                            x.Order == 1)
+                .Select(x => x.TransApproverCode)
+                .Distinct()
+                .ToList();
+
+        }
         #endregion
 
         #region  Additional budget For Requestor Logic
@@ -524,7 +585,6 @@ namespace Prodata.WebForm.Class
         }
         #endregion
 
-
         #region  T1C Approver Logic
         public static void EmailsReqT1CForApproverModified(Guid id, Models.Form Fo, string roleCode, string baseUrl)
         {
@@ -562,6 +622,7 @@ namespace Prodata.WebForm.Class
 
                 string body = EmailTemplateBuilder.BuildT1CEmailBody(Fo, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
+                Task.Delay(1000).Wait(); // 1 second delay 
             }
         }
         private static string GetNextT1CApproverCode(decimal amount, string roleCode, out AppDbContext db, Guid? id = null)
@@ -612,14 +673,14 @@ namespace Prodata.WebForm.Class
             string nextApproverCode = GetNextApproverCodeForAdditionalBudget(amount, roleCode, type, out var db, id);
             if (string.IsNullOrEmpty(nextApproverCode)) return;
             SaveNextApproverAdditional(id, new List<string> { nextApproverCode }, db);
-            List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA); 
+            List<User> userRole = GetUsersDetails(db, nextApproverCode, ABR.BA);
             string actionName = "Additional Budget Request";
-
 
             foreach (var user in userRole)
             {
                 string fullUrl;
-                if (ABR.Status == 3) // completed additional budget
+                // Updated check: Comparing status string "Completed" instead of int 3
+                if (ABR.Status == "Completed") // completed additional budget
                 {
                     fullUrl = $"{baseUrl}/Budget/Additional/View?Id={id}";
                     actionName = "Completed Additional Budget";
@@ -633,7 +694,7 @@ namespace Prodata.WebForm.Class
                 {
                     fullUrl = $"{baseUrl}/Budget/Additional/Approval/{type}/Default";
                     actionName = "Additional Budget Request";
-                } 
+                }
                 string body = EmailTemplateBuilder.BuildAdditionalEmailBody(ABR, actionName, fullUrl, user);
                 SendFunctionEmail(user.Email, actionName, body);
             }
@@ -691,7 +752,7 @@ namespace Prodata.WebForm.Class
         }
         #endregion
 
-        #region Function 
+        #region Public Function 
 
         public static void SaveNextApprover(Guid formId, List<string> nextApproverCodes, AppDbContext db)
         {
@@ -734,49 +795,89 @@ namespace Prodata.WebForm.Class
                 db.SaveChanges();
             }
         }
-        private static List<User> GetUsersDetails(AppDbContext db, string ApproverCode, string bizAreaCode)
+        private static List<User> GetUsersDetails(AppDbContext db, string ApproverCode, string FormbizAreaCode)
         {
-            string zoneCode = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(bizAreaCode);
+            string zoneCode = Class.IPMSBizArea.GetZoneCodeByBizAreaCode(FormbizAreaCode);
+            string WilayahCode = Class.IPMSBizArea.GetWilayahCodeByBizAreaCode(FormbizAreaCode);
             var users = db.Users.Where(x => x.CCMSRoleCode == ApproverCode).ToList();
 
-            var filtered = !string.IsNullOrEmpty(zoneCode)
-                ? users.Where(x => x.CCMSBizAreaCode == zoneCode).ToList()
-                : new List<User>();
+            if (!string.IsNullOrEmpty(zoneCode))
+            {
+                var usersByZone = users
+                    .Where(x => x.CCMSBizAreaCode == zoneCode || x.CCMSBizAreaCode == "")
+                    .ToList();
 
-            return filtered.Any()
-                ? filtered
-                : users.Where(x => x.CCMSBizAreaCode == bizAreaCode).ToList();
+                if (usersByZone.Any())
+                {
+                    return usersByZone;
+                }
+            }
+
+            // 4. PRIORITY 2: Check Wilayah Code
+            // If no users found by Zone (or zoneCode was null), try Wilayah
+            if (!string.IsNullOrEmpty(WilayahCode))
+            {
+                var usersByWilayah = users
+                    .Where(x => x.CCMSBizAreaCode == WilayahCode || x.CCMSBizAreaCode == "")
+                    .ToList();
+
+                if (usersByWilayah.Any())
+                {
+                    return usersByWilayah;
+                }
+            }
+            return users
+            .Where(x => x.CCMSBizAreaCode == FormbizAreaCode || x.CCMSBizAreaCode == "")
+            .ToList();
+            //var filtered = !string.IsNullOrEmpty(zoneCode)
+            //    ? users.Where(x => x.CCMSBizAreaCode == zoneCode || x.CCMSBizAreaCode == "").ToList()
+            //    : new List<User>();
+
+            //return filtered.Any()
+            //    ? filtered
+            //    : users.Where(x => x.CCMSBizAreaCode == FormbizAreaCode || x.CCMSBizAreaCode == "").ToList();
         }
 
-        //public static void SendFunctionEmail(string email, string subject, string body)
-        //{
-        //    try
-        //    {
-        //        var smtpClient = new SmtpClient("sandbox.smtp.mailtrap.io", 25)
-        //        {
-        //            Credentials = new NetworkCredential("cdc48d9f523501", "28fdc344fda835"),    //ijat
-        //            //Credentials = new NetworkCredential("b79f1fe30948da", "b0fbba86f8d7da"), // capek
-        //            EnableSsl = true
-        //        };
+        public static void SendFunctionEmailTest(string email, string subject, string body)
+        {
+            //Testing Mailtrap
+            try
+            {
+                // MAILTRAP CONFIGURATION
+                SmtpClient smtpClient = new SmtpClient("sandbox.smtp.mailtrap.io", 2525)
+                {
+                    // Replace the password below with your full Mailtrap password
+                    Credentials = new NetworkCredential("b79f1fe30948da", "b0fbba86f8d7da"),
+                    EnableSsl = true
+                };
 
-        //        MailMessage mailMessage = new MailMessage
-        //        {
-        //            From = new MailAddress("siserver.fps@fgvholdings.com"),
-        //            Subject = "(CCMS) " + subject,
-        //            Body = body,
-        //            IsBodyHtml = true
-        //        };
+                MailMessage mailMessage = new MailMessage
+                {
+                    // In Mailtrap, the 'From' address is displayed but the email is trapped in the sandbox
+                    From = new MailAddress("siserver.fps@fgvholdings.com"),
+                    Subject = "(CCMS Test) " + subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
 
-        //        mailMessage.To.Add(email);
-        //        smtpClient.Send(mailMessage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
-        //    }
-        //}
+                mailMessage.To.Add(email);
+                smtpClient.Send(mailMessage);
+
+                // Optional: Log success
+                // System.Diagnostics.Debug.WriteLine("Email sent to Mailtrap.");
+            }
+            catch (Exception ex)
+            {
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
+                }
+            }
+        }
+
         public static void SendFunctionEmail(string email, string subject, string body)
         {
+            //Original Live
             try
             {
                 SmtpClient smtpClient = new SmtpClient("mx.felda.net.my")

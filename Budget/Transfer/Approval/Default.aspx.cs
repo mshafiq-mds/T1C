@@ -58,7 +58,8 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                         var matchingLimit = Class.Budget.GetMatchingTransferLimit(limits, x.FromTransfer ?? 0m);
                         int userLevel = matchingLimit?.Order ?? 0;
 
-                        bool canEdit = Class.Budget.CanEditTransfer(matchingLimit, userLevel, currentLevel, x.DeletedDate);
+                        bool canEdit = Class.Budget.CanEditTransfer(matchingLimit, userLevel, currentLevel, x.DeletedDate, x.status);
+
                         string status = Class.Budget.GetStatusName(x.status, x.DeletedDate);
 
                         return new
@@ -70,6 +71,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                             x.Date,
                             x.EstimatedCost,
                             x.FromTransfer,
+                            x.NextApprover,
                             Status = status,
                             CanEdit = canEdit
                         };
