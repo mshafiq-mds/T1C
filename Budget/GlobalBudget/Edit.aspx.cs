@@ -119,6 +119,7 @@ namespace Prodata.WebForm.Budget.GlobalBudget
                 Ref = budget.Ref,
                 Name = budget.Name,
                 Details = budget.Details,
+                Remarks = txtRemarks.Text.Trim(),
 
                 Wages = budget.Wages,
                 Purchase = budget.Purchase,
@@ -150,7 +151,8 @@ namespace Prodata.WebForm.Budget.GlobalBudget
                                      ActionBy = u != null ? u.Name : "System/Unknown",
                                      audit.Amount,
                                      audit.Ref,
-                                     audit.Details
+                                     audit.Details,
+                                     audit.Remarks
                                  }).ToList();
 
                 if (auditData.Any())

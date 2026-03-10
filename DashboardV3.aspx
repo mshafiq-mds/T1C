@@ -36,7 +36,7 @@
                 <asp:HiddenField ID="hfChartDataT1COthers" runat="server" Value="[]" />
                 <asp:HiddenField ID="hfChartDataAdd" runat="server" Value="[]" />
                 <asp:HiddenField ID="hfChartDataTrans" runat="server" Value="[]" />
-                <asp:HiddenField ID="hfChartDataDoughnut" runat="server" Value="{}" /> 
+                <asp:HiddenField ID="hfChartDataTop10" runat="server" Value="{}" /> 
 
                 <div class="row g-3 mb-4">
                     <div class="col-12 col-md-4">
@@ -50,7 +50,7 @@
                                     <div class="d-flex align-items-center">
                                         <h2 class="mb-0 font-weight-bold"><asp:Label ID="lblTotalBudget" runat="server" Text="RM 0.00"></asp:Label></h2>
                                     </div>
-                                    <div class="sub-label">Allocated across 4 Category</div>
+                                    <div class="sub-label">Allocated T1C and T1C Others Budget</div>
                                 </div>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                                     <div class="d-flex align-items-center flex-wrap">
                                         <h2 class="mb-0 font-weight-bold"><asp:Label ID="lblCompletionRate" runat="server" Text="0.0%"></asp:Label></h2>
                                     </div>
-                                    <div class="sub-label">Compared to last quarter</div>
+                                    <div class="sub-label">(totalCompleted&Approved / totalActive) * 100</div>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +180,7 @@
                             <div class="card-header bg-white border-0 py-3">
                                 <h6 class="mb-0 font-weight-bold">Top 10 T1C Amount by Business Area</h6></div><div class="card-body">
                                 <div style="position: relative; height: 320px; width: 100%;">
-                                    <canvas id="chartDoughnut"></canvas></div></div></div></div></div><div class="card border-0 shadow-sm">
+                                    <canvas id="chartTop10Bar"></canvas></div></div></div></div></div><div class="card border-0 shadow-sm">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h6 class="mb-0 font-weight-bold">Recent Activity / Details</h6></div><div class="card-body p-0">
                         <div class="table-responsive">
@@ -265,7 +265,7 @@
 
     <script type="text/javascript">
         var myGroupedChart = null;
-        var myDoughnutChart = null;
+        var myTop10BarChart = null;
 
         // ASP.NET AJAX standard function triggered after Partial Postbacks (UpdatePanel).
         function pageLoad() {
@@ -279,12 +279,14 @@
             var t1cO = JSON.parse(document.getElementById('<%= hfChartDataT1COthers.ClientID %>').value || "[0,0,0,0,0,0]");
             var add = JSON.parse(document.getElementById('<%= hfChartDataAdd.ClientID %>').value || "[0,0,0,0,0,0]");
             var trans = JSON.parse(document.getElementById('<%= hfChartDataTrans.ClientID %>').value || "[0,0,0,0,0,0]");
-            var doughnutObj = JSON.parse(document.getElementById('<%= hfChartDataDoughnut.ClientID %>').value || "{}");
+            
+            // Replaced the doughnut fetch with the top 10 fetch
+            var top10Obj = JSON.parse(document.getElementById('<%= hfChartDataTop10.ClientID %>').value || "{}");
 
-            renderDashboardCharts(t1c, t1cO, add, trans, doughnutObj);
+            renderDashboardCharts(t1c, t1cO, add, trans, top10Obj);
         }
 
-        function renderDashboardCharts(t1c, t1cO, add, trans, doughnutObj) {
+        function renderDashboardCharts(t1c, t1cO, add, trans, top10Obj) {
             const blueLight = '#a0c4ff';
             const blueDark = '#003f88';
 
@@ -305,24 +307,32 @@
                 });
             }
 
-            // 2. Doughnut Chart
-            var ctxDoughnut = document.getElementById('chartDoughnut');
-            if (ctxDoughnut) {
-                if (myDoughnutChart) myDoughnutChart.destroy();
-                myDoughnutChart = new Chart(ctxDoughnut.getContext('2d'), {
-                    type: 'doughnut',
+            // 2. Top 10 Bar Chart (Replaced Doughnut)
+            var ctxTop10 = document.getElementById('chartTop10Bar');
+            if (ctxTop10) {
+                if (myTop10BarChart) myTop10BarChart.destroy();
+                myTop10BarChart = new Chart(ctxTop10.getContext('2d'), {
+                    type: 'bar',
                     data: {
-                        labels: doughnutObj.labels || [],
+                        labels: top10Obj.labels || [],
                         datasets: [{
-                            data: doughnutObj.data || [],
-                            backgroundColor: ['#003f88', '#005b9f', '#0077b6', '#0096c7', '#48cae4', '#ade8f4', '#f4a261', '#e76f51', '#2a9d8f']
+                            label: 'Total Amount (RM)',
+                            data: top10Obj.data || [],
+                            backgroundColor: '#0077b6', // Solid theme-matching blue
+                            borderRadius: 6
                         }]
                     },
                     options: {
-                        cutout: '70%',
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'right' } }
+                        plugins: {
+                            legend: { display: false } // Hidden since it's just one dataset
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
                     }
                 });
             }

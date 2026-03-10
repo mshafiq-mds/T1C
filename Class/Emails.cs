@@ -4,6 +4,8 @@ using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.Auth;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -355,7 +357,7 @@ namespace Prodata.WebForm.Class
         public static void EmailsTransferBudgetForFirstApproverModified(Guid id, TransfersTransaction TT, string baseUrl)
         {
             // 1. Get Approver Role Codes & Initialize DB
-            var nextApproverCodes = GetFirstApproverCodesForTransferBudget(TT.FromTransfer, out var db);
+            var nextApproverCodes = GetFirstApproverCodesForTransferBudget(TT.EstimatedCost, out var db);
 
             if (!nextApproverCodes.Any()) return;
 
@@ -803,6 +805,8 @@ namespace Prodata.WebForm.Class
 
             if (!string.IsNullOrEmpty(zoneCode))
             {
+                var cleanCode = zoneCode.Trim();
+
                 var usersByZone = users
                     .Where(x => x.CCMSBizAreaCode == zoneCode || x.CCMSBizAreaCode == "")
                     .ToList();
@@ -812,13 +816,13 @@ namespace Prodata.WebForm.Class
                     return usersByZone;
                 }
             }
-
-            // 4. PRIORITY 2: Check Wilayah Code
-            // If no users found by Zone (or zoneCode was null), try Wilayah
+             
             if (!string.IsNullOrEmpty(WilayahCode))
             {
+                var cleanCode = WilayahCode.Trim();
+
                 var usersByWilayah = users
-                    .Where(x => x.CCMSBizAreaCode == WilayahCode || x.CCMSBizAreaCode == "")
+                    .Where(x => x.CCMSBizAreaCode == cleanCode || x.CCMSBizAreaCode == "")
                     .ToList();
 
                 if (usersByWilayah.Any())
@@ -828,14 +832,7 @@ namespace Prodata.WebForm.Class
             }
             return users
             .Where(x => x.CCMSBizAreaCode == FormbizAreaCode || x.CCMSBizAreaCode == "")
-            .ToList();
-            //var filtered = !string.IsNullOrEmpty(zoneCode)
-            //    ? users.Where(x => x.CCMSBizAreaCode == zoneCode || x.CCMSBizAreaCode == "").ToList()
-            //    : new List<User>();
-
-            //return filtered.Any()
-            //    ? filtered
-            //    : users.Where(x => x.CCMSBizAreaCode == FormbizAreaCode || x.CCMSBizAreaCode == "").ToList();
+            .ToList(); 
         }
 
         public static void SendFunctionEmailTest(string email, string subject, string body)
@@ -875,7 +872,7 @@ namespace Prodata.WebForm.Class
             }
         }
 
-        public static void SendFunctionEmail(string email, string subject, string body)
+        public static void SendFunctionEmailOri(string email, string subject, string body)
         {
             //Original Live
             try
@@ -900,6 +897,87 @@ namespace Prodata.WebForm.Class
             catch (Exception ex)
             {
                 HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
+            }
+        }
+        public static void SendFunctionEmail(string email, string subject, string body)
+        {
+            // 1. Initialize the EF model with the attempted email details
+            EmailLog logData = new EmailLog
+            {
+                RecipientEmail = email,
+                Subject = subject,
+                Body = body,
+                Status = "Success", // Default to success, change if it fails,
+                CreatedDate = DateTime.Now
+            };
+
+            try
+            {
+                SmtpClient smtpClient = new SmtpClient("mx.felda.net.my")
+                {
+                    Port = 25,
+                    UseDefaultCredentials = false
+                };
+
+                MailMessage mailMessage = new MailMessage
+                {
+                    From = new MailAddress("siserver.fps@fgvholdings.com", "CCMS System"),
+                    Subject = "(CCMS) " + subject,
+                    Body = body,
+                    IsBodyHtml = true
+                };
+
+                mailMessage.To.Add(email);
+                smtpClient.Send(mailMessage);
+            }
+            catch (Exception ex)
+            {
+                // 2. Update the model properties on failure
+                logData.Status = "Failed";
+                logData.ErrorMessage = ex.Message;
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Response.Write("<p>Email Error: " + ex.Message + "</p>");
+                }
+            }
+            finally
+            {
+                // 3. Pass the EF model to the logging method
+                LogEmailToDatabase(logData);
+            }
+        }
+
+        private static void LogEmailToDatabase(EmailLog logEntry)
+        {
+            try
+            { 
+                using (var db = new AppDbContext())
+                {
+                    db.EmailLog.Add(logEntry);
+                    db.SaveChanges(); // This automatically generates and executes the INSERT SQL
+                }
+            }
+            catch (Exception logEx)
+            {
+                // Extract the hidden Inner Exception details
+                string realError = logEx.Message;
+
+                if (logEx.InnerException != null)
+                {
+                    realError += "<br/><b>Inner Exception:</b> " + logEx.InnerException.Message;
+
+                    // Sometimes the real SQL error is buried two levels deep
+                    if (logEx.InnerException.InnerException != null)
+                    {
+                        realError += "<br/><b>Deep Inner Exception:</b> " + logEx.InnerException.InnerException.Message;
+                    }
+                }
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.Response.Write("<p>Log Insertion Error: " + realError + "</p>");
+                }
             }
         }
         #endregion

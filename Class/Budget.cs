@@ -265,25 +265,29 @@ namespace Prodata.WebForm.Class
                     );
                 }
 
-                // ✅ Group by BudgetId (FromId or ToId depending on direction)
-                var utilizedMap = transactions
-                    .GroupBy(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? t.FromId : t.ToId)
-                    .ToDictionary(
-                        g => g.Key.Value,
-                        g => g.Sum(t =>
-                        {
-                            decimal amt = t.Amount ?? 0m;
-                            // Subtract incoming (To) and add outgoing (From)
-                            return t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? amt : -amt;
-                        })
-                    );
+                // 🚀 THE REPAIR: Split into TWO maps so Budget-to-Budget transfers credit both sides!
 
-                // ✅ Step 3: Project into view model with balance
+                // 1. Map Outgoing Money (Deductions)
+                var outgoingMap = transactions
+                    .Where(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) && t.FromId.HasValue)
+                    .GroupBy(t => t.FromId.Value)
+                    .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount ?? 0m));
+
+                // 2. Map Incoming Money (Additions)
+                var incomingMap = transactions
+                    .Where(t => t.ToType.Equals("Budget", StringComparison.OrdinalIgnoreCase) && t.ToId.HasValue)
+                    .GroupBy(t => t.ToId.Value)
+                    .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount ?? 0m));
+
+                // ✅ Step 3: Project into view model with accurate balance
                 return query2.Select(q =>
                 {
                     decimal amount = q.Amount ?? 0m;
-                    decimal utilized = utilizedMap.ContainsKey(q.Id) ? utilizedMap[q.Id] : 0m;
-                    decimal balance = amount - utilized;
+                    decimal outgoing = outgoingMap.ContainsKey(q.Id) ? outgoingMap[q.Id] : 0m;
+                    decimal incoming = incomingMap.ContainsKey(q.Id) ? incomingMap[q.Id] : 0m;
+
+                    // CORRECT MATH: Base Amount + Money Received - Money Spent
+                    decimal balance = amount + incoming - outgoing;
 
                     return new Models.ViewModels.BudgetListViewModel
                     {
@@ -306,6 +310,58 @@ namespace Prodata.WebForm.Class
                         Status = q.Status
                     };
                 }).ToList();
+            //// ✅ Apply excludedFormId filter
+            //if (excludedFormId.HasValue)
+            //{
+            //    Guid excludedId = excludedFormId.Value;
+
+            //    transactions = transactions.Where(t =>
+            //        !(t.ToId == excludedId && t.ToType.Equals("Form", StringComparison.OrdinalIgnoreCase)) &&
+            //        !(t.FromId == excludedId && t.FromType.Equals("Form", StringComparison.OrdinalIgnoreCase))
+            //    );
+            //}
+
+            //// ✅ Group by BudgetId (FromId or ToId depending on direction)
+            //var utilizedMap = transactions
+            //    .GroupBy(t => t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? t.FromId : t.ToId)
+            //    .ToDictionary(
+            //        g => g.Key.Value,
+            //        g => g.Sum(t =>
+            //        {
+            //            decimal amt = t.Amount ?? 0m;
+            //            // Subtract incoming (To) and add outgoing (From)
+            //            return t.FromType.Equals("Budget", StringComparison.OrdinalIgnoreCase) ? amt : -amt;
+            //        })
+            //    );
+
+            //// ✅ Step 3: Project into view model with balance
+            //return query2.Select(q =>
+            //{
+            //    decimal amount = q.Amount ?? 0m;
+            //    decimal utilized = utilizedMap.ContainsKey(q.Id) ? utilizedMap[q.Id] : 0m;
+            //    decimal balance = amount - utilized;
+
+            //    return new Models.ViewModels.BudgetListViewModel
+            //    {
+            //        Id = q.Id,
+            //        Type = q.Type,
+            //        BizAreaCode = q.BizAreaCode,
+            //        BizAreaName = q.BizAreaName,
+            //        Date = q.Date.HasValue ? q.Date.Value.ToString("dd/MM/yyyy") : string.Empty,
+            //        Month = q.Month.HasValue && q.Month.Value >= 1 && q.Month.Value <= 12
+            //            ? new DateTime(2000, q.Month.Value, 1).ToString("MMM", CultureInfo.CurrentCulture).ToUpper()
+            //            : string.Empty,
+            //        Ref = q.Ref,
+            //        Name = q.Name,
+            //        DisplayName = q.Ref + " - " + q.Details + " (RM" + balance.ToString("#,##0.00") + ")",
+            //        Details = q.Details,
+            //        Wages = q.Wages.HasValue ? q.Wages.Value.ToString("#,##0.00") : string.Empty,
+            //        Purchase = q.Purchase.HasValue ? q.Purchase.Value.ToString("#,##0.00") : string.Empty,
+            //        Amount = balance.ToString("#,##0.00"),
+            //        Vendor = q.Vendor,
+            //        Status = q.Status
+            //    };
+            //}).ToList();
             }
         }
 

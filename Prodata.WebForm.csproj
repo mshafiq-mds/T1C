@@ -188,6 +188,7 @@
     <Content Include="Account\ResetPasswordConfirmation.aspx" />
     <Content Include="Account\TwoFactorAuthenticationSignIn.aspx" />
     <Content Include="Account\VerifyPhoneNumber.aspx" />
+    <Content Include="Administration\EmailLogViewer.aspx" />
     <Content Include="Administration\Role\Default.aspx" />
     <Content Include="Administration\Role\Manage.aspx" />
     <Content Include="Administration\User\Add.aspx" />
@@ -2292,6 +2293,12 @@
     <Content Include="App_Themes\AdminLTE-3.2.0\plugins\uplot\uPlot.iife.min.js" />
     <Content Include="App_Themes\AdminLTE-3.2.0\plugins\uplot\uPlot.min.css" />
     <Content Include="App_Themes\AdminLTE-3.2.0\starter.html" />
+    <Content Include="AssetWriteOff\Add.aspx" />
+    <Content Include="AssetWriteOff\Approver\Default.aspx" />
+    <Content Include="AssetWriteOff\Approver\Edit.aspx" />
+    <Content Include="AssetWriteOff\Default.aspx" />
+    <Content Include="AssetWriteOff\Edit.aspx" />
+    <Content Include="AssetWriteOff\View.aspx" />
     <Content Include="Budget\Additional\Add.aspx" />
     <Content Include="Budget\Additional\Approval\COGS\Approval.aspx" />
     <Content Include="Budget\Additional\Approval\COGS\Default.aspx" />
@@ -2310,16 +2317,20 @@
     <Content Include="Budget\GlobalBudget\Default.aspx" />
     <Content Include="Budget\GlobalBudget\Edit.aspx" />
     <Content Include="Budget\Transfer\Add.aspx" />
+    <Content Include="Budget\Transfer\Addv2.aspx" />
     <Content Include="Budget\Transfer\Approval\Approval.aspx" />
     <Content Include="Budget\Transfer\Approval\Default.aspx" />
     <Content Include="Budget\Transfer\Approval\View.aspx" />
     <Content Include="Budget\Transfer\Default.aspx" />
     <Content Include="Budget\Transfer\Edit.aspx" />
+    <Content Include="Budget\Transfer\EditV2.aspx" />
     <Content Include="Budget\Transfer\Resubmit.aspx" />
     <Content Include="Budget\Transfer\TransferApplication\Application.aspx" />
+    <Content Include="Budget\Transfer\TransferApplication\ApplicationV2.aspx" />
     <Content Include="Budget\Transfer\TransferApplication\Default.aspx" />
     <Content Include="Budget\Transfer\TransferApplication\View.aspx" />
     <Content Include="Budget\Transfer\View.aspx" />
+    <Content Include="Budget\Transfer\ViewV2.aspx" />
     <Content Include="Budget\UploadFGVPISB\Default.aspx" />
     <Content Include="Budget\UploadFGVPISB\Edit.aspx" />
     <Content Include="Budget\UploadFGVPISB\View.aspx" />
@@ -2364,6 +2375,9 @@
     <Content Include="MasterData\AdditionalBudgetApprover\Default.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\FinanceAdd.aspx" />
     <Content Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx" />
+    <Content Include="MasterData\AOW\Add.aspx" />
+    <Content Include="MasterData\AOW\Default.aspx" />
+    <Content Include="MasterData\AOW\Edit.aspx" />
     <Content Include="MasterData\BudgetApprover\Add.aspx" />
     <Content Include="MasterData\BudgetApprover\Default.aspx" />
     <Content Include="MasterData\BudgetApprover\Edit.aspx" />
@@ -2885,6 +2899,13 @@
     <Compile Include="Account\VerifyPhoneNumber.aspx.designer.cs">
       <DependentUpon>VerifyPhoneNumber.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Administration\EmailLogViewer.aspx.cs">
+      <DependentUpon>EmailLogViewer.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Administration\EmailLogViewer.aspx.designer.cs">
+      <DependentUpon>EmailLogViewer.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Administration\Role\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -2934,6 +2955,48 @@
     <Compile Include="App_Start\SignInManager.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\UserManager.cs" />
+    <Compile Include="AssetWriteOff\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetWriteOff\Approver\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\Approver\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetWriteOff\Approver\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\Approver\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetWriteOff\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetWriteOff\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AssetWriteOff\View.aspx.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AssetWriteOff\View.aspx.designer.cs">
+      <DependentUpon>View.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Additional\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3060,6 +3123,12 @@
     <Compile Include="Budget\Transfer\Add.aspx.designer.cs">
       <DependentUpon>Add.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\Transfer\Addv2.aspx.cs">
+      <DependentUpon>Addv2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\Addv2.aspx.designer.cs">
+      <DependentUpon>Addv2.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Transfer\Approval\Approval.aspx.cs">
       <DependentUpon>Approval.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3095,6 +3164,13 @@
     <Compile Include="Budget\Transfer\Edit.aspx.designer.cs">
       <DependentUpon>Edit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Budget\Transfer\EditV2.aspx.cs">
+      <DependentUpon>EditV2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\EditV2.aspx.designer.cs">
+      <DependentUpon>EditV2.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Budget\Transfer\Resubmit.aspx.cs">
       <DependentUpon>Resubmit.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3108,6 +3184,13 @@
     </Compile>
     <Compile Include="Budget\Transfer\TransferApplication\Application.aspx.designer.cs">
       <DependentUpon>Application.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\ApplicationV2.aspx.cs">
+      <DependentUpon>ApplicationV2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\TransferApplication\ApplicationV2.aspx.designer.cs">
+      <DependentUpon>ApplicationV2.aspx</DependentUpon>
     </Compile>
     <Compile Include="Budget\Transfer\TransferApplication\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -3129,6 +3212,13 @@
     </Compile>
     <Compile Include="Budget\Transfer\View.aspx.designer.cs">
       <DependentUpon>View.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Budget\Transfer\ViewV2.aspx.cs">
+      <DependentUpon>ViewV2.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Budget\Transfer\ViewV2.aspx.designer.cs">
+      <DependentUpon>ViewV2.aspx</DependentUpon>
     </Compile>
     <Compile Include="Budget\UploadFGVPISB\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -3160,6 +3250,7 @@
     </Compile>
     <Compile Include="Class\AllocationItem.cs" />
     <Compile Include="Class\Approval.cs" />
+    <Compile Include="Class\AWOHelper.cs" />
     <Compile Include="Class\Budget.cs" />
     <Compile Include="Class\Emails.cs" />
     <Compile Include="Class\EmailTemplateBuilder.cs" />
@@ -3247,6 +3338,27 @@
     <Compile Include="MasterData\AdditionalBudgetApprover\FinanceEdit.aspx.designer.cs">
       <DependentUpon>FinanceEdit.aspx</DependentUpon>
     </Compile>
+    <Compile Include="MasterData\AOW\Add.aspx.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AOW\Add.aspx.designer.cs">
+      <DependentUpon>Add.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AOW\Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AOW\Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MasterData\AOW\Edit.aspx.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MasterData\AOW\Edit.aspx.designer.cs">
+      <DependentUpon>Edit.aspx</DependentUpon>
+    </Compile>
     <Compile Include="MasterData\BudgetApprover\Add.aspx.cs">
       <DependentUpon>Add.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3323,6 +3435,7 @@
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\BudgetsDetails.cs" />
     <Compile Include="Models\Budgets_Audit.cs" />
+    <Compile Include="Models\EmailLog.cs" />
     <Compile Include="Models\Form.cs" />
     <Compile Include="Models\FormBudget.cs" />
     <Compile Include="Models\FormsProcurement.cs" />
@@ -3331,12 +3444,18 @@
     <Compile Include="Models\MasterData\BudgetType.cs" />
     <Compile Include="Models\MasterData\FormType.cs" />
     <Compile Include="Models\MasterData\PurchaseTypes.cs" />
+    <Compile Include="Models\ModelAWO\AssetWriteOff.cs" />
+    <Compile Include="Models\ModelAWO\AssetWriteOffApprovalLimit.cs" />
+    <Compile Include="Models\ModelAWO\AssetWriteOffApprovalLog.cs" />
+    <Compile Include="Models\ModelAWO\AssetWriteOffDetail.cs" />
+    <Compile Include="Models\ModelAWO\AssetWriteOffDocument.cs" />
     <Compile Include="Models\PoolBudget.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\TransferApprovalLimits.cs" />
     <Compile Include="Models\TransferApprovalLog.cs" />
     <Compile Include="Models\TransferDocument.cs" />
     <Compile Include="Models\TransfersTransaction.cs" />
+    <Compile Include="Models\TransfersTransactionDetail.cs" />
     <Compile Include="Models\Vendor.cs" />
     <Compile Include="Models\ViewModels\ApprovalLimitViewModel.cs" />
     <Compile Include="Models\ViewModels\ApprovalViewModel.cs" />

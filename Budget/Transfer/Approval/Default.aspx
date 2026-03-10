@@ -12,7 +12,7 @@
                     <%--<asp:ListItem Text="All" Value="All" Selected="True"/>--%>
                     <asp:ListItem Text="Submitted" Value="Submitted" />
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
-                    <asp:ListItem Text="Under Review" Value="Under Review" />
+                    <asp:ListItem Text="Under Review" Value="UnderReview" />
                     <asp:ListItem Text="Completed" Value="Completed" />
                     <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
@@ -37,7 +37,7 @@
                         <asp:BoundField DataField="Project" HeaderText="Project" />
                         <asp:BoundField DataField="Date" HeaderText="Application Date" DataFormatString="{0:dd/MM/yyyy}" />
                         <asp:BoundField DataField="EstimatedCost" HeaderText="Estimated Cost (RM)" DataFormatString="{0:N2}" />
-                        <asp:BoundField DataField="FromTransfer" HeaderText="Transfer (RM)" DataFormatString="{0:N2}" />
+                        <%--<asp:BoundField DataField="FromTransfer" HeaderText="Transfer (RM)" DataFormatString="{0:N2}" />--%>
                         <asp:BoundField DataField="NextApprover" HeaderText="Next Approver"  />
                         <asp:TemplateField HeaderText="Status">
                             <ItemTemplate>

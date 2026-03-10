@@ -151,9 +151,16 @@ namespace Prodata.WebForm
                         case "Completed": query = query.Where(x => x.Status == "Completed" && x.DeletedDate == null); break;
                     }
 
-                    var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RefNo = x.Ref, Date = x.CreatedDate, BA = x.BizAreaCode, Status = x.Status, Amount = x.Amount }).ToList();
+                    var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RefNo = x.Ref, Date = x.CreatedDate, BizArea = x.BizAreaCode, Status = x.Status, Amount = x.Amount, Pending = x.NextApprover }).ToList();
                     totalAmount = resultList.Sum(x => x.Amount ?? 0);
-                    gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), x.Status, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
+                    if (statusType == "Submitted" || statusType == "Deleted" || statusType == "Completed")
+                    {
+                        gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BizArea = x.BizArea + " - " + (bizAreaDict.ContainsKey(x.BizArea) ? bizAreaDict[x.BizArea] : "-"), x.Status, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
+                    }
+                    else
+                    {
+                        gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BizArea = x.BizArea + " - " + (bizAreaDict.ContainsKey(x.BizArea) ? bizAreaDict[x.BizArea] : "-"), x.Status, x.Pending, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
+                    }
                 }
                 else if (category == "T1COthers")
                 {
@@ -173,7 +180,7 @@ namespace Prodata.WebForm
 
                     var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RefNo = x.Ref, Date = x.CreatedDate, BA = x.BizAreaCode, Status = x.Status, Amount = x.Amount }).ToList();
                     totalAmount = resultList.Sum(x => x.Amount ?? 0);
-                    gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), x.Status, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
+                    gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BizArea = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), x.Status, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
                 }
                 else if (category == "Additional")
                 {
@@ -193,7 +200,7 @@ namespace Prodata.WebForm
 
                     var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RequestNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.Status }).ToList();
                     totalAmount = 0;
-                    gvDetails.DataSource = resultList.Select(x => new { RefNo = x.RequestNo, x.Date, BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), Status = x.Status.ToString(), Amount = 0m.ToString("N2") }).ToList();
+                    gvDetails.DataSource = resultList.Select(x => new { RefNo = x.RequestNo, x.Date, BizArea = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), Status = x.Status.ToString(), Amount = 0m.ToString("N2") }).ToList();
                 }
                 else if (category == "Transfer")
                 {
@@ -211,9 +218,9 @@ namespace Prodata.WebForm
                         case "DELETED": query = query.Where(x => x.DeletedDate != null || x.status == "Deleted"); break;
                     }
 
-                    var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status, Amount = x.FromTransfer }).ToList();
+                    var resultList = query.OrderByDescending(x => x.CreatedDate).Select(x => new { RefNo = x.RefNo, Date = x.CreatedDate, BA = x.BA, Status = x.status, Amount = x.FromTransfer, Pending = x.NextApprover }).ToList();
                     totalAmount = resultList.Sum(x => x.Amount ?? 0);
-                    gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BA = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), Status = x.Status, Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
+                    gvDetails.DataSource = resultList.Select(x => new { x.RefNo, x.Date, BizArea = x.BA + " - " + (bizAreaDict.ContainsKey(x.BA) ? bizAreaDict[x.BA] : "-"), Status = x.Status, x.Pending , Amount = (x.Amount ?? 0).ToString("N2") }).ToList();
                 }
 
                 lblModalTotal.Text = "RM " + totalAmount.ToString("N2");
@@ -351,14 +358,21 @@ namespace Prodata.WebForm
                     lblCompletionRate.Text = completionRate.ToString("0.0") + "%";
 
                     var budgetQuery = db.Forms.Where(x => x.CreatedDate.Year == selectedYear && x.DeletedDate == null && x.Status != "Draft" && x.Status != "Rejected");
-                    if (targetCodes.Any()) budgetQuery = budgetQuery.Where(x => targetCodes.Contains(x.BizAreaCode));
+                    var OthersbudgetQuery = db.FormsProcurement.Where(x => x.CreatedDate.Year == selectedYear && x.DeletedDate == null && x.Status != "Draft" && x.Status != "Rejected");
 
-                    decimal totalBudget = budgetQuery.Sum(x => x.Amount ?? 0);
+                    if (targetCodes.Any())
+                    {
+                        budgetQuery = budgetQuery.Where(x => targetCodes.Contains(x.BizAreaCode));
+                        OthersbudgetQuery = OthersbudgetQuery.Where(x => targetCodes.Contains(x.BizAreaCode));
+                    }
+
+                    decimal totalBudget = budgetQuery.Sum(x => (decimal?)x.Amount) ?? 0;
+                    decimal OtherstotalBudget = OthersbudgetQuery.Sum(x => (decimal?)x.Amount) ?? 0;
 
                     if (totalBudget >= 1000000)
-                        lblTotalBudget.Text = "RM " + (totalBudget / 1000000m).ToString("0.##") + "M";
+                        lblTotalBudget.Text = "RM " + ((totalBudget + OtherstotalBudget) / 1000000m).ToString("0.##") + "M";
                     else
-                        lblTotalBudget.Text = "RM " + totalBudget.ToString("N0");
+                        lblTotalBudget.Text = "RM " + (totalBudget + OtherstotalBudget).ToString("N0");
                 }
                 catch (Exception ex)
                 {
@@ -369,7 +383,7 @@ namespace Prodata.WebForm
                 }
 
                 // ----------------------------------------------------
-                // DOUGHNUT CHART LOGIC
+                // TOP 10 BAR CHART LOGIC
                 // ----------------------------------------------------
                 try
                 {
@@ -384,29 +398,21 @@ namespace Prodata.WebForm
 
                     List<string> dLabels = new List<string>();
                     List<decimal> dData = new List<decimal>();
-                    decimal dTotal = 0;
 
                     foreach (var item in top10BAs)
                     {
                         string baName = bizAreaDict.ContainsKey(item.BA) ? bizAreaDict[item.BA] : item.BA;
                         dLabels.Add(baName);
                         dData.Add(item.TotalAmount);
-                        dTotal += item.TotalAmount;
                     }
 
-                    string centerText = "RM 0";
-                    if (dTotal >= 1000000)
-                        centerText = "RM " + (dTotal / 1000000m).ToString("0.##") + "M";
-                    else if (dTotal > 0)
-                        centerText = "RM " + dTotal.ToString("N0");
-
-                    var doughnutObj = new { labels = dLabels, data = dData, centerText = centerText };
+                    var top10Obj = new { labels = dLabels, data = dData };
                     JavaScriptSerializer js = new JavaScriptSerializer();
-                    hfChartDataDoughnut.Value = js.Serialize(doughnutObj);
+                    hfChartDataTop10.Value = js.Serialize(top10Obj);
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Doughnut Data Error: " + ex.Message);
+                    System.Diagnostics.Debug.WriteLine("Top 10 Data Error: " + ex.Message);
                 }
 
                 JavaScriptSerializer mainJs = new JavaScriptSerializer();
@@ -441,7 +447,6 @@ namespace Prodata.WebForm
             catch (Exception) { /* Handled silently for UI safety */ }
         }
 
-        // Changed to protected to ensure inline binding <%# ... %> works safely
         protected string GetStatusBadgeClass(string status)
         {
             string s = (status ?? "").ToLower();

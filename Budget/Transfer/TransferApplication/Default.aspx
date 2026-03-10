@@ -12,7 +12,7 @@
                     <%--<asp:ListItem Text="All" Value="All" Selected="True"/>--%>
                     <asp:ListItem Text="Submitted" Value="Submitted" />
                     <asp:ListItem Text="Resubmit" Value="Resubmit" />
-                    <asp:ListItem Text="Under Review" Value="Under Review" />
+                    <asp:ListItem Text="Under Review" Value="UnderReview" />
                     <asp:ListItem Text="Completed" Value="Completed" />
                     <asp:ListItem Text="Finalized" Value="Finalized" />
                     <asp:ListItem Text="Deleted" Value="Deleted" />
@@ -60,7 +60,7 @@
                                 <div class="btn-group" role="group">
                                     <asp:PlaceHolder ID="phEditButton" runat="server" Visible='<%# Eval("CanEdit") %>'>
                                         <a class="btn btn-outline-primary btn-sm" 
-                                           href='Application?Id=<%# Eval("Id") %>'
+                                           href='ApplicationV2?Id=<%# Eval("Id") %>'
                                            data-toggle="tooltip" data-placement="top" title="Edit">
                                             <i class="fas fa-edit"></i>
                                         </a>

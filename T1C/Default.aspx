@@ -166,7 +166,7 @@
                                 <i class="fas fa-print"></i> Print
                             </button>
 
-                            <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Addv1" CausesValidation="false">
+                            <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/T1C/Addv2" CausesValidation="false">
                                 <i class="fas fa-plus"></i> New Budget T1C
                             </asp:LinkButton>
                         </div>

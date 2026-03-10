@@ -3,8 +3,6 @@ using Prodata.WebForm.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Prodata.WebForm.Budget.Transfer.Approval
@@ -19,7 +17,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             {
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
-                    LoadTransfer(_transferId);
+                    LoadTransferMasterAndDetails(_transferId);
                     LoadDocument(_transferId);
                     Loadhistory(_transferId);
                 }
@@ -29,6 +27,87 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 }
             }
         }
+
+        private void LoadTransferMasterAndDetails(Guid id)
+        {
+            using (var db = new AppDbContext())
+            {
+                // 1. Load Master Record
+                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
+                if (transfer == null)
+                {
+                    Response.Redirect("~/Budget/Transfer/Approval");
+                    return;
+                }
+
+                // 2. Bind Header Info
+                lblRefNo.Text = transfer.RefNo;
+                lblProject.Text = transfer.Project;
+                lblDate.Text = transfer.Date.ToString("dd-MMM-yyyy");
+                lblEstimatedCost.Text = "RM " + transfer.EstimatedCost.ToString("N2");
+                lblEVisa.Text = transfer.EVisaNo;
+                lblBudgetType.Text = transfer.BudgetType;
+
+                // Status Logic & Styling
+                string status = transfer.DeletedDate != null ? "Deleted" : (transfer.status ?? "Unknown");
+                lblStatus.Text = status;
+
+                string statusClass = "view-data font-weight-bold px-2 py-1 rounded text-white d-inline-block ";
+                if (status == "Deleted") statusClass += "bg-danger";
+                else if (status == "sentback") statusClass += "bg-warning text-dark";
+                else if (status == "UnderReview") statusClass += "bg-primary";
+                else if (status == "Completed" || status == "Approved") statusClass += "bg-success";
+                else if (status == "Finalized") statusClass += "bg-secondary";
+                else statusClass += "bg-dark";
+
+                lblStatus.CssClass = statusClass;
+
+                // 3. Bind Global BAs
+                var ipmsBA = new Class.IPMSBizArea();
+                lblGlobalFromBA.Text = $"{transfer.FromBA} - {ipmsBA.GetNameByCode(transfer.FromBA)}";
+                lblGlobalToBA.Text = $"{transfer.ToBA} - {ipmsBA.GetNameByCode(transfer.ToBA)}";
+
+                // 4. Bind the Multiple 'From' Details to the Repeater
+                var detailsList = db.TransfersTransactionDetails
+                                    .Where(x => x.TransferId == id)
+                                    .ToList();
+
+                rptFromBudgets.DataSource = detailsList;
+                rptFromBudgets.DataBind();
+
+                // 5. Bind 'To' Budget Info
+                var ToBudgetTypeName = db.BudgetTypes
+                    .Where(x => x.Id == transfer.ToBudgetType)
+                    .Select(x => x.Name)
+                    .FirstOrDefault();
+
+                lblToBudgetType.Text = ToBudgetTypeName ?? "Unknown";
+                lblToGL.Text = transfer.ToGL;
+                lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("N2");
+                lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("N2");
+                lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("N2");
+                lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("N2");
+
+                // 6. Justification
+                litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");
+            }
+        }
+
+        // Helper method for the Repeater to resolve Budget Type ID to Name
+        protected string GetBudgetTypeName(object budgetTypeIdObj)
+        {
+            if (budgetTypeIdObj == null) return "Unknown";
+
+            if (Guid.TryParse(budgetTypeIdObj.ToString(), out Guid typeId))
+            {
+                using (var db = new AppDbContext())
+                {
+                    return db.BudgetTypes.Where(x => x.Id == typeId).Select(x => x.Name).FirstOrDefault() ?? "Unknown";
+                }
+            }
+            return "Unknown";
+        }
+
         private void LoadDocument(Guid transferId)
         {
             using (var db = new AppDbContext())
@@ -50,14 +129,14 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                         var link = new HyperLink
                         {
                             NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=TransferDocuments",
-                            CssClass = "btn btn-outline-success mr-2",
+                            CssClass = "btn btn-sm btn-outline-success mr-2 d-print-none", // Hidden on print
                             Target = "_blank",
                             Text = "<i class='fas fa-external-link-alt'></i> View"
                         };
 
                         var fileLabel = new Label
                         {
-                            Text = $"<i class='fas fa-file-alt text-success mr-2'></i> {doc.FileName}",
+                            Text = $"<i class='fas fa-file-alt text-secondary mr-2'></i> {doc.FileName}",
                             CssClass = "text-dark font-weight-bold",
                             EnableViewState = false
                         };
@@ -73,67 +152,14 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 }
             }
         }
-        private void LoadTransfer(Guid id)
-        {
-            using (var db = new AppDbContext())
-            {
-                var transfer = db.TransfersTransaction.FirstOrDefault(x => x.Id == id);
-                if (transfer == null)
-                {
-                    Response.Redirect("~/Budget/Transfer/Approval");
-                    return;
-                }
-
-                // Header
-                lblRefNo.Text = transfer.RefNo;
-                lblProject.Text = transfer.Project;
-                lblDate.Text = transfer.Date.ToString("yyyy-MM-dd");
-                lblEstimatedCost.Text = transfer.EstimatedCost.ToString("F2");
-                lblEVisa.Text = transfer.EVisaNo;
-                lblBudgetType.Text = transfer.BudgetType;
-                lblBA.Text = transfer.BA;
-
-                // From Budget
-                Guid FromBudgetTypeGuid = transfer.FromBudgetType;
-                var FromBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == FromBudgetTypeGuid)
-                    .Select(x => x.Name)
-                    .FirstOrDefault();
-
-                lblFromBudgetType.Text = FromBudgetType ?? "Unknown";
-                lblFromBA.Text = transfer.FromBA;
-                lblFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
-                lblFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
-                lblFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
-                lblFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
-                lblFromGL.Text = transfer.FromGL;
-
-                // To Budget
-                Guid ToBudgetTypeGuid = transfer.ToBudgetType;
-                var ToBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == ToBudgetTypeGuid)
-                    .Select(x => x.Name)
-                    .FirstOrDefault();
-                lblToBudgetType.Text = ToBudgetType ?? "Unknown";
-                lblToBA.Text = transfer.ToBA;
-                lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
-                lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
-                lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
-                lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
-                lblToGL.Text = transfer.ToGL;
-
-                // Justification
-                litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");
-            }
-        }
 
         private void Loadhistory(Guid id)
-        { 
+        {
             using (var db = new AppDbContext())
             {
                 var query = db.TransferApprovalLog
                               .Where(x => x.DeletedDate == null && x.BudgetTransferId == id);
-                 
+
                 var transfers = query
                     .OrderByDescending(x => x.ActionDate)
                     .Select(x => new
@@ -147,8 +173,12 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     })
                     .ToList();
 
-                gvHistory.DataSource = transfers;
-                gvHistory.DataBind();
+                if (transfers.Any())
+                {
+                    pnHistoryApproval.Visible = true;
+                    gvHistory.DataSource = transfers;
+                    gvHistory.DataBind();
+                }
             }
         }
     }

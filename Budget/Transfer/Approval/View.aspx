@@ -1,169 +1,183 @@
 ﻿<%@ Page Title="Transfer Approval View" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.Budget.Transfer.Approval.View" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
-    <asp:Panel runat="server" CssClass="card p-4 shadow-sm rounded">
+    
+    <style>
+        .full-screen-container { width: 100%; padding: 0 15px; }
+        .card-custom { border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-radius: 10px; margin-bottom: 30px; background-color: #fff; }
+        .card-header-custom { background-color: #f8f9fa; border-bottom: 2px solid #e9ecef; border-radius: 10px 10px 0 0 !important; padding: 1.25rem 1.5rem; position: sticky; top: 0; z-index: 1000; }
+        .section-title { color: #2c3e50; font-weight: 600; border-bottom: 2px solid #3498db; padding-bottom: 8px; margin-bottom: 20px; margin-top: 30px; font-size: 1.25rem; }
+        .form-label { font-weight: 600; color: #6c757d; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+        .view-data { font-size: 1.1rem; font-weight: 500; color: #212529; margin-bottom: 15px; display: block; }
+        .table-custom th { background-color: #343a40 !important; color: #ffffff !important; font-weight: 500; vertical-align: middle !important; text-align: center; }
+        .table-custom td { vertical-align: middle; }
+        .min-w-150 { min-width: 150px; }
+        .min-w-200 { min-width: 200px; }
+        
+        @media print {
+            .full-screen-container { padding: 0; }
+            .card-custom { box-shadow: none; border: none; }
+            .btn, .card-tools, .navbar, footer, .sidebar { display: none !important; }
+            body { background-color: #fff; margin: 0; padding: 0; }
+            .table-custom th { background-color: #f8f9fa !important; color: #000 !important; border-bottom: 2px solid #000 !important; }
+            .section-title { border-bottom: 2px solid #000; }
+            .page-break-inside-avoid { page-break-inside: avoid; }
+        }
+    </style>
 
-        <!-- Header Bar -->
-        <div class="card-header card-header-sticky">
-            <h2 class="card-title d-none d-sm-inline"><%: Page.Title %></h2>
-            <div class="card-tools">
-                <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-default" PostBackUrl="~/Budget/Transfer/Approval/Default" CausesValidation="false">
-                    <i class="fas fa-angle-double-left"></i> Back
-                </asp:LinkButton>
-                <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-print" CausesValidation="false"
-                    OnClientClick="printPanel(); return false;">
-                    <i class="fas fa-print"></i> Print
-                </asp:LinkButton>   
-                <%--<asp:LinkButton ID="btnSave" runat="server" CssClass="btn btn-primary btn-revision">
-                    <i class="fas fa-edit"></i> Request Revision
-                </asp:LinkButton>
-                <asp:LinkButton ID="btnSubmit1" runat="server" CssClass="btn btn-success btn-approve">
-                    <i class="fas fa-circle"></i> Approve Transfer
-                </asp:LinkButton>--%>
-            </div>
-        </div>
+    <div class="full-screen-container">
+        <asp:Panel ID="pnlPrintArea" runat="server" CssClass="card card-custom page-break-inside-avoid">
 
-        <!-- Transfer Info Section -->
-        <div class="row mt-4">
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">Reference No:</label>
-                <div><asp:Label ID="lblRefNo" runat="server" /></div>
+            <div class="card-header card-header-custom d-flex align-items-center">
+                <h3 class="card-title m-0 fw-bold text-dark"><i class="fas fa-clipboard-list mr-2"></i><%: Page.Title %></h3>
+                <div class="card-tools" style="margin-left: auto !important;">
+                    <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary mr-2" PostBackUrl="~/Budget/Transfer/Approval/Default" CausesValidation="false">
+                        <i class="fas fa-angle-double-left"></i> Back
+                    </asp:LinkButton>
+                    <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-primary" CausesValidation="false" OnClientClick="window.print(); return false;">
+                        <i class="fas fa-print"></i> Print
+                    </asp:LinkButton>
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">Application Date:</label>
-                <div><asp:Label ID="lblDate" runat="server" /></div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">Project:</label>
-                <div><asp:Label ID="lblProject" runat="server" /></div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">BA:</label>
-                <div><asp:Label ID="lblBA" runat="server" /></div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">Budget Type:</label>
-                <div><asp:Label ID="lblBudgetType" runat="server" /></div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">Estimated Cost (RM):</label>
-                <div><asp:Label ID="lblEstimatedCost" runat="server" /></div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <label class="fw-bold">E-VISA No.:</label>
-                <div><asp:Label ID="lblEVisa" runat="server" /></div>
-            </div>
-        </div>
 
-        <!-- Budget Table -->
-        <h4 class="mt-4">Budget Transfer Details</h4>
-        <table class="table table-striped table-bordered table-hover">
-            <thead class="table-primary text-center">
-                <tr>
-                    <th>Item</th>
-                    <th>GL</th>
-                    <th>Asset Class</th>
-                    <th>BA</th>
-                    <th>Original Budget (RM)</th>
-                    <th>Current Balance (RM)</th>
-                    <th>Transfer Amount (RM)</th>
-                    <th>Balance After Transfer (RM)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>From Budget</td>
-                    <td><asp:Label ID="lblFromGL" runat="server" /></td>
-                    <td><asp:Label ID="lblFromBudgetType" runat="server" /></td>
-                    <td><asp:Label ID="lblFromBA" runat="server" /></td>
-                    <td><asp:Label ID="lblFromBudget" runat="server" /></td>
-                    <td><asp:Label ID="lblFromBalance" runat="server" /></td>
-                    <td><asp:Label ID="lblFromTransfer" runat="server" /></td>
-                    <td><asp:Label ID="lblFromAfter" runat="server" /></td>
-                </tr>
-                <tr>
-                    <td>To Budget</td>
-                    <td><asp:Label ID="lblToGL" runat="server" /></td>
-                    <td><asp:Label ID="lblToBudgetType" runat="server" /></td>
-                    <td><asp:Label ID="lblToBA" runat="server" /></td>
-                    <td><asp:Label ID="lblToBudget" runat="server" /></td>
-                    <td><asp:Label ID="lblToBalance" runat="server" /></td>
-                    <td><asp:Label ID="lblToTransfer" runat="server" /></td>
-                    <td><asp:Label ID="lblToAfter" runat="server" /></td>
-                </tr>
-            </tbody>
-        </table>
+            <div class="card-body p-4">
+                
+                <h4 class="section-title mt-0">Application Information</h4>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Reference No.</label>
+                        <asp:Label ID="lblRefNo" runat="server" CssClass="view-data text-primary font-weight-bold" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">E-VISA No.</label>
+                        <asp:Label ID="lblEVisa" runat="server" CssClass="view-data text-info font-weight-bold" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Application Date</label>
+                        <asp:Label ID="lblDate" runat="server" CssClass="view-data" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <div><asp:Label ID="lblStatus" runat="server" CssClass="view-data" /></div>
+                    </div>
+                </div>
 
-        <!-- Justification -->
-        <h4 class="mt-4">Justification</h4>
-        <div class="border rounded p-3 bg-light">
-            <asp:Literal ID="litJustification" runat="server" Mode="Encode" />
-        </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Budget Type</label>
+                        <asp:Label ID="lblBudgetType" runat="server" CssClass="view-data" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Project Name / Details</label>
+                        <asp:Label ID="lblProject" runat="server" CssClass="view-data font-italic" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Total Estimated Cost</label>
+                        <asp:Label ID="lblEstimatedCost" runat="server" CssClass="view-data font-weight-bold text-success" />
+                    </div>
+                </div>
 
-        <!-- Uploaded Documents -->
-        <h4 class="mt-4">Uploaded Document</h4>
-        <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="form-group" Visible="false">
-            <asp:PlaceHolder ID="phDocumentList" runat="server" />
+                <h4 class="section-title mt-4">Budget Transfer Details</h4>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-danger"><i class="fas fa-sign-out-alt mr-1"></i> Source Business Area (FROM)</label>
+                        <div class="form-control bg-light font-weight-bold text-dark shadow-sm border-danger" style="border-left: 4px solid #dc3545; height: auto;">
+                            <asp:Label runat="server" ID="lblGlobalFromBA" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-success"><i class="fas fa-sign-in-alt mr-1"></i> Destination Business Area (TO)</label>
+                        <div class="form-control bg-light font-weight-bold text-dark shadow-sm border-success" style="border-left: 4px solid #28a745; height: auto;">
+                            <asp:Label runat="server" ID="lblGlobalToBA" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive shadow-sm border rounded mb-4 page-break-inside-avoid">
+                    <table class="table table-bordered table-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px;">Direction</th> 
+                                <th class="min-w-150">GL Code</th> 
+                                <th class="min-w-200">Budget Type</th>
+                                <th class="min-w-150 text-right">Original (RM)</th>
+                                <th class="min-w-150 text-right">Current Bal (RM)</th>
+                                <th class="min-w-150 text-right">Transfer (RM)</th>
+                                <th class="min-w-150 text-right">Bal After (RM)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <asp:Repeater ID="rptFromBudgets" runat="server">
+                                <ItemTemplate>
+                                    <tr class="bg-light">
+                                        <td class="font-weight-bold text-danger text-center align-middle"><i class="fas fa-arrow-up mr-1 d-print-none"></i> FROM</td>
+                                        <td class="align-middle"><%# Eval("FromGL") %></td>
+                                        <td class="align-middle"><%# GetBudgetTypeName(Eval("FromBudgetType")) %></td>
+                                        <td class="align-middle text-right"><%# Eval("FromBudget", "{0:N2}") %></td>
+                                        <td class="align-middle text-right"><%# Eval("FromBalance", "{0:N2}") %></td>
+                                        <td class="align-middle text-right font-weight-bold text-danger"><%# Eval("FromTransfer", "{0:N2}") %></td>
+                                        <td class="align-middle text-right"><%# Eval("FromAfter", "{0:N2}") %></td>
+                                    </tr>
+                                </ItemTemplate>
+                            </asp:Repeater>
+
+                            <tr style="background-color: #e8f4f8; border-top: 3px solid #dee2e6;">
+                                <td class="font-weight-bold text-success text-center align-middle"><i class="fas fa-arrow-down mr-1 d-print-none"></i> TO</td>
+                                <td class="align-middle"><asp:Label ID="lblToGL" runat="server" /></td>
+                                <td class="align-middle"><asp:Label ID="lblToBudgetType" runat="server" /></td>
+                                <td class="align-middle text-right"><asp:Label ID="lblToBudget" runat="server" /></td>
+                                <td class="align-middle text-right"><asp:Label ID="lblToBalance" runat="server" /></td>
+                                <td class="align-middle text-right font-weight-bold text-success"><asp:Label ID="lblToTransfer" runat="server" /></td>
+                                <td class="align-middle text-right font-weight-bold"><asp:Label ID="lblToAfter" runat="server" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row page-break-inside-avoid">
+                    <div class="col-md-12 mb-4">
+                        <h4 class="section-title mt-0">Justification</h4>
+                        <div class="border rounded p-3 bg-light view-data" style="min-height: 80px;">
+                            <asp:Literal ID="litJustification" runat="server" Mode="Encode" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row page-break-inside-avoid">
+                    <div class="col-md-6 mb-3">
+                        <asp:Panel runat="server" ID="pnlUploadedDocument" CssClass="card bg-light border-success h-100" Visible="false">
+                            <div class="card-body">
+                                <h5 class="card-title text-success"><i class="fas fa-paperclip"></i> Uploaded Documents</h5>
+                                <div class="bg-white p-2 rounded border">
+                                    <asp:PlaceHolder ID="phDocumentList" runat="server" />
+                                </div>
+                            </div>
+                        </asp:Panel>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <asp:Panel runat="server" ID="pnHistoryApproval" CssClass="card bg-light border-info h-100" Visible="false">
+                            <div class="card-body p-2">
+                                <h5 class="card-title text-info mb-2 px-2"><i class="fas fa-history"></i> Approval History</h5>
+                                <div class="table-responsive bg-white">
+                                    <asp:GridView ID="gvHistory" runat="server" CssClass="table table-bordered table-sm mb-0" AutoGenerateColumns="False" EmptyDataText="No Approval record.">
+                                        <Columns>
+                                            <asp:BoundField DataField="ActionDate" HeaderText="Date" DataFormatString="{0:yyyy-MM-dd HH:mm}" />
+                                            <asp:BoundField DataField="ActionType" HeaderText="Action" />
+                                            <asp:BoundField DataField="RoleName" HeaderText="Role" /> 
+                                            <asp:BoundField DataField="Status" HeaderText="Status"/>
+                                            <asp:BoundField DataField="Remarks" HeaderText="Remarks"/>
+                                        </Columns>
+                                    </asp:GridView>
+                                </div>
+                            </div>
+                        </asp:Panel>
+                    </div>
+                </div>
+
+            </div>
         </asp:Panel>
-         
-        <h4 class="mt-4">Approval History</h4>
-         <asp:UpdatePanel ID="UpdatePanel1" runat="server">
-            <ContentTemplate>
-                <asp:GridView ID="gvHistory" runat="server"
-                              CssClass="table table-bordered table-sm" 
-                              AllowPaging="true"
-                              AutoGenerateColumns="False"
-                              DataKeyNames="Id"
-                              EmptyDataText="No record.">
-                    <Columns>
-                        <asp:BoundField DataField="ActionDate" HeaderText="Action Date" />
-                        <asp:BoundField DataField="ActionType" HeaderText="Role Action" />
-                        <asp:BoundField DataField="RoleName" HeaderText="Role" /> 
-                        <asp:BoundField DataField="Status" HeaderText="Status"/>
-                        <asp:BoundField DataField="Remarks" HeaderText="Remarks"/>
-                    </Columns>
-                </asp:GridView>
-            </ContentTemplate>
-        </asp:UpdatePanel>
+    </div>
 
-    </asp:Panel>
-      <!-- PRINT SCRIPT -->
-<script type="text/javascript">
-    function printPanel() {
-        var panel = document.querySelector('.card');
-        var printWindow = window.open('', '', 'height=800,width=1000');
-        printWindow.document.write('<html><head><title>Print Report</title>');
-
-        // Copy all linked stylesheets and inline styles
-        var styles = document.querySelectorAll('link[rel="stylesheet"], style');
-        styles.forEach(function (style) {
-            printWindow.document.write(style.outerHTML);
-        });
-
-        // Print-specific styles
-        printWindow.document.write(`
-            <style>
-                .btn, .card-header-sticky, .navbar, .footer {
-                    display: none !important;
-                }
-                body, .card {
-                    margin: 0;
-                    padding: 0;
-                    box-shadow: none;
-                }
-            </style>
-        `);
-
-        printWindow.document.write('</head><body>');
-        printWindow.document.write(panel.outerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-
-        printWindow.onafterprint = function () {
-            printWindow.close();
-        };
-    }
-</script>
-     
 </asp:Content>

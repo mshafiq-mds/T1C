@@ -303,6 +303,15 @@ namespace Prodata.WebForm.T1C.PO.Upload
         protected global::System.Web.UI.WebControls.HyperLink lnkPO;
 
         /// <summary>
+        /// txtPONumber control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtPONumber;
+
+        /// <summary>
         /// txtActualAmount control.
         /// </summary>
         /// <remarks>
@@ -373,6 +382,15 @@ namespace Prodata.WebForm.T1C.PO.Upload
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Repeater rptOverrunAllocations;
+
+        /// <summary>
+        /// divAddAllocationBtn control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAddAllocationBtn;
 
         /// <summary>
         /// lblDynamicError control.

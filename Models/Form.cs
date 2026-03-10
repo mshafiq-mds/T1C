@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -50,6 +51,7 @@ namespace Prodata.WebForm.Models
         public decimal? PreviousYearActual { get; set; }
 
         public decimal? PreviousYearBudget { get; set; }
+        public int? PONumber { get; set; }
 
         public decimal? A { get; set; }
 

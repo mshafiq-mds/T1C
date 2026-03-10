@@ -42,6 +42,51 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         protected global::System.Web.UI.WebControls.LinkButton btnSubmit1;
 
         /// <summary>
+        /// hdnAction control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnAction;
+
+        /// <summary>
+        /// hdnRemarks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnRemarks;
+
+        /// <summary>
+        /// hdnTransferId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hdnTransferId;
+
+        /// <summary>
+        /// btnRevisionConfirmed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRevisionConfirmed;
+
+        /// <summary>
+        /// btnApproveConfirmed control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnApproveConfirmed;
+
+        /// <summary>
         /// lblRefNo control.
         /// </summary>
         /// <remarks>
@@ -49,51 +94,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblRefNo;
-
-        /// <summary>
-        /// lblDate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDate;
-
-        /// <summary>
-        /// lblProject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblProject;
-
-        /// <summary>
-        /// lblBA control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBA;
-
-        /// <summary>
-        /// lblBudgetType control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblBudgetType;
-
-        /// <summary>
-        /// lblEstimatedCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblEstimatedCost;
 
         /// <summary>
         /// lblEVisa control.
@@ -105,67 +105,67 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         protected global::System.Web.UI.WebControls.Label lblEVisa;
 
         /// <summary>
-        /// lblFromGL control.
+        /// lblDate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromGL;
+        protected global::System.Web.UI.WebControls.Label lblDate;
 
         /// <summary>
-        /// lblFromBudgetType control.
+        /// lblBudgetType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromBudgetType;
+        protected global::System.Web.UI.WebControls.Label lblBudgetType;
 
         /// <summary>
-        /// lblFromBA control.
+        /// lblProject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromBA;
+        protected global::System.Web.UI.WebControls.Label lblProject;
 
         /// <summary>
-        /// lblFromBudget control.
+        /// lblEstimatedCost control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromBudget;
+        protected global::System.Web.UI.WebControls.Label lblEstimatedCost;
 
         /// <summary>
-        /// lblFromBalance control.
+        /// lblGlobalFromBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromBalance;
+        protected global::System.Web.UI.WebControls.Label lblGlobalFromBA;
 
         /// <summary>
-        /// lblFromTransfer control.
+        /// lblGlobalToBA control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromTransfer;
+        protected global::System.Web.UI.WebControls.Label lblGlobalToBA;
 
         /// <summary>
-        /// lblFromAfter control.
+        /// rptFromBudgets control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblFromAfter;
+        protected global::System.Web.UI.WebControls.Repeater rptFromBudgets;
 
         /// <summary>
         /// lblToGL control.
@@ -184,15 +184,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblToBudgetType;
-
-        /// <summary>
-        /// lblToBA control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblToBA;
 
         /// <summary>
         /// lblToBudget control.
@@ -258,49 +249,13 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
         protected global::System.Web.UI.WebControls.PlaceHolder phDocumentList;
 
         /// <summary>
-        /// hdnAction control.
+        /// pnHistoryApproval control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnAction;
-
-        /// <summary>
-        /// hdnRemarks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnRemarks;
-
-        /// <summary>
-        /// btnRevisionConfirmed control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRevisionConfirmed;
-
-        /// <summary>
-        /// btnApproveConfirmed control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnApproveConfirmed;
-
-        /// <summary>
-        /// hdnTransferId control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hdnTransferId;
+        protected global::System.Web.UI.WebControls.Panel pnHistoryApproval;
 
         /// <summary>
         /// UpdatePanel1 control.

@@ -43,7 +43,8 @@ namespace Prodata.WebForm.Models
 
         [StringLength(255)]
         public string Name { get; set; }
-
+        public string Remarks { get; set; }
+        
         public string Details { get; set; }
 
         public decimal? Wages { get; set; }

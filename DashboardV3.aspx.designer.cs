@@ -105,13 +105,13 @@ namespace Prodata.WebForm
         protected global::System.Web.UI.WebControls.HiddenField hfChartDataTrans;
 
         /// <summary>
-        /// hfChartDataDoughnut control.
+        /// hfChartDataTop10 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfChartDataDoughnut;
+        protected global::System.Web.UI.WebControls.HiddenField hfChartDataTop10;
 
         /// <summary>
         /// lblTotalBudget control.

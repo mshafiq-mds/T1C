@@ -23,7 +23,7 @@
             </div>
 
             <div class="card-tools">
-                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/Budget/Transfer/Add" CausesValidation="false">
+                <asp:LinkButton ID="btnAdd" runat="server" CssClass="btn btn-primary" PostBackUrl="~/Budget/Transfer/AddV2" CausesValidation="false">
                     <i class="fas fa-plus"></i> Request Transfer Budget
                 </asp:LinkButton>
             </div>
@@ -65,26 +65,36 @@
                         <asp:TemplateField HeaderText="Action">
                             <HeaderStyle CssClass="width-80 text-center align-middle" />
                             <ItemStyle CssClass="width-80 text-center" />
-                            <ItemTemplate>
-                                <%-- View: Completed, UnderReview, Deleted, Finalized --%>
+                           <%-- <ItemTemplate>
                                 <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "UnderReview"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
                                     "<a class='btn btn-info btn-xs' href='View.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
-                                <%-- Resubmit: sentback --%>
                                 <%# (Eval("Status").ToString() == "sentback") ? 
                                     "<a class='btn btn-info btn-xs' href='Resubmit.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
 
-                                <%-- Edit: Submitted --%>
                                 <%# (Eval("Status").ToString() == "Submitted") ? 
                                     "<a class='btn btn-info btn-xs' href='Edit.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
 
-                                <%-- Delete: Submitted or sentback --%>
                                 <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "sentback") 
                                     ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "' title='Delete Entry'><i class='fas fa-trash-alt'></i></a>" 
                                     : "" 
                                 %>
-                            </ItemTemplate>
+                            </ItemTemplate>--%>
+                             <ItemTemplate>
+                                 <%# (Eval("Status").ToString() == "Completed" || Eval("Status").ToString() == "UnderReview"|| Eval("Status").ToString() == "Deleted" || Eval("Status").ToString() == "Finalized") ? 
+                                     "<a class='btn btn-info btn-xs' href='ViewV2.aspx?id=" + Eval("Id") + "' title='View Details'><i class='fas fa-eye'></i></a>" : "" %>
 
+                                 <%# (Eval("Status").ToString() == "sentback") ? 
+                                     "<a class='btn btn-info btn-xs' href='EditV2.aspx?id=" + Eval("Id") + "' title='Resubmit Form'><i class='fas fa-sync-alt'></i></a>" : "" %>
+
+                                 <%# (Eval("Status").ToString() == "Submitted") ? 
+                                     "<a class='btn btn-info btn-xs' href='EditV2.aspx?id=" + Eval("Id") + "' title='Edit Submission'><i class='fas fa-edit'></i></a>" : "" %>
+
+                                 <%# (Eval("Status") == null || Eval("Status").ToString() == "Submitted" || Eval("Status").ToString() == "sentback") 
+                                     ? "<a href='#' class='btn btn-danger btn-xs button-delete' commandargument='" + Eval("Id") + "' title='Delete Entry'><i class='fas fa-trash-alt'></i></a>" 
+                                     : "" 
+                                 %>
+                             </ItemTemplate>
 
                         </asp:TemplateField>
                     </Columns>

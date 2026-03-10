@@ -1,14 +1,15 @@
 ﻿using CustomGuid.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Prodata.WebForm.Models.Auth;
+using Prodata.WebForm.Models.ModelAWO;
 using Prodata.WebForm.Models.MasterData;
 using Prodata.WebForm.Models.System;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace Prodata.WebForm.Models
@@ -133,8 +134,14 @@ namespace Prodata.WebForm.Models
         public DbSet<PurchaseTypes> PurchaseTypes { get; set; }
         public DbSet<FormsProcurement> FormsProcurement { get; set; }
         public DbSet<FormsProcurementDocuments> FormsProcurementDocuments { get; set; }
+        public DbSet<EmailLog> EmailLog { get; set; }
+        public DbSet<TransfersTransactionDetail> TransfersTransactionDetails { get; set; }
+        public DbSet<Models.ModelAWO.AssetWriteOff> AssetWriteOffs { get; set; }
+        public DbSet<AssetWriteOffDetail> AssetWriteOffDetails { get; set; }
+        public DbSet<AssetWriteOffDocument> AssetWriteOffDocuments { get; set; }
+        public DbSet<AssetWriteOffApprovalLog> AssetWriteOffApprovalLogs { get; set; }
         //public DbSet<PoolBudgets> PoolBudgets { get; set; }
-        
+        public DbSet<AssetWriteOffApprovalLimit> AssetWriteOffApprovalLimits { get; set; }
 
 
     }

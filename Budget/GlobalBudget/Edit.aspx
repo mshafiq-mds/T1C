@@ -51,7 +51,14 @@
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label">Description</label>
                         <div class="col-sm-9">
-                            <asp:TextBox ID="txtDescription" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="e.g. Approved Pool Budget for 2025"></asp:TextBox>
+                            <asp:TextBox ID="txtDescription" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="e.g. Pool Budget For All Mill..."></asp:TextBox>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">Remarks</label>
+                        <div class="col-sm-9">
+                            <asp:TextBox ID="txtRemarks" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="e.g. Approved Pool Budget for this year..."></asp:TextBox>
                         </div>
                     </div>
 
@@ -83,8 +90,8 @@
                                                 <th>Action</th>
                                                 <th>Date</th>
                                                 <th>By</th>
-                                                <th>Amount (RM)</th>
-                                                <th>Reference</th>
+                                                <th>Amount Before Edited (RM)</th>
+                                                <th>Remarks</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -99,7 +106,7 @@
                                                         <td><%# Eval("ActionDate", "{0:dd/MM/yyyy HH:mm}") %></td>
                                                         <td><%# Eval("ActionBy") %></td>
                                                         <td><%# Eval("Amount", "{0:N2}") %></td>
-                                                        <td><%# Eval("Ref") %></td>
+                                                        <td><%# Eval("Remarks") %></td>
                                                     </tr>
                                                 </ItemTemplate>
                                             </asp:Repeater>

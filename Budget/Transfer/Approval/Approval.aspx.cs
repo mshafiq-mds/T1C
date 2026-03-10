@@ -24,7 +24,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             {
                 string idUserStr = Request.QueryString["userId"];
 
-                // Redirect only if userId exists and does not match the current user
                 if (!string.IsNullOrEmpty(idUserStr) && idUserStr != Auth.User().Id.ToString())
                 {
                     Response.Redirect("~/Budget/Transfer/Approval");
@@ -33,7 +32,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                 if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
                 {
                     hdnTransferId.Value = _transferId.ToString();
-                    LoadTransfer(_transferId);
+                    LoadTransferMasterAndDetails(_transferId);
                     LoadDocument(_transferId);
                     Loadhistory(_transferId);
                 }
@@ -44,7 +43,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
             }
         }
 
-        private void LoadTransfer(Guid id)
+        private void LoadTransferMasterAndDetails(Guid id)
         {
             using (var db = new AppDbContext())
             {
@@ -56,53 +55,63 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     return;
                 }
 
-                // Header
+                // 1. Header Info
                 lblRefNo.Text = transfer.RefNo;
                 lblProject.Text = transfer.Project;
-                lblDate.Text = transfer.Date.ToString("yyyy-MM-dd");
-                lblEstimatedCost.Text = transfer.EstimatedCost.ToString("F2");
-                //esCost = transfer.EstimatedCost; 
-
+                lblDate.Text = transfer.Date.ToString("dd-MMM-yyyy");
+                lblEstimatedCost.Text = "RM " + transfer.EstimatedCost.ToString("N2");
                 lblEVisa.Text = transfer.EVisaNo;
                 lblBudgetType.Text = transfer.BudgetType;
-                lblBA.Text = transfer.BA;
 
-                // From Budget
-                Guid FromBudgetTypeGuid = transfer.FromBudgetType;
-                var FromBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == FromBudgetTypeGuid)
+                // 2. Global BA Information
+                var ipmsBA = new Class.IPMSBizArea();
+                lblGlobalFromBA.Text = $"{transfer.FromBA} - {ipmsBA.GetNameByCode(transfer.FromBA)}";
+                lblGlobalToBA.Text = $"{transfer.ToBA} - {ipmsBA.GetNameByCode(transfer.ToBA)}";
+
+                // 3. Bind V2 Multiple 'From' Details to Repeater
+                var detailsList = db.TransfersTransactionDetails
+                                    .Where(x => x.TransferId == id)
+                                    .ToList();
+
+                rptFromBudgets.DataSource = detailsList;
+                rptFromBudgets.DataBind();
+
+                // 4. Bind 'To' Budget Info
+                var ToBudgetTypeName = db.BudgetTypes
+                    .Where(x => x.Id == transfer.ToBudgetType)
                     .Select(x => x.Name)
                     .FirstOrDefault();
-                lblFromBudgetType.Text = FromBudgetType ?? "Unknown";
-                lblFromBA.Text = transfer.FromBA;
-                lblFromBudget.Text = (transfer.FromBudget ?? 0).ToString("F2");
-                lblFromBalance.Text = (transfer.FromBalance ?? 0).ToString("F2");
-                lblFromTransfer.Text = (transfer.FromTransfer ?? 0).ToString("F2");
-                lblFromAfter.Text = (transfer.FromAfter ?? 0).ToString("F2");
-                lblFromGL.Text = transfer.FromGL;
 
-                // To Budget
-                Guid ToBudgetTypeGuid = transfer.ToBudgetType;
-                var ToBudgetType = db.BudgetTypes
-                    .Where(x => x.Id == ToBudgetTypeGuid)
-                    .Select(x => x.Name)
-                    .FirstOrDefault();
-                lblToBudgetType.Text = ToBudgetType ?? "Unknown";
-                lblToBA.Text = transfer.ToBA;
-                lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("F2");
-                lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("F2");
-                lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("F2");
-                lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("F2");
+                lblToBudgetType.Text = ToBudgetTypeName ?? "Unknown";
                 lblToGL.Text = transfer.ToGL;
+                lblToBudget.Text = (transfer.ToBudget ?? 0).ToString("N2");
+                lblToBalance.Text = (transfer.ToBalance ?? 0).ToString("N2");
+                lblToTransfer.Text = (transfer.ToTransfer ?? 0).ToString("N2");
+                lblToAfter.Text = (transfer.ToAfter ?? 0).ToString("N2");
 
-                // Justification
+                // 5. Justification
                 litJustification.Text = Server.HtmlEncode(transfer.Justification)?.Replace("\n", "<br/>");
             }
         }
 
+        // Helper method for the Repeater
+        protected string GetBudgetTypeName(object budgetTypeIdObj)
+        {
+            if (budgetTypeIdObj == null) return "Unknown";
+
+            if (Guid.TryParse(budgetTypeIdObj.ToString(), out Guid typeId))
+            {
+                using (var db = new AppDbContext())
+                {
+                    return db.BudgetTypes.Where(x => x.Id == typeId).Select(x => x.Name).FirstOrDefault() ?? "Unknown";
+                }
+            }
+            return "Unknown";
+        }
+
         protected void btnSave_Click(object sender, EventArgs e)
         {
-            esCost = string.IsNullOrWhiteSpace(lblFromTransfer.Text) ? 0 : Convert.ToDecimal(lblFromTransfer.Text);
+            SetEstimatedCostForLogic();
             HandleApprovalAction("Resubmit");
             UpdateStatusTransferTransaction("sentback");
             Response.Redirect("~/Budget/Transfer/Approval");
@@ -110,20 +119,33 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            esCost = string.IsNullOrWhiteSpace(lblFromTransfer.Text) ? 0 : Convert.ToDecimal(lblFromTransfer.Text);
+            SetEstimatedCostForLogic();
             HandleApprovalAction("Approved");
             UpdateStatusTransferTransaction(FindNextStatus());
             Response.Redirect("~/Budget/Transfer/Approval");
         }
 
+        private void SetEstimatedCostForLogic()
+        {
+            if (Guid.TryParse(hdnTransferId.Value, out Guid id))
+            {
+                using (var db = new AppDbContext())
+                {
+                    // For logic, we need the total transfer amount from the Master table
+                    esCost = db.TransfersTransaction.Where(x => x.Id == id).Select(x => x.EstimatedCost).FirstOrDefault();
+                }
+            }
+        }
+
         private string FindNextStatus()
-        { 
+        {
             string status = "UnderReview";
-            if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
+            if (Guid.TryParse(hdnTransferId.Value, out _transferId))
             {
                 using (var db = new AppDbContext())
                 {
                     int currentorder = db.TransferApprovalLog.Where(x => x.BudgetTransferId == _transferId).OrderByDescending(x => x.ActionDate).Select(x => x.StepNumber).FirstOrDefault();
+
                     int currentLimitorder = db.TransferApprovalLimits
                         .Where(x => x.DeletedDate == null &&
                                     x.AmountMin <= esCost &&
@@ -139,7 +161,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
         private void UpdateStatusTransferTransaction(string status)
         {
-            if (Guid.TryParse(Request.QueryString["Id"], out _transferId))
+            if (Guid.TryParse(hdnTransferId.Value, out _transferId))
             {
                 using (var db = new AppDbContext())
                 {
@@ -163,14 +185,20 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                         Emails.EmailsReqTransferBudgetForApprover(_transferId, model, Auth.User().CCMSRoleCode);
                     }
 
+                    // Only undelete Budgets if the process is 100% completed.
                     if (status == "Completed")
-                    { 
+                    {
                         var TTdata = db.TransfersTransaction.Where(x => x.Id == _transferId).FirstOrDefault();
-                        var BudgetData = db.Budgets.Where(x => x.Id == TTdata.NewBudgetId).FirstOrDefault();
-
-                        BudgetData.DeletedBy = null;
-                        BudgetData.DeletedDate = null;
-                        db.SaveChanges();
+                        if (TTdata.NewBudgetId.HasValue)
+                        {
+                            var BudgetData = db.Budgets.Where(x => x.Id == TTdata.NewBudgetId.Value).FirstOrDefault();
+                            if (BudgetData != null)
+                            {
+                                BudgetData.DeletedBy = null;
+                                BudgetData.DeletedDate = null;
+                                db.SaveChanges();
+                            }
+                        }
                     }
                 }
             }
@@ -196,7 +224,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
             using (var db = new AppDbContext())
             {
-                // Fetch approval config for current role once
                 var approvalConfig = db.TransferApprovalLimits
                                         .Where(x =>
                                             x.TransApproverCode == roleCode &&
@@ -208,7 +235,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
 
                 int approvalStep = approvalConfig?.Order ?? 0;
                 string section = approvalConfig?.Section ?? "Unknown";
- 
+
                 if (section == "Unknown")
                 {
                     SweetAlert.SetAlert(SweetAlert.SweetAlertType.Warning, "This role has no approval authority.");
@@ -216,7 +243,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     return;
                 }
 
-                // Reset to step 0 for resubmission
                 if (status == "Resubmit")
                 {
                     approvalStep = -1;
@@ -231,7 +257,6 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     ActionType = section,
                     ActionDate = DateTime.Now,
                     Status = status,
-                    // UPDATED: Using hidden field instead of TextBox
                     Remarks = hdnRemarks.Value?.Trim()
                 };
 
@@ -263,7 +288,7 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                         var link = new HyperLink
                         {
                             NavigateUrl = "~/DocumentHandler.ashx?id=" + doc.Id + "&module=TransferDocuments",
-                            CssClass = "btn btn-outline-success mr-2",
+                            CssClass = "btn btn-sm btn-outline-success mr-2",
                             Target = "_blank",
                             Text = "<i class='fas fa-external-link-alt'></i> View"
                         };
@@ -307,8 +332,12 @@ namespace Prodata.WebForm.Budget.Transfer.Approval
                     })
                     .ToList();
 
-                gvHistory.DataSource = transfers;
-                gvHistory.DataBind();
+                if (transfers.Any())
+                {
+                    pnHistoryApproval.Visible = true;
+                    gvHistory.DataSource = transfers;
+                    gvHistory.DataBind();
+                }
             }
         }
     }
