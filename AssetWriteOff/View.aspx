@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.AssetWriteOff.View" %>
+﻿<%@ Page Title="View Asset Write-Off" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="View.aspx.cs" Inherits="Prodata.WebForm.AssetWriteOff.View" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     
@@ -24,7 +24,7 @@
         @media print {
             @page { 
                 size: A4 landscape; 
-                margin: 10mm 15mm;   
+                margin: 10mm 15mm; 
             }
 
             body { 
@@ -77,7 +77,7 @@
             .print-only { display: block !important; }
             .print-only-flex { display: flex !important; }
 
-            /* NEW: Top Stamp (Moved from Footer) */
+            /* Top Stamp (Moved from Footer) */
             .print-top-stamp {
                 width: 100%;
                 text-align: right;
@@ -174,9 +174,15 @@
                     <i class="fas fa-file-alt mr-2 text-primary"></i><%: Page.Title %>
                 </h3>
                 <div class="card-tools" style="margin-left: auto !important;">
+                    
                     <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary mr-2" PostBackUrl="~/AssetWriteOff/Default.aspx" CausesValidation="false">
                         <i class="fas fa-angle-double-left"></i> Back
                     </asp:LinkButton>
+                    
+                    <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="btn btn-success mr-2" CausesValidation="false" OnClick="btnExportExcel_Click">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </asp:LinkButton>
+
                     <asp:LinkButton ID="btnPrint" runat="server" CssClass="btn btn-primary" CausesValidation="false" OnClientClick="window.print(); return false;">
                         <i class="fas fa-print"></i> Print Document
                     </asp:LinkButton>
@@ -338,7 +344,7 @@
                         </Columns>
                     </asp:GridView>
                 </div>
- 
+
             </div>
         </asp:Panel>
     </div>

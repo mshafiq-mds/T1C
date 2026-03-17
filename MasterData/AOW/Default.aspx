@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.MasterData.AOW.Default" %>
+﻿<%@ Page Title="AWO Approver" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="Prodata.WebForm.MasterData.AOW.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -70,26 +70,26 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:BoundField DataField="MinAmount" HeaderText="Min (RM)" DataFormatString="{0:N2}">
+                            <asp:BoundField DataField="AmountMin" HeaderText="Min (RM)" DataFormatString="{0:N2}">
                                 <ItemStyle CssClass="text-center" />
                             </asp:BoundField>
 
                             <asp:TemplateField HeaderText="Max (RM)">
                                 <ItemStyle CssClass="text-center" />
                                 <ItemTemplate>
-                                    <%# Eval("MaxAmount") != null ? Eval("MaxAmount", "{0:N2}") : "<span class='badge badge-secondary'>Above</span>" %>
+                                    <%# Eval("AmountMax") != null ? Eval("AmountMax", "{0:N2}") : "<span class='badge badge-secondary'>Above</span>" %>
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:BoundField DataField="ActionType" HeaderText="Section">
+                            <asp:BoundField DataField="Section" HeaderText="Section">
                                 <ItemStyle CssClass="text-center" />
                             </asp:BoundField>
 
-                            <asp:BoundField DataField="RoleCode" HeaderText="Role">
+                            <asp:BoundField DataField="AWOApproverCode" HeaderText="Role">
                                 <ItemStyle CssClass="font-weight-bold text-center" />
                             </asp:BoundField>
 
-                            <asp:BoundField DataField="ApprovalLevel" HeaderText="Order">
+                            <asp:BoundField DataField="Order" HeaderText="Order">
                                 <ItemStyle CssClass="text-center font-weight-bold text-primary" Width="100px" />
                             </asp:BoundField>
 

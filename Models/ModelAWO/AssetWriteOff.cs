@@ -17,8 +17,11 @@ namespace Prodata.WebForm.Models.ModelAWO
         [StringLength(200)]
         public string Project { get; set; }
 
+        [StringLength(255)]
+        public string NextApprover { get; set; }
+
         [StringLength(50)]
-        public string BACode { get; set; } // Used to match the Matrix 'ActionType'
+        public string BACode { get; set; }  
 
         public DateTime Date { get; set; }
 

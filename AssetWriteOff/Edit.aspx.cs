@@ -38,7 +38,7 @@ namespace Prodata.WebForm.AssetWriteOff
                 var master = db.AssetWriteOffs.Find(writeOffId);
 
                 // Security Check: Only the creator can edit, and only if it's Sent Back (Clarification)
-                if (master == null ||  master.Status != "Sentback")
+                if (master == null ||  master.Status != "SentBack")
                 {
                     Response.Redirect("~/AssetWriteOff/Default.aspx");
                     return;
@@ -224,6 +224,9 @@ namespace Prodata.WebForm.AssetWriteOff
                 db.SaveChanges();
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Asset Write-Off Request re-submitted successfully.");
+
+                Class.AWOEmails.SendToNextApprover(master.Id);
+
                 Response.Redirect("~/AssetWriteOff/Default.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();
             }

@@ -3,6 +3,7 @@ using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.ModelAWO;
 using System;
 using System.Linq;
+using System.Text;
 using System.Web.UI.WebControls;
 
 namespace Prodata.WebForm.AssetWriteOff.Approver
@@ -23,6 +24,10 @@ namespace Prodata.WebForm.AssetWriteOff.Approver
                 if (Request.QueryString["id"] != null && Guid.TryParse(Request.QueryString["id"], out Guid writeOffId))
                 {
                     LoadData(writeOffId);
+                    btnSendBack.Enabled = Auth.User().Can("asset-write-off-approve-edit");
+                    btnReject.Enabled = Auth.User().Can("asset-write-off-approve-edit");
+                    btnApprove.Enabled = Auth.User().Can("asset-write-off-approve-edit");
+
                 }
                 else
                 {
@@ -40,13 +45,15 @@ namespace Prodata.WebForm.AssetWriteOff.Approver
                 if (master == null) return;
 
                 lblRefNo.Text = master.RequestNo;
-                lblGlobalBA.Text = master.BACode;
+                var ipmsBA = new Class.IPMSBizArea();
+                string baName = ipmsBA.GetNameByCode(master.BACode) ?? "Unknown BA";
+                lblGlobalBA.Text = $"{master.BACode} - {baName}";
                 lblDate.Text = master.Date.ToString("dd-MMM-yyyy");
                 lblHighestNBV.Text = master.NetBookValue.ToString("N2");
                 string status = master.Status ?? "Unknown";
                 lblStatus.Text = status == "UnderReview" ? "Under Review" : status;
                 lblGlobalBA.Text = master.BACode;
-                lblPrintBA.Text = master.BACode;
+                lblPrintBA.Text = lblGlobalBA.Text; // Applied for printed version
 
                 string statusClass = "view-data font-weight-bold px-3 py-1 rounded text-white d-inline-block ";
                 if (status == "Rejected") statusClass += "bg-danger";
@@ -155,7 +162,91 @@ namespace Prodata.WebForm.AssetWriteOff.Approver
                 }
             }
         }
+        // ==========================================
+        // EXPORT EXCEL (Table Details Only)
+        // ==========================================
+        protected void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            if (!Guid.TryParse(Request.QueryString["id"], out Guid writeOffId)) return;
 
+            using (var db = new AppDbContext())
+            {
+                var master = db.AssetWriteOffs.Find(writeOffId);
+                if (master == null) return;
+
+                var details = db.AssetWriteOffDetails.Where(x => x.WriteOffId == writeOffId).OrderBy(x => x.AssetCode).ToList();
+
+                string cleanRefNo = master.RequestNo.Replace("/", "-").Replace(" ", "_");
+                string fileName = $"AssetWriteOff_{cleanRefNo}_{DateTime.Now:yyyyMMdd_HHmmss}.xls";
+
+                Response.Clear();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment;filename=" + fileName);
+                Response.Charset = "";
+                Response.ContentType = "application/vnd.ms-excel";
+
+                // Build a custom HTML table for the export
+                StringBuilder sb = new StringBuilder();
+                sb.Append("<table border='1'>");
+
+                // Header Row
+                sb.Append("<tr style='background-color: #343a40; color: #ffffff; font-weight: bold;'>");
+                sb.Append("<th>NO</th>");
+                sb.Append("<th>ASSET CODE</th>");
+                sb.Append("<th>ITEM DESCRIPTION</th>");
+                sb.Append("<th>DATE OF ACQ.</th>");
+                sb.Append("<th>AGE (YRS)</th>");
+                sb.Append("<th>USEFUL LIFE</th>");
+                sb.Append("<th>QTY</th>");
+                sb.Append("<th>ORIGINAL PRICE (RM)</th>");
+                sb.Append("<th>ACC. DEPR. (RM)</th>");
+                sb.Append("<th>NET BOOK VAL (RM)</th>");
+                sb.Append("<th>REASON</th>");
+                sb.Append("</tr>");
+
+                int index = 1;
+                decimal totalOrig = 0, totalAcc = 0, totalNet = 0;
+
+                // Data Rows
+                foreach (var item in details)
+                {
+                    sb.Append("<tr>");
+                    sb.Append($"<td>{index++}</td>");
+
+                    // mso-number-format forces Excel to treat asset code as text to keep leading zeros
+                    sb.Append($"<td style=\"mso-number-format:'\\@'\">{item.AssetCode}</td>");
+                    sb.Append($"<td>{item.ItemDescription}</td>");
+                    sb.Append($"<td>{(item.AcqDate.HasValue ? item.AcqDate.Value.ToString("dd-MMM-yyyy") : "")}</td>");
+                    sb.Append($"<td>{item.AgeYears}</td>");
+                    sb.Append($"<td>{item.UsefulLife}</td>");
+                    sb.Append($"<td>{item.Quantity}</td>");
+                    sb.Append($"<td>{item.OriginalPrice:N2}</td>");
+                    sb.Append($"<td>{item.AccDepreciation:N2}</td>");
+                    sb.Append($"<td>{item.NetBookValue:N2}</td>");
+                    sb.Append($"<td>{item.Reason}</td>");
+                    sb.Append("</tr>");
+
+                    totalOrig += item.OriginalPrice;
+                    totalAcc += item.AccDepreciation;
+                    totalNet += item.NetBookValue;
+                }
+
+                // Footer Row
+                sb.Append("<tr style='background-color: #f8f9fa; font-weight: bold;'>");
+                sb.Append("<td colspan='7' style='text-align: right;'>GRAND TOTAL (RM)</td>");
+                sb.Append($"<td>{totalOrig:N2}</td>");
+                sb.Append($"<td>{totalAcc:N2}</td>");
+                sb.Append($"<td>{totalNet:N2}</td>");
+                sb.Append("<td></td>");
+                sb.Append("</tr>");
+
+                sb.Append("</table>");
+
+                Response.Output.Write(sb.ToString());
+                Response.Flush();
+                Response.End();
+            }
+        }
         private void ProcessAction(string action)
         {
             if (!Guid.TryParse(Request.QueryString["id"], out Guid writeOffId)) return;
@@ -231,6 +322,22 @@ namespace Prodata.WebForm.AssetWriteOff.Approver
 
                 db.AssetWriteOffApprovalLogs.Add(approvalLog);
                 db.SaveChanges();
+
+                if (action == "Approve")
+                {
+                    if (master.Status == "Pending")
+                        Class.AWOEmails.SendToNextApprover(master.Id); // Routed to next level
+                    else
+                        Class.AWOEmails.SendFinalResultToCreator(master.Id, true); // Fully approved
+                }
+                else if (action == "Reject")
+                {
+                    Class.AWOEmails.SendFinalResultToCreator(master.Id, false);
+                }
+                else if (action == "Send Back")
+                {
+                    Class.AWOEmails.SendBackToCreator(master.Id);
+                }
 
                 Response.Redirect("~/AssetWriteOff/Approver/Default.aspx", false);
                 Context.ApplicationInstance.CompleteRequest();

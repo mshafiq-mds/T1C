@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Dashboard" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.AssetWriteOff.Approver.Edit" %>
+﻿<%@ Page Title="Review AWO" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Edit.aspx.cs" Inherits="Prodata.WebForm.AssetWriteOff.Approver.Edit" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -234,9 +234,14 @@
             <div class="card-header card-header-sticky bg-white shadow-sm border mb-4 d-flex align-items-center d-print-none" style="border-radius: 8px;">
                 <h4 class="card-title d-none d-sm-inline m-0 fw-bold text-dark"><i class="fas fa-search-dollar text-primary mr-2"></i> <%: Page.Title %></h4>
                 <div class="card-tools ml-auto">
+                    
                     <button type="button" class="btn btn-outline-secondary mr-1" onclick="window.print();">
                         <i class="fas fa-print"></i> Print
                     </button>
+
+                    <asp:LinkButton ID="btnExportExcel" runat="server" CssClass="btn btn-success mr-1" CausesValidation="false" OnClick="btnExportExcel_Click">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </asp:LinkButton>
 
                     <asp:LinkButton ID="btnBack" runat="server" CssClass="btn btn-outline-secondary mr-1" PostBackUrl="~/AssetWriteOff/Approver/Default.aspx">
                         <i class="fas fa-angle-double-left"></i> Back
@@ -385,16 +390,7 @@
                             </asp:Repeater>
                         </tbody>
                     </table>
-                </div>
-
-                <div class="card shadow-sm border-0 mb-4 border-left-primary d-print-none">
-                    <div class="card-body bg-light">
-                        <h5 class="fw-bold text-dark"><i class="fas fa-pen-signature text-primary mr-2"></i> Approver Remark</h5>
-                        <div class="form-group mt-3 mb-0">
-                            <p class="text-muted">Click an action button above to provide your remarks.</p>
-                        </div>
-                    </div>
-                </div>
+                </div> 
 
                 <h4 class="section-title mt-4">Audit Trail / Workflow History</h4>
                 <div class="table-responsive shadow-sm border rounded mb-4 page-break-inside-avoid" style="box-shadow: none !important; border: none !important;">

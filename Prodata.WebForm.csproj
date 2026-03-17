@@ -3250,6 +3250,8 @@
     </Compile>
     <Compile Include="Class\AllocationItem.cs" />
     <Compile Include="Class\Approval.cs" />
+    <Compile Include="Class\AWOEmails.cs" />
+    <Compile Include="Class\AWOEmailTemplateBuilder.cs" />
     <Compile Include="Class\AWOHelper.cs" />
     <Compile Include="Class\Budget.cs" />
     <Compile Include="Class\Emails.cs" />

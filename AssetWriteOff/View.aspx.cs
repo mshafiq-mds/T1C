@@ -3,6 +3,7 @@ using Prodata.WebForm.Models;
 using Prodata.WebForm.Models.ModelAWO;
 using System;
 using System.Linq;
+using System.Text;
 using System.Web.UI.WebControls;
 
 namespace Prodata.WebForm.AssetWriteOff
@@ -132,6 +133,93 @@ namespace Prodata.WebForm.AssetWriteOff
                         phDocumentList.Controls.Add(panel);
                     }
                 }
+            }
+        }
+        // ==========================================
+        // EXPORT TO EXCEL LOGIC
+        // ==========================================
+        protected void btnExportExcel_Click(object sender, EventArgs e)
+        {
+            if (!Guid.TryParse(Request.QueryString["id"], out Guid writeOffId)) return;
+
+            using (var db = new AppDbContext())
+            {
+                var master = db.AssetWriteOffs.Find(writeOffId);
+                if (master == null) return;
+
+                var details = db.AssetWriteOffDetails.Where(x => x.WriteOffId == writeOffId).OrderBy(x => x.AssetCode).ToList();
+
+                // Remove spaces and special characters for a clean file name
+                string cleanRefNo = master.RequestNo.Replace("/", "-").Replace(" ", "_");
+                string fileName = $"AssetWriteOff_{cleanRefNo}_{DateTime.Now:yyyyMMdd_HHmmss}.xls";
+
+                Response.Clear();
+                Response.Buffer = true;
+                Response.AddHeader("content-disposition", "attachment;filename=" + fileName);
+                Response.Charset = "";
+                Response.ContentType = "application/vnd.ms-excel";
+
+                // Build a custom HTML table for the export
+                StringBuilder sb = new StringBuilder();
+                sb.Append("<table border='1'>");
+
+                // Main Details Header Row
+                sb.Append("<tr style='background-color: #343a40; color: #ffffff; font-weight: bold;'>");
+                sb.Append("<th>NO</th>");
+                sb.Append("<th>ASSET CODE</th>");
+                sb.Append("<th>ITEM DESCRIPTION</th>");
+                sb.Append("<th>DATE OF ACQ.</th>");
+                sb.Append("<th>AGE (YRS)</th>");
+                sb.Append("<th>USEFUL LIFE</th>");
+                sb.Append("<th>QTY</th>");
+                sb.Append("<th>ORIGINAL PRICE (RM)</th>");
+                sb.Append("<th>ACC. DEPR. (RM)</th>");
+                sb.Append("<th>NET BOOK VAL (RM)</th>");
+                sb.Append("<th>REASON</th>");
+                sb.Append("</tr>");
+
+                // Detail Rows Data
+                int index = 1;
+                decimal totalOrig = 0, totalAcc = 0, totalNet = 0;
+
+                foreach (var item in details)
+                {
+                    sb.Append("<tr>");
+                    sb.Append($"<td>{index++}</td>");
+
+                    // The mso-number-format:'\@' style forces Excel to treat the cell as text, preserving leading zeros on Asset Codes
+                    sb.Append($"<td style=\"mso-number-format:'\\@'\">{item.AssetCode}</td>");
+                    sb.Append($"<td>{item.ItemDescription}</td>");
+                    sb.Append($"<td>{(item.AcqDate.HasValue ? item.AcqDate.Value.ToString("dd-MMM-yyyy") : "")}</td>");
+                    sb.Append($"<td>{item.AgeYears}</td>");
+                    sb.Append($"<td>{item.UsefulLife}</td>");
+                    sb.Append($"<td>{item.Quantity}</td>");
+                    sb.Append($"<td>{item.OriginalPrice:N2}</td>");
+                    sb.Append($"<td>{item.AccDepreciation:N2}</td>");
+                    sb.Append($"<td>{item.NetBookValue:N2}</td>");
+                    sb.Append($"<td>{item.Reason}</td>");
+                    sb.Append("</tr>");
+
+                    totalOrig += item.OriginalPrice;
+                    totalAcc += item.AccDepreciation;
+                    totalNet += item.NetBookValue;
+                }
+
+                // Details Footer Row (Grand Totals)
+                sb.Append("<tr style='background-color: #f8f9fa; font-weight: bold;'>");
+                sb.Append("<td colspan='7' style='text-align: right;'>GRAND TOTAL (RM)</td>");
+                sb.Append($"<td>{totalOrig:N2}</td>");
+                sb.Append($"<td>{totalAcc:N2}</td>");
+                sb.Append($"<td>{totalNet:N2}</td>");
+                sb.Append("<td></td>");
+                sb.Append("</tr>");
+
+                sb.Append("</table>");
+
+                // Write the string to the response stream
+                Response.Output.Write(sb.ToString());
+                Response.Flush();
+                Response.End();
             }
         }
     }

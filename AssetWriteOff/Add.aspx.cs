@@ -18,7 +18,7 @@ namespace Prodata.WebForm.AssetWriteOff
 
                 lblBA.Text = $"{baCode} - {baName}";
                 txtDate.Text = DateTime.Today.ToString("yyyy-MM-dd");
-                txtRequestNo.Text = Functions.GetGeneratedRefNo("WO", true);
+                txtRequestNo.Text = Functions.GetGeneratedRefNo("AW", true);
             }
         }
 
@@ -140,6 +140,9 @@ namespace Prodata.WebForm.AssetWriteOff
                 db.SaveChanges();
 
                 SweetAlert.SetAlert(SweetAlert.SweetAlertType.Success, "Asset Write-Off Request submitted successfully.");
+
+                Class.AWOEmails.SendToNextApprover(master.Id);
+
                 Response.Redirect("~/AssetWriteOff/Default", false);
                 Context.ApplicationInstance.CompleteRequest();
             }

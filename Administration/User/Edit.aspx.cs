@@ -42,8 +42,10 @@ namespace Prodata.WebForm.Administration.User
                 string userId = hdnUserId.Value;
                 Guid guidUserId = Guid.Parse(userId);
 
+                var existingUser = userManager.FindByName(txtUsername.Text.Trim());
                 // Check if user exists (to prevent duplicates if username/email changed)
-                if (!userManager.UserExists(guidUserId, txtUsername.Text.Trim(), txtEmail.Text.Trim()))
+                //if (!userManager.UserExists(guidUserId, txtUsername.Text.Trim(), txtEmail.Text.Trim()))
+                if (existingUser == null || existingUser.Id == guidUserId)
                 {
                     using (var db = new AppDbContext())
                     {
@@ -119,7 +121,8 @@ namespace Prodata.WebForm.Administration.User
                 }
                 else
                 {
-                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "A user with this username or email already exists.");
+                    SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "A user with this username already exists.");
+                    //SweetAlert.SetAlert(SweetAlert.SweetAlertType.Error, "A user with this username or email already exists.");
                 }
             }
         }
